@@ -4,21 +4,21 @@
 #include <gtkmm.h>
 #include <iostream>
 
-#define PATH_VISTA "./Torrent/Vista/vistaTorrent.glade"
+#define PATH_VISTA "./Vista/vistaTorrent.glade"
 
 /*Iconos status*/
-#define PATH_DOWN_FAIL "./Torrent/Vista/images/statusIcons/down_fail.png"
-#define PATH_DOWN_OK "./Torrent/Vista/images/statusIcons/down_ok.png"
-#define PATH_DOWN_QUEUED "./Torrent/Vista/images/statusIcons/down_queued.png"
-#define PATH_SEED_FAIL "./Torrent/Vista/images/statusIcons/seed_fail.png"
-#define PATH_SEED_OK "./Torrent/Vista/images/statusIcons/seed_ok.png"
-#define PATH_SEED_QUEUED "./Torrent/Vista/images/statusIcons/seed_queued.png"
-#define PATH_COMPLETE "./Torrent/Vista/images/statusIcons/complete.png"
-#define PATH_PAUSED "./Torrent/Vista/images/statusIcons/paused.png"
-#define PATH_STOPPED "./Torrent/Vista/images/statusIcons/stopped.png"
-#define PATH_ERROR "./Torrent/Vista/images/statusIcons/error.png"
-#define PATH_ACTIVE "./Torrent/Vista/images/statusIcons/active.png"
-#define PATH_ALL "./Torrent/Vista/images/statusIcons/all.png"
+#define PATH_DOWN_FAIL "./Vista/images/statusIcons/down_fail.png"
+#define PATH_DOWN_OK "./Vista/images/statusIcons/down_ok.png"
+#define PATH_DOWN_QUEUED "./Vista/images/statusIcons/down_queued.png"
+#define PATH_SEED_FAIL "./Vista/images/statusIcons/seed_fail.png"
+#define PATH_SEED_OK "./Vista/images/statusIcons/seed_ok.png"
+#define PATH_SEED_QUEUED "./Vista/images/statusIcons/seed_queued.png"
+#define PATH_COMPLETE "./Vista/images/statusIcons/complete.png"
+#define PATH_PAUSED "./Vista/images/statusIcons/paused.png"
+#define PATH_STOPPED "./Vista/images/statusIcons/stopped.png"
+#define PATH_ERROR "./Vista/images/statusIcons/error.png"
+#define PATH_ACTIVE "./Vista/images/statusIcons/active.png"
+#define PATH_ALL "./Vista/images/statusIcons/all.png"
 
 /****************************************************************************/
 class VistaTorrent {
