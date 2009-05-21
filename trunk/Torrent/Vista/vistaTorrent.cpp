@@ -5,6 +5,8 @@ VistaTorrent::VistaTorrent() {
 	
 	try {
 		this->refXml= Gtk::Builder::create_from_file(PATH_VISTA);
+	} catch(const Gtk::BuilderError &be) {
+		std::cerr << "Gtk::BuilderError code:" << be.code() << std::endl;
 	} catch(const Glib::FileError &fe) {
 		std::cerr << "Glib::FileError code:" << fe.code() << std::endl;
 	} catch(const Glib::MarkupError &me) {
@@ -86,8 +88,6 @@ void VistaTorrent::correr() {
     Glib::RefPtr<Glib::Object> obj_treeModel_pieces= 
                                           refXml->get_object("liststore_pieces");   	
 	treeModel_pieces= Glib::RefPtr<Gtk::ListStore>::cast_static(obj_treeModel_pieces); 
-	
-	
 	
 /***************************************************************************************/
 //PRUEBASSSSSSSSSSS//
