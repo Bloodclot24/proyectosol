@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <stdlib.h>
 #include <iostream>
 #include <sstream>
 
@@ -49,22 +50,20 @@ public:
 	  return request;
      }
 
-     /* Devuelve un nuevo string con el request completo. Es string
-      * debe ser liberado luego de ser utilizado. */
+     /* Devuelve un nuevo string con el request completo. El string
+      * debe ser liberado externamente luego de ser utilizado. */
      std::string* getRequest(void){
 	  std::string *paquete = new std::string();
 
 	  std::string host, dir;
-	  
 
 	  int auxiliar = strlen("http://");
 	  if(url.compare(0,auxiliar,"http://") != 0){
 	       auxiliar = 0;
 	  }
 	  
-	  host = url.substr(auxiliar, url.find_first_of('/',auxiliar)-auxiliar);
-	  dir  = url.substr(url.find_first_of('/',auxiliar));
-
+	  host = url.substr(auxiliar, url.find('/',auxiliar)-auxiliar);
+	  dir  = url.substr(url.find('/',auxiliar));
 
 	  *paquete += "GET ";
 	  *paquete += dir;
@@ -79,8 +78,54 @@ public:
 
 	  return paquete;
      }
+};
 
-//     static std::string UrlDecode
+/* Clase para parsear la respuesta HTTP */
+class HttpResponse{
+     std::string response;
+     int offsetVersion, offsetCode;
+     int longitudContenido;
+     int offsetContenido;
+     
+public:
+     /* dado un string con la respuesta, lo parsea obteniendo los
+      * datos que nos interesan */
+     HttpResponse(std::string respuesta):response(respuesta){
+	  offsetVersion = 0;
+	  offsetCode = response.find(' ',0)+1;
+	  longitudContenido = atoi(response.c_str()+response.find("Content-Length: ")+strlen("Content-Length: "));
+	  offsetContenido = response.find("\r\n\r\n")+4;
+     }
+
+     /* Devuelve los datos que nos interesan */
+     std::string getContent(){
+	  return response.substr(offsetContenido);
+     }
+
+     /* Dado un string codificado en URL, decodifica los datos */
+     static std::string UrlDecode(std::string datos){
+	  std::string decodificado;
+	  unsigned char byte;
+	  for(int i=0;i<datos.length();i++){
+	       byte = datos[i];
+	       if( byte != '%' ){
+		    decodificado += byte;
+	       }
+	       else{
+		    i++;
+		    char auxiliar[3];
+		    auxiliar[0] = datos[i];
+		    auxiliar[1] = datos[i+1];
+		    auxiliar[2] = '\0';
+
+		    decodificado += (char)strtol(auxiliar, NULL, 16);
+		    i++;
+	       }
+	  }
+	  return decodificado;
+	  
+     }
+
 };
 
 int main(int argc, char** argv){
@@ -119,5 +164,8 @@ int main(int argc, char** argv){
      /* Libero el string y salgo */
      delete request;
 
+     HttpResponse resp("HTTP/1.1 200 OK\r\nContent-Length: 574\r\nContent-Type: text/plain\r\n\r\nd8:completei193e10:%20incompletei55e8:intervali1800e12:%40min intervali1%500e5:peers480::privatei0ee");
+
+     std::cout << "Datos de la respuesta: " << HttpResponse::UrlDecode(resp.getContent()) << "\n";
      return 0;
 }
