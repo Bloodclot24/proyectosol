@@ -69,7 +69,7 @@ public:
      const std::string getBitString(void){
 	  std::string cadenaFinal;
 	  int bitActual = 0;
-	  unsigned char byte;
+	 // unsigned char byte;
 	  
 	  for(int i=0;i<byteActual;i++){
 	       for(bitActual=0;bitActual<8;bitActual++){
