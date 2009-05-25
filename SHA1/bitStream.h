@@ -79,6 +79,10 @@ public:
 	  return cadenaFinal;
      }
 
+	void setCadena(std::string cadena){
+		this->cadena = cadena;
+		this->cadena += '\0';
+	}
 
 };
 
