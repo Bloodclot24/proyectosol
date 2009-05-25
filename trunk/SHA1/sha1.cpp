@@ -5,6 +5,16 @@ Sha1::Sha1()
 	
 }
 
+std::string Sha1::intAstring(uint32_t valor)
+{
+	//convierto de int a string
+	std::string snumero;
+	std::stringstream cvz;
+	cvz << valor;
+	snumero = cvz.str();
+	return snumero;
+}
+
 std::string Sha1::ejecutarSha1(std::string cadena)
 {
 	//escribo las constantes en BIG ENDIAN
@@ -14,11 +24,24 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 	uint32_t h3 = 0x76543210;//0x10325476
 	uint32_t h4 = 0xF0E1D2C3;//0xC3D2E1F0
 
-	//TODO
 	//pre-procesamiento
-	uint64_t tamanioMsjOriginal = cadena.length();
-
-
+	//obtengo el tamaño del mensaje original
+	this->bitStream.setCadena(cadena);
+	uint64_t tamanioMsjOriginal = this->bitStream.bitLength();//cadena.length();
+	//agrego el bit 1 al final
+	this->bitStream.appendBit(1);
+	//obtengo la longitud  
+	uint32_t longitudCadena = this->bitStream.bitLength();
+	int i = 0;
+	//completo con 0's hasta que la longitud en bits sea 448
+	for(i=longitudCadena ;i<=448;i++){
+		this->bitStream.appendBit(0);
+	}
+	//agrego los 64 bits 
+	//del tamaño en bit's del mensaje original
+	this->bitStream.append64BitsBE(tamanioMsjOriginal);
+	
+	std::string bitString = this->bitStream.getBitString();
 
 	//TODO
 	//Divido el mensaje en partes de 512 bits
@@ -26,10 +49,9 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 		//Por cada parte.
 	
 		//Armo las palabras de 32 bits
-		char* cadenaAux = new char[cadena.length()+1];
+		char* cadenaAux = new char[bitString.length()+1];
 		uint32_t* palabra = NULL;
 		int j = 0;
-		int i = 0;
 		for (i = 0; i< 512/32; i++,j+=8){
 			palabra[i] = cadenaAux[j];
 		}
@@ -46,6 +68,9 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 		uint32_t c = h2;
 		uint32_t d = h3;
 		uint32_t e = h4;
+		uint32_t f = 0;
+		uint32_t k = 0;
+		uint32_t auxiliar = 0;
 
 		for( i=0;i<=79;i++){
 			if(i>=0 && i<=19){
@@ -66,12 +91,12 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 					k = 0xD6C162CA;//0xCA62C1D6
 				}
 			}
-			temp = (a << 5) + f + e + k + palabra[i];
+			auxiliar = (a << 5) + f + e + k + palabra[i];
 			e = d;
         	d = c;
         	c = b << 30;
         	b = a;
-        	a = temp;
+        	a = auxiliar;
 
 			h0 += a;
 			h1 += b;
@@ -82,7 +107,13 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 
 	//TODO
 	//Resultado
-	std::string resultado = h0 append h1 append h2 append h3 append h4;
+	//Convierto h0...h4 de int a string y los concateno
+	std::string resultadoH0 = intAstring(h0);
+	std::string resultadoH1 = intAstring(h1);
+	std::string resultadoH2 = intAstring(h2);
+	std::string resultadoH3 = intAstring(h3);
+	std::string resultadoH4 = intAstring(h4);
+	std::string resultado = resultadoH0.append(resultadoH1.append(resultadoH2.append(resultadoH3.append(resultadoH4))));
 	return resultado;
 }
 
