@@ -34,7 +34,7 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 	uint32_t longitudCadena = this->bitStream.bitLength();
 	int i = 0;
 	//completo con 0's hasta que la longitud en bits sea 448
-	for(i=longitudCadena ;i<=448;i++){
+	for(i=longitudCadena;i<=448;i++){
 		this->bitStream.appendBit(0);
 	}
 	//agrego los 64 bits 
@@ -105,7 +105,6 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 			h4 += e;
 	 	}
 
-	//TODO
 	//Resultado
 	//Convierto h0...h4 de int a string y los concateno
 	std::string resultadoH0 = intAstring(h0);
