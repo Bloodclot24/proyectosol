@@ -1,7 +1,37 @@
 #include "parserBencode.h"
+#include <sstream>
+#include <string>
 
 /****************************************************************************/
-BeNode* ParserBencode::beDecode(std::string cadena, 
+std::list<BeNode*>* ParserBencode::beDecode(const char* NombreArchivo){
+     
+     std::fstream archTorrent;
+     archTorrent.open("prueba.torrent", std::fstream::in);   
+     std::stringbuf buf;
+
+     archTorrent >> &buf;
+
+     std::string str = buf.str();
+
+     std::list<BeNode*> *list = new std::list<BeNode*>;
+
+     BeNode* beNode;
+
+     std::string::size_type endPosition=0;
+
+     do{
+	  beNode = beDecode(str, endPosition, endPosition);
+	  list->push_back(beNode);
+     }while(endPosition != BE_END);
+
+     archTorrent.close();
+
+     return list;
+
+}
+
+/****************************************************************************/
+BeNode* ParserBencode::beDecode(std::string &cadena, 
 				std::string::size_type inicioNodo,
 				std::string::size_type &finNodo) {
 
@@ -90,8 +120,6 @@ BeDict* ParserBencode::beDecodeDict(std::string stringDict,
      std::string next;
      next.assign(stringDict, startPosition+1, 1);
 	
-     std::cout << "next: " << next << std::endl;
-
      while(next != END) {
 	  std::string clave = beDecodeStr(stringDict, startPosition+1, endPosition);
 	  BeNode* beNode = beDecode(stringDict, endPosition+1,
