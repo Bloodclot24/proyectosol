@@ -11,7 +11,9 @@ RM := rm -rf
 -include subdir.mk
 -include Torrent/subdir.mk
 -include Torrent/Vista/subdir.mk
--include Torrent/Modelo/subdir.mk
+-include Torrent/Modelo/SHA1/subdir.mk
+-include Torrent/Modelo/ParserBencode/subdir.mk
+-include Torrent/Modelo/HTTP/subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -40,19 +42,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: workspace
+all: SunTorrent
 
 # Tool invocations
-workspace: $(OBJS) $(USER_OBJS)
+SunTorrent: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ `pkg-config --cflags --libs gtkmm-2.4` -o"workspace" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++  -o"SunTorrent" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(C_DEPS)$(CXX_DEPS)$(CPP_DEPS)$(OBJS)$(CC_DEPS)$(EXECUTABLES)$(C_UPPER_DEPS)$(C++_DEPS) workspace
+	-$(RM) $(C_DEPS)$(CXX_DEPS)$(CPP_DEPS)$(OBJS)$(CC_DEPS)$(EXECUTABLES)$(C_UPPER_DEPS)$(C++_DEPS) SunTorrent
 	-@echo ' '
 
 .PHONY: all clean dependents

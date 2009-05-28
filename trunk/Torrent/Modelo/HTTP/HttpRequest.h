@@ -2,6 +2,7 @@
 #define HTTPREQUEST_H_INCLUDED
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
 #include <iostream>
 #include <sstream>
 
