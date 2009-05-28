@@ -32,7 +32,6 @@ std::string HttpRequest::UrlEncode(std::string datos){
 	  }
      }
      return codificado.str();
-	  
 }
 
 /* devuelve un string con todos los parametros del request */

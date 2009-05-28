@@ -1,4 +1,0 @@
-#ifndef PARSERBENCODING_H_
-#define PARSERBENCODING_H_
-
-#endif /*PARSERBENCODING_H_*/
