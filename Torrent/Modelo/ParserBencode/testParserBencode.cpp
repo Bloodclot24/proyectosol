@@ -71,13 +71,10 @@ void print(BeNode* beNode){
 /*---------*/
 int main(int argc, char *argv[]) {
    
-   	std::fstream archTorrent;
-   	archTorrent.open("prueba.torrent", std::fstream::in);   
-   
-	char linea[512];
-	archTorrent.getline(linea, 10);  
    	ParserBencode parserBencode;
 	std::string::size_type endPosition;
+
+
 	
 /*--------------------------------------------------------------------------*/
 	/*PRUEBA STR*/
@@ -196,19 +193,39 @@ int main(int argc, char *argv[]) {
 	
 /*--------------------------------------------------------------------------*/	
 //	/*PRUEBA 2*/
-//	std::cout << "PRUEBA 2" << std::endl;
-//	std::cout << "========" << std::endl;
-//
-//	std::string stringPrueba2= "d8:announce40:http://tracker.thepiratebay.org/announce13:announce-listll40:http://tracker.thepiratebay.org/announceel42:udp://tracker.thepiratebay.org:80/announceee7:comment47:Torrent downloaded from http://thepiratebay.org13:creation datei1242619527e4:infod6:lengthi6011879424e4:name12:rld-sim3.iso12:piece lengthi4194304e6:pieceseee";
-//	std::cout << "stringPrueba2: "<< stringPrueba2 << std::endl;
-//	
-//	endPosition= -1;
-//	print(stringPrueba2, endPosition, parserBencode);
+	std::cout << "PRUEBA 2" << std::endl;
+	std::cout << "========" << std::endl;
 
+	std::string stringPrueba2= "d8:announce40:http://tracker.thepiratebay.org/announce13:announce-listll40:http://tracker.thepiratebay.org/announceel42:udp://tracker.thepiratebay.org:80/announceee7:comment47:Torrent downloaded from http://thepiratebay.org13:creation datei1242619527e4:infod6:lengthi6011879424e4:name12:rld-sim3.iso12:piece lengthi4194304eeee";
+	std::cout << "stringPrueba2: "<< stringPrueba2 << std::endl;
+	
+//	endPosition= -1;
+
+	beNode= parserBencode.beDecode(stringPrueba2, 0, endPosition);
+	print(beNode);
+	std::cout << "\n";
 
 /*--------------------------------------------------------------------------*/	
 
-	archTorrent.close();
+	std::cout << "PRUEBA TORRENT" << std::endl;
+	std::cout << "==============" << std::endl;
+
+	std::cout << 
+	     "A continuacion se realizara la prueba de parseo de un archivo .torrent\
+ completo. Presione [ENTER] para continuar. \n(NOTA: La informacion de \
+las piezas del archivo puede resultar molesta y muy extensa. Asi es la vida)\n";
+
+	char dummy[2];
+	std::cin.getline(dummy,1);
+
+
+	std::list<BeNode*> *list = parserBencode.beDecode("prueba.torrent");
+
+	for(std::list<BeNode*>::iterator it= list->begin(); 
+	    it != list->end(); ++it) {	 
+	     print(*it);
+	     std::cout << "\n";
+	} 
 
 	return 0;
 }

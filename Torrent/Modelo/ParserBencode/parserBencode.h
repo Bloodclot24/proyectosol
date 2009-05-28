@@ -64,9 +64,13 @@ class ParserBencode {
 		 * Para saber el tipo de dato que almacena el BeNode se debe leer el 
 		 * typeNode; y luego, a partir de este, leer el dato correspondiente.
 		 * */
-		BeNode* beDecode(std::string cadena,
+		BeNode* beDecode(std::string &cadena,
 				 std::string::size_type inicioNodo,
-		                 std::string::size_type &finNodo);          	
+		                 std::string::size_type &finNodo);
+
+		/* Dado un archivo, parsea el contenido y lo devuelve
+		 * en una lista de nodos */
+		std::list<BeNode*>* beDecode(const char* NombreArchivo);
 };
 
 /****************************************************************************/
