@@ -69,7 +69,7 @@ public:
      const std::string getBitString(void){
 	  std::string cadenaFinal;
 	  int bitActual = 0;
-	  unsigned char byte;
+	 // unsigned char byte;
 	  
 	  for(int i=0;i<byteActual;i++){
 	       for(bitActual=0;bitActual<8;bitActual++){
@@ -79,7 +79,23 @@ public:
 	  return cadenaFinal;
      }
 
+	void setCadena(std::string cadena){
+		this->cadena = cadena;
+		this->cadena += '\0';
+	}
 
+	uint32_t swap32ABigEndian(uint32_t numero){
+		unsigned char* inicio = (unsigned char*)&numero;
+		unsigned char aux;
+
+     	aux = inicio[3];
+     	inicio[3] = inicio[0];
+     	inicio[0] = aux;
+     	aux = inicio[2];
+     	inicio[2] = inicio[1];
+     	inicio[1] = aux;
+     	return numero;
+	}	
 };
 
 

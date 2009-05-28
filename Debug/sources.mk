@@ -25,5 +25,7 @@ C++_DEPS :=
 SUBDIRS := \
 Torrent \
 Torrent/Vista \
-Torrent/Modelo \
+Torrent/Modelo/SHA1 \
+Torrent/Modelo/ParserBencode \
+Torrent/Modelo/HTTP \
 

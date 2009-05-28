@@ -34,12 +34,13 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 	uint32_t longitudCadena = this->bitStream.bitLength();
 	int i = 0;
 	//completo con 0's hasta que la longitud en bits sea 448
-	for(i=longitudCadena;i<=448;i++){
+	for(i=longitudCadena;/*i<=448*/(i % 448) != 0;i++){
 		this->bitStream.appendBit(0);
 	}
 	//agrego los 64 bits 
 	//del tamaño en bit's del mensaje original
-	this->bitStream.append64BitsBE(tamanioMsjOriginal);
+	//this->bitStream.append64BitsBE(tamanioMsjOriginal);
+	this->bitStream.append64BitsLE(tamanioMsjOriginal);
 	
 	std::string bitString = this->bitStream.getBitString();
 
@@ -57,7 +58,9 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 		}
 		//TODO
 		//convierto a Big Endian cada una de las palabras
-
+		for(i = 0; i < 512/32; i++){
+			palabra[i] = this->bitStream.swap32ABigEndian(palabra[i]);	
+		}
 	
 		for(i=16;i<=79;i++){
 			palabra[i] = (palabra[i-3] ^ palabra[i-8] ^ palabra[i-14] ^ palabra[i-16]) << 1;
