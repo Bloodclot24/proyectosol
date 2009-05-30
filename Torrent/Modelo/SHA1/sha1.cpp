@@ -56,7 +56,7 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 		for (i = 0; i< 512/32; i++,j+=8){
 			palabra[i] = cadenaAux[j];
 		}
-		//TODO
+
 		//convierto a Big Endian cada una de las palabras
 		for(i = 0; i < 512/32; i++){
 			palabra[i] = this->bitStream.swap32ABigEndian(palabra[i]);	
