@@ -106,9 +106,57 @@ class ProtocoloBitTorrent
 				//Opcion: enviar el mensaje desde aca sin devolver.
 				return  int32Astring(len) + int32Astring(id);//+ bitfield;
 			}
+					
+			std::string request(){//ver tema de recibir index, begin y length
+				//length = 2^14(16KB)
+				uint32_t len = 13;
+				len = this->bitStream.swap32ABigEndian(len);
+				uint32_t id = 6;
+				id = this->bitStream.swap32ABigEndian(id);
+				//Opcion: enviar el mensaje desde aca sin devolver.
+				return  int32Astring(len) + int32Astring(id);//+ index + begin + length
+			}
 			
+			std::string piece(){//ver tema de recibir block index y begin
+				uint32_t len = 9;// + block.length()//longitud del bloque
+				len = this->bitStream.swap32ABigEndian(len);
+				uint32_t id = 7;
+				id = this->bitStream.swap32ABigEndian(id);
+				//Opcion: enviar el mensaje desde aca sin devolver.
+				return  int32Astring(len) + int32Astring(id);//+ index + begin + block
+			}
 			
-			~ProtocoloBitTorrent(){}	
+			std::string cancel(uint32_t idAcancelar){
+				uint32_t len = 13; 
+				len = this->bitStream.swap32ABigEndian(len);
+				uint32_t id = 8;
+				//paso ambas id's a big endian
+				id = this->bitStream.swap32ABigEndian(id);
+				idAcancelar = this->bitStream.swap32ABigEndian(idAcancelar);
+				if(idAcancelar > id){
+					 //TODO
+					 //Ver como vamos a manejar este tipo de errores
+					 //Hago algo MUY provisorio...
+					 std::cerr<<"Imposible cancelar"<<std::endl;
+					 return "";
+				}else{
+					//Opcion: enviar el mensaje desde aca sin devolver.
+					return  int32Astring(len) + int32Astring(id);//+ index + begin + length
+				}
+			}
+			
+			std::string port (uint32_t port){
+				uint32_t len = 3;
+				len = this->bitStream.swap32ABigEndian(len);
+				uint32_t id = 9;
+				id = this->bitStream.swap32ABigEndian(id);
+				port = this->bitStream.swap32ABigEndian(port);
+				//Opcion: enviar el mensaje desde aca sin devolver.
+				return  int32Astring(len) + int32Astring(id) + int32Astring(port);
+			}
+			
+			~ProtocoloBitTorrent(){}
+				
 };
 
 #endif /*PROTOCOLOBITTORRENT_H_*/
