@@ -1,6 +1,8 @@
 #include "../ParserBencode/parserBencode.h"
 #include "torrent.h"
 
+#include <stdexcept>
+
 #define DICT_TRACKER  "announce"
 #define DICT_DATE     "creation date"
 #define DICT_COMMENTS "comments"
@@ -8,47 +10,39 @@
 #define DICT_ENCODING "encoding"
 #define DICT_INFO     "info"
 
+
 Torrent::Torrent(std::list<BeNode*>* info){
      BeNode* primero = info->front();
      
      if(primero->typeNode == BE_DICT){
-	  std::map<std::string, BeNode*>* dict = &(primero->elements);
+	  std::map<std::string, BeNode*>* dict = &(primero->beDict->elements);
 	  BeNode* elemento;
 	  /* Extraigo todos los elementos que necesito */
-	  try{
-	       elemento = dict->at(DICT_TRACKER);
+	  
+	  elemento = (*dict)[DICT_TRACKER];
+	  if(elemento != NULL)
 	       this->announce = elemento->beStr;
-	  }
-	  catch(std::out_of_range &ex){}
-	  try{
-	       elemento = dict->at(DICT_DATE);
+
+	  elemento = (*dict)[DICT_DATE];
+	  if(elemento != NULL)
 	       this->creationDate = elemento->beInt;
-	  }
-	  catch(std::out_of_range &ex){
-	       this->creationDate = 0;
-	  }
-	  try{
-	       elemento = dict->at(DICT_COMMENTS);
-	       this->acomment = elemento->beStr;
-	  }
-	  catch(std::out_of_range &ex){}
-	  try{
-	       elemento = dict->at(DICT_CREATOR);
+	  else this->creationDate = 0;
+
+	  elemento = (*dict)[DICT_COMMENTS];
+	  if(elemento != NULL)
+	       this->comment = elemento->beStr;
+
+	  elemento = (*dict)[DICT_CREATOR];
+	  if(elemento != NULL)
 	       this->createdBy = elemento->beStr;
-	  }
-	  catch(std::out_of_range &ex){}
-	  try{
-	       elemento = dict->at(DICT_ENCODING);
+
+	  elemento = (*dict)[DICT_ENCODING];
+	  if(elemento != NULL)
 	       this->encoding = elemento->beInt;
-	  }
-	  catch(std::out_of_range &ex){
-	       this->encoding = 0;
-	  }
-	  try{
-	       /* Informacion de todos los archivos */
-	       elemento = dict->at(DICT_INFO);
-	       /* TODO */
-	  }
-	  catch(std::out_of_range &ex){}
+	  else this->encoding = 0;
+
+	  /* Informacion de todos los archivos */
+	  elemento = (*dict)[DICT_INFO];
+	  /* TODO */
      }
 }

@@ -2,6 +2,7 @@
 
 #include "../ParserBencode/parserBencode.h"
 #include <iostream>
+#include <stdexcept>
 
 #define INFO_NAME     "name"
 #define INFO_PIECELEN "piece length"
@@ -15,41 +16,33 @@
 TorrentFile::TorrentFile(BeNode* node){
      if(node->typeNode == BE_DICT){
 	  /* la seccion info debe ser un diccionario */
-	  std::map<std::string, BeNode*>* dict = &(node->elements);
+	  std::map<std::string, BeNode*>* dict = &(node->beDict->elements);
 	  BeNode* elemento;
 	  /* Extraigo todos los elementos que necesito */
-	  try{
-	       elemento = dict->at(INFO_NAME);
+
+	  elemento = (*dict)[INFO_NAME];
+	  if(elemento != NULL)
 	       this->name = elemento->beStr;
-	  }
-	  catch(std::out_of_range &ex){}
-	  try{
-	       elemento = dict->at(INFO_PIECELEN);
+	  
+	  elemento = (*dict)[INFO_PIECELEN];
+	  if(elemento != NULL)
 	       this->pieceLength = elemento->beInt;
-	  }
-	  catch(std::out_of_range &ex){
-	       this->pieceLength = 0;
-	  }
-	  try{
-	       elemento = dict->at(INFO_PIECES);
+	  else this->pieceLength = 0;
+
+	  elemento = (*dict)[INFO_PIECES];
+	  if(elemento != NULL)
 	       this->pieces = elemento->beStr;
-	  }
-	  catch(std::out_of_range &ex){}
-	  try{
-	       elemento = dict->at(INFO_PRIVATE);
+	  
+	  elemento = (*dict)[INFO_PRIVATE];
+	  if(elemento != NULL)
 	       this->isPrivate = elemento->beInt;
-	  }
-	  catch(std::out_of_range &ex){
-	       this->isPrivate = 0;
-	  }
-	  try{
-	       elemento = dict->at(INFO_FILES);
+	  else this->isPrivate = 0;
+
+	  elemento = (*dict)[INFO_FILES];
+	  if(elemento != NULL);
 	       /* Si existe, hay mas de un archivo*/
-	       
-	  }
-	  catch(std::out_of_range &ex){
+	  else;
 	       /* Si no existe hay un solo archivo */
 	       
-	  }
      }
 }
