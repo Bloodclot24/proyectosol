@@ -43,6 +43,6 @@ Torrent::Torrent(std::list<BeNode*>* info){
 
 	  /* Informacion de todos los archivos */
 	  elemento = (*dict)[DICT_INFO];
-	  /* TODO */
+	  archivos = TorrentFile::Parse(elemento);
      }
 }

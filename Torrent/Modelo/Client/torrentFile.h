@@ -19,8 +19,13 @@ private:
 
      std::string md5;
 
+     std::string path;
+
+     TorrentFile(){};
+
 public:
-     TorrentFile(BeNode* node);
+     static std::list<TorrentFile*>* Parse(BeNode* node);
+     
 
 };
 

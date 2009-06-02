@@ -6,7 +6,7 @@
 std::list<BeNode*>* ParserBencode::beDecode(const char* NombreArchivo){
      
      std::fstream archTorrent;
-     archTorrent.open("prueba.torrent", std::fstream::in);   
+     archTorrent.open(NombreArchivo, std::fstream::in);   
      std::stringbuf buf;
 
      archTorrent >> &buf;
