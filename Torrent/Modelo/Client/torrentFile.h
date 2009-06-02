@@ -1,6 +1,7 @@
 #ifndef TORRENTFILE_H_INCLUDED
 #define TORRENTFILE_H_INCLUDED
 
+#include "../ParserBencode/parserBencode.h"
 #include <iostream>
 
 /* Clase que representa uno de los archivos contenidos en el torrent */

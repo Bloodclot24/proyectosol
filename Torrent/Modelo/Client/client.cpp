@@ -19,6 +19,8 @@ int Client::addTorrent(const char* file){
 
      if(lista!= NULL){
 	  Torrent *torrent = new Torrent(lista);
+	  /* TODO: liberar cada elemento antes de eliminar */
+	  delete lista;
 	  return 1;
      }
 

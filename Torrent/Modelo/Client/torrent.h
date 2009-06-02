@@ -1,7 +1,10 @@
 #ifndef TORRENT_H_INCLUDED
 #define TORRENT_H_INCLUDED
 
+#include "torrentFile.h"
 #include "../ParserBencode/parserBencode.h"
+
+#include <iostream>
 
 /* El modelo de cada Torrent que maneja el cliente */
 class Torrent{
@@ -24,7 +27,7 @@ private:
      std::string createdBy;
 
      /* Codificacion */
-     std::string encoding;
+     int encoding;
 public:
      Torrent(std::list<BeNode*> *info);
 
