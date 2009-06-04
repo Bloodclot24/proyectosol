@@ -23,7 +23,7 @@ void VistaTorrent::correr() {
 	main_window->maximize();   
 	
 	/*MENUBAR*/
-	load_menuBar();
+	load_menuBar(main_window);
 	
 	/*TOOLBAR*/
 	load_toolBar();
@@ -139,7 +139,7 @@ void VistaTorrent::correr() {
     
 /***************************************************************************************/
 /***************************************************************************************/
-
+	
     Gtk::Main::run(*main_window);    
 }
 
@@ -178,18 +178,47 @@ std::string getPathStatusIcon(std::string status) {
 
 /*--------------------------------------------------------------------------*/
 /**MENUBAR**/
-void VistaTorrent::load_menuBar() {
+void VistaTorrent::load_menuBar(Gtk::Window* main_window) {
 
-	//itemQuit
-	Gtk::ImageMenuItem* itemQuit;
-    refXml->get_widget("itemQuit", itemQuit);
-    itemQuit->signal_activate().connect(sigc::ptr_fun(Gtk::Main::quit));
+	//Create actions for menus and toolbars
+  	m_refActionGroup = Gtk::ActionGroup::create();
 
-	//itemAbout
-	Gtk::ImageMenuItem* itemAbout;
-    refXml->get_widget("itemAbout", itemAbout);
-    itemAbout->signal_activate().connect(sigc::mem_fun(*this, 
-                                      &VistaTorrent::on_itemAbout_activate));	
+  	//File menu:
+  	m_refActionGroup->add(Gtk::Action::create("FileMenu", "File"));
+  	m_refActionGroup->add(Gtk::Action::create("FileQuit", Gtk::Stock::QUIT),
+                        sigc::ptr_fun(Gtk::Main::quit));
+
+  	//Help menu:
+  	m_refActionGroup->add(Gtk::Action::create("HelpMenu", "Help"));
+  	m_refActionGroup->add(Gtk::Action::create("HelpAbout", Gtk::Stock::ABOUT),
+                          sigc::mem_fun(*this, &VistaTorrent::on_itemAbout_activate));
+
+	m_refUIManager = Gtk::UIManager::create();
+	m_refUIManager->insert_action_group(m_refActionGroup);
+
+	main_window->add_accel_group(m_refUIManager->get_accel_group());
+
+	//Layout the actions in a menubar and toolbar:
+  	Glib::ustring ui_info = 
+        "<ui>"
+        "  <menubar name='MenuBar'>"
+        "    <menu action='FileMenu'>"
+        "      <menuitem action='FileQuit'/>"
+        "    </menu>"
+        "    <menu action='HelpMenu'>"
+        "      <menuitem action='HelpAbout'/>"
+        "    </menu>"
+        "  </menubar>"
+        "</ui>";
+
+	m_refUIManager->add_ui_from_string(ui_info);
+
+	//Get the menubar and toolbar widgets, and add them to a container widget:
+	Gtk::Widget* pMenubar = m_refUIManager->get_widget("/MenuBar");
+	
+	Gtk::VBox* boxMenuBar;
+  	refXml->get_widget("vbox_menubar", boxMenuBar);
+	boxMenuBar->add(*pMenubar);
 }
 
 /*---*/

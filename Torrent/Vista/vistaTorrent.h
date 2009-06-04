@@ -27,7 +27,10 @@ class VistaTorrent {
 		Glib::RefPtr<Gtk::Builder> refXml;
 		
 		/*MENUBAR*/
-		void load_menuBar();
+		Glib::RefPtr<Gtk::UIManager> m_refUIManager;
+  		Glib::RefPtr<Gtk::ActionGroup> m_refActionGroup;
+		
+		void load_menuBar(Gtk::Window* main_window);
 		void on_itemAbout_activate();
 		
 		/*TOOLBAR*/
