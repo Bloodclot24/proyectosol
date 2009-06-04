@@ -4,159 +4,70 @@
 #include "../SHA1/bitStream.h"
 #include <iostream>
 #include <sstream>
+#include <list>
 
+#define ID_CHOKE 0
+#define ID_UNCHOKE 1
+#define ID_INTERESTED 2 
+#define ID_NOT_INTERESTED 3
+#define ID_HAVE 4
+#define ID_BITFIELD 5
+#define ID_REQUEST 6
+#define ID_PIECE 7
+#define ID_CANCEL 8
+#define ID_PORT 9
+
+enum MsgId {CHOKE, UNCHOKE, INTERESTED, NOT_INTERESTED, HAVE, BITFIELD,
+	        REQUEST, PIECE, CANCEL, PORT, KEEP_ALIVE};
+
+typedef struct {
+	MsgId id;
+	std::string piece;
+	std::string bitfield;
+	int index;
+	int begin;
+	int length;
+	std::string block;
+	int listenPort;
+} Message;
 
 class ProtocoloBitTorrent
 {
 	private:
 			BitStream bitStream;
 		
-			std::string int64Astring(uint64_t valor){
-				//convierto de int a string
-				std::string snumero;
-				std::stringstream cvz;
-				cvz << valor;
-				snumero = cvz.str();
-				return snumero;
-			
-			}
-			std::string int32Astring(uint32_t valor)
-			{
-				//convierto de int a string
-				std::string snumero;
-				std::stringstream cvz;
-				cvz << valor;
-				snumero = cvz.str();
-				return snumero;
-			}
+			std::string int64Astring(uint64_t valor);
+			std::string int32Astring(uint32_t valor);
+
 	public:
 			ProtocoloBitTorrent(){}
 			
-			std::string handshake(std::string str,std::string info_hash,std::string peer_id){
-				char pstrlen = str.length();
-				std::string mensajeHandshake;
-				uint64_t reserved = 0;//Revisar, xq deberia mostrar los 8bytes de 0's
-				mensajeHandshake = pstrlen + str + int64Astring(reserved) + info_hash + peer_id;
-				//Opcion: que envie directamente el mensaje de a partes.
-				return mensajeHandshake;
-			}  
+			std::string handshake(std::string str, std::string info_hash, 
+			                      std::string peer_id);
 			
-			uint32_t keep_alive(){
-				uint32_t len = 0;
-				len = this->bitStream.swap32ABigEndian(len);
-				//Otra posibilidad, es que mande directamente el mensaje
-				return len;
-			}
+			std::string keepAlive();
 			
-			std::string choke(){
-				uint32_t len = 1;
-				len = this->bitStream.swap32ABigEndian(len);
-				uint32_t id = 0;
-				id = this->bitStream.swap32ABigEndian(id);
-				//Opcion: enviar el mensaje desde aca sin devolver.
-				return  int32Astring(len) + int32Astring(id);
-			}
+			std::string choke();
 			
-			std::string unchoke(){
-				uint32_t len = 1;
-				len = this->bitStream.swap32ABigEndian(len);
-				uint32_t id = 1;
-				id = this->bitStream.swap32ABigEndian(id);
-				//Opcion: enviar el mensaje desde aca sin devolver.
-				return  int32Astring(len) + int32Astring(id);
-			}
+			std::string unchoke();
 			
-			std::string interested(){
-				uint32_t len = 1;
-				len = this->bitStream.swap32ABigEndian(len);
-				uint32_t id = 2;
-				id = this->bitStream.swap32ABigEndian(id);
-				//Opcion: enviar el mensaje desde aca sin devolver.
-				return  int32Astring(len) + int32Astring(id);
-			}
+			std::string interested();
 			
-			std::string not_interested(){
-				uint32_t len = 1;
-				len = this->bitStream.swap32ABigEndian(len);
-				uint32_t id = 3;
-				id = this->bitStream.swap32ABigEndian(id);
-				//Opcion: enviar el mensaje desde aca sin devolver.
-				return  int32Astring(len) + int32Astring(id);
-			}
+			std::string not_interested();
 			
-			std::string have(){//ver si tiene que recibir el piece_index
-				uint32_t len = 5;
-				len = this->bitStream.swap32ABigEndian(len);
-				uint32_t id = 4;
-				id = this->bitStream.swap32ABigEndian(id);
-				//TODO
-				// ** VER PIECE INDEX **
-				// aca va que parte fue bajada satisfactoriamente y verificada
-				//con la informacion del hashing
-				
-				//Opcion: enviar el mensaje desde aca sin devolver.
-				return  int32Astring(len) + int32Astring(id);
-			}
+			std::string have(std::string piece);
 			
-			std::string bitfield(){//ver para recibir el bitfield de la parte que se descargo
-				uint32_t len = 1;// + bitfield.length(); //la longitud de la parte
-				len = this->bitStream.swap32ABigEndian(len);
-				uint32_t id = 5;
-				id = this->bitStream.swap32ABigEndian(id);
-				//Opcion: enviar el mensaje desde aca sin devolver.
-				return  int32Astring(len) + int32Astring(id);//+ bitfield;
-			}
+			std::string bitfield(std::string bitfield);
 					
-			std::string request(){//ver tema de recibir index, begin y length
-				//length = 2^14(16KB)
-				uint32_t len = 13;
-				len = this->bitStream.swap32ABigEndian(len);
-				uint32_t id = 6;
-				id = this->bitStream.swap32ABigEndian(id);
-				//Opcion: enviar el mensaje desde aca sin devolver.
-				return  int32Astring(len) + int32Astring(id);//+ index + begin + length
-			}
+			std::string request(int index, int begin, int length);
 			
-			std::string piece(){//ver tema de recibir block index y begin
-				uint32_t len = 9;// + block.length()//longitud del bloque
-				len = this->bitStream.swap32ABigEndian(len);
-				uint32_t id = 7;
-				id = this->bitStream.swap32ABigEndian(id);
-				//Opcion: enviar el mensaje desde aca sin devolver.
-				return  int32Astring(len) + int32Astring(id);//+ index + begin + block
-			}
+			std::string piece(int index, int begin, std::string block);
 			
-			std::string cancel(uint32_t idAcancelar){
-				uint32_t len = 13; 
-				len = this->bitStream.swap32ABigEndian(len);
-				uint32_t id = 8;
-				//paso ambas id's a big endian
-				id = this->bitStream.swap32ABigEndian(id);
-				idAcancelar = this->bitStream.swap32ABigEndian(idAcancelar);
-				if(idAcancelar > id){
-					 //TODO
-					 //Ver como vamos a manejar este tipo de errores
-					 //Hago algo MUY provisorio...
-					 std::cerr<<"Imposible cancelar"<<std::endl;
-					 return "";
-				}else{
-					//Opcion: enviar el mensaje desde aca sin devolver.
-					return  int32Astring(len) + int32Astring(id);//+ index + begin + length
-				}
-			}
+			std::string cancel(int index, int begin, int length);
 			
-			std::string port (uint32_t port){
-				uint32_t len = 3;
-				len = this->bitStream.swap32ABigEndian(len);
-				uint32_t id = 9;
-				id = this->bitStream.swap32ABigEndian(id);
-				port = this->bitStream.swap32ABigEndian(port);
-				//Opcion: enviar el mensaje desde aca sin devolver.
-				return  int32Astring(len) + int32Astring(id) + int32Astring(port);
-			}
+			std::string port(int listenPort);
 			
-			~ProtocoloBitTorrent(){}
-				
+			Message* decode(const char* mensaje);	
 };
 
 #endif /*PROTOCOLOBITTORRENT_H_*/
