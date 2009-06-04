@@ -1,4 +1,4 @@
-#include "common_mensaje.h"
+#include "mensaje.h"
 
 /* Crea un nuevo mensaje vacío */
 Mensaje::Mensaje(void){

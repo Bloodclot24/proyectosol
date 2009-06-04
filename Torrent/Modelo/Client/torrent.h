@@ -1,10 +1,16 @@
 #ifndef TORRENT_H_INCLUDED
 #define TORRENT_H_INCLUDED
 
+#include "socket.h"
+#include "threadEmisor.h"
+#include "threadReceptor.h"
+
 #include "torrentFile.h"
 #include "../ParserBencode/parserBencode.h"
 
 #include <iostream>
+
+typedef enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING};
 
 /* El modelo de cada Torrent que maneja el cliente */
 class Torrent{
@@ -28,9 +34,22 @@ private:
 
      /* Codificacion */
      int encoding;
+
+     EstadoTorrent estado;
+
+     Socket* socket;
+     ThreadReceptor *receptor;
+     ThreadEmisor *emisor;
+
 public:
      Torrent(std::list<BeNode*> *info);
 
+     /* Comienza el torrent */
+     int start();
+
+     /* Devuelve el tamaño total de todos los archivos contenidos en
+      * el torrent */
+     int getTotalSize();
 };
 
 #endif /* TORRENT_H_INCLUDED */

@@ -1,9 +1,9 @@
 #ifndef __COMMON_THREADRECEPTOR_H__
 #define __COMMON_THREADRECEPTOR_H__
 
-#include "common_threads.h"
-#include "common_socket.h"
-#include "common_mensaje.h"
+#include "threads.h"
+#include "socket.h"
+#include "mensaje.h"
 
 class ThreadReceptor:Thread{
      Socket *socket;  /* el socket asociado */
@@ -91,13 +91,13 @@ protected:
      void run(){
 	  while(corriendo){
 	       Mensaje* mensaje= new Mensaje;
-	       char tipo[LONGITUD_TIPO_MENSAJE];
-	       socket->recibir(&tipo, LONGITUD_TIPO_MENSAJE);
-	       mensaje->setTipo(tipo);
-	       socket->recibir(&(mensaje->tamanio), sizeof(mensaje->tamanio));
-	       mensaje->datos = new char[mensaje->tamanio+1];
-	       socket->recibir(mensaje->datos, mensaje->tamanio);
-	       mensaje->datos[mensaje->tamanio]=0;
+/* 	       char tipo[LONGITUD_TIPO_MENSAJE]; */
+/* 	       socket->recibir(&tipo, LONGITUD_TIPO_MENSAJE); */
+/* 	       mensaje->setTipo(tipo); */
+/* 	       socket->recibir(&(mensaje->tamanio), sizeof(mensaje->tamanio)); */
+/* 	       mensaje->datos = new char[mensaje->tamanio+1]; */
+/* 	       socket->recibir(mensaje->datos, mensaje->tamanio); */
+/* 	       mensaje->datos[mensaje->tamanio]=0; */
 	       mutexCola.lock();
 	       colaDeMensajes.push_back(mensaje);
 

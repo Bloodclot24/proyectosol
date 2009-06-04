@@ -18,7 +18,7 @@ public:
      };
      
      void appendBit(int bit){
-	  unsigned char bitNormalizado = bit>0?1<<bitActual:0;
+	  unsigned char bitNormalizado = bit>0?1<<(7-bitActual):0;
 
 	  if(bitActual <= 7){
 	       cadena[byteActual] = cadena[byteActual] & ~bitNormalizado;
@@ -54,6 +54,18 @@ public:
 	  }
      }
 
+     void append32BitsBE(uint32_t numero){
+	  unsigned char bitActual=0;
+	  unsigned char byteActual=0;
+	  for(int i=3;i>=0;i--){
+	       byteActual = ((char*)&numero)[i];
+	       for(bitActual=0;bitActual<8;bitActual++){
+		    appendBit(byteActual & (1<<bitActual) );
+	       }
+	  }
+     }
+
+
      int bitLength(void){
 	  return byteActual*8+bitActual;
      }
@@ -66,10 +78,18 @@ public:
 	  return cadena;
      }
 
+     std::string getChunk(int byteOffset, int bytes){
+	  std::string chunk;
+	  for(int i=byteOffset;i<byteOffset+bytes;i++){
+	       chunk += cadena[i];
+	  }
+	  return chunk;
+     }
+
      const std::string getBitString(void){
 	  std::string cadenaFinal;
 	  int bitActual = 0;
-	 // unsigned char byte;
+	  // unsigned char byte;
 	  
 	  for(int i=0;i<byteActual;i++){
 	       for(bitActual=0;bitActual<8;bitActual++){
@@ -81,6 +101,7 @@ public:
 
 	void setCadena(std::string cadena){
 		this->cadena = cadena;
+		byteActual = cadena.length();
 		this->cadena += '\0';
 	}
 

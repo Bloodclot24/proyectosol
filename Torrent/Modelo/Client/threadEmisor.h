@@ -1,9 +1,9 @@
 #ifndef __COMMON_THREADEMISOR_H__
 #define __COMMON_THREADEMISOR_H__
 
-#include "common_threads.h"
-#include "common_socket.h"
-#include "common_mensaje.h"
+#include "threads.h"
+#include "socket.h"
+#include "mensaje.h"
 #include <deque>
 
 class ThreadEmisor:Thread{

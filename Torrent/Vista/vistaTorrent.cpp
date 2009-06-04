@@ -4,13 +4,13 @@
 VistaTorrent::VistaTorrent() {
 	
 	try {
-		this->refXml= Gtk::Builder::create_from_file(PATH_VISTA);
+		this->refXml= Gtk::Builder::create_from_file("vistaTorrent.cpp");
 	} catch(const Gtk::BuilderError &be) {
 		std::cerr << "Gtk::BuilderError code:" << be.code() << std::endl;
 	} catch(const Glib::FileError &fe) {
 		std::cerr << "Glib::FileError code:" << fe.code() << std::endl;
 	} catch(const Glib::MarkupError &me) {
-		std::cerr << "Glib::MarkupError code" << me.code() << std::endl;
+		std::cerr << "Glib::MarkupError code:" << me.code() << std::endl;
 	}
 }
 		
