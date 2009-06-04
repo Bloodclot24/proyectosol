@@ -4,7 +4,7 @@
 #include <gtkmm.h>
 #include <iostream>
 
-#define PATH_VISTA "./Vista/vistaTorrent.glade"
+#define PATH_VISTA "vistaTorrent.glade"
 
 /*Iconos status*/
 #define PATH_DOWN_FAIL "./Vista/images/statusIcons/down_fail.png"

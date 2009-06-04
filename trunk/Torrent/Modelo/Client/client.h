@@ -17,6 +17,9 @@ public:
      
      /* Agrega un torrent */
      int addTorrent(const char* file);
+
+     /* comienza a descargar un torrent */
+     int start();
 };
 
 #endif /* CLIENT_H_INCLUDED */
