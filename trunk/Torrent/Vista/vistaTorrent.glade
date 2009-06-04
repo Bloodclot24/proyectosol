@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <interface>
-  <requires lib="gtk+" version="2.16"/>
+  <requires lib="gtk+" version="2.14"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkIconFactory" id="iconfactory">
     <sources>
-      <source stock-id="toolIcons_stop" filename="/home/vero/Documentos/Facultad/Taller/Ejercicios/EjercicioFinal/workspace/Torrent/Vista/images/toolIcons/stop.png"/>
-      <source stock-id="toolIcons_pause" filename="/home/vero/Documentos/Facultad/Taller/Ejercicios/EjercicioFinal/workspace/Torrent/Vista/images/toolIcons/pause.png"/>
-      <source stock-id="toolIcons_add_url_torrent" filename="/home/vero/Documentos/Facultad/Taller/Ejercicios/EjercicioFinal/workspace/Torrent/Vista/images/toolIcons/add_url_torrent.png"/>
-      <source stock-id="toolIcons_add_torrent" filename="/home/vero/Documentos/Facultad/Taller/Ejercicios/EjercicioFinal/workspace/Torrent/Vista/images/toolIcons/add_torrent.png"/>
-      <source stock-id="toolIcons_move_down" filename="/home/vero/Documentos/Facultad/Taller/Ejercicios/EjercicioFinal/workspace/Torrent/Vista/images/toolIcons/move_down.png"/>
-      <source stock-id="toolIcons_remove" filename="/home/vero/Documentos/Facultad/Taller/Ejercicios/EjercicioFinal/workspace/Torrent/Vista/images/toolIcons/remove.png"/>
-      <source stock-id="toolIcons_start" filename="/home/vero/Documentos/Facultad/Taller/Ejercicios/EjercicioFinal/workspace/Torrent/Vista/images/toolIcons/start.png"/>
-      <source stock-id="toolIcons_move_up" filename="/home/vero/Documentos/Facultad/Taller/Ejercicios/EjercicioFinal/workspace/Torrent/Vista/images/toolIcons/move_up.png"/>
+      <source stock-id="toolIcons_move_up" filename="/images/toolIcons/move_up.png"/>
+      <source stock-id="toolIcons_pause" filename="/images/toolIcons/pause.png"/>
+      <source stock-id="toolIcons_add_url_torrent" filename="/images/toolIcons/add_url_torrent.png"/>
+      <source stock-id="toolIcons_add_torrent" filename="/images/toolIcons/add_torrent.png"/>
+      <source stock-id="toolIcons_move_down" filename="/images/toolIcons/move_down.png"/>
+      <source stock-id="toolIcons_remove" filename="/images/toolIcons/remove.png"/>
+      <source stock-id="toolIcons_start" filename="/images/toolIcons/start.png"/>
+      <source stock-id="toolIcons_stop" filename="/images/toolIcons/stop.png"/>
     </sources>
   </object>
   <object class="GtkListStore" id="liststore_peers">
@@ -88,58 +88,6 @@
         <property name="visible">True</property>
         <property name="n_rows">22</property>
         <property name="n_columns">9</property>
-        <child>
-          <object class="GtkMenuBar" id="menubar">
-            <property name="visible">True</property>
-            <child>
-              <object class="GtkMenuItem" id="menuFile">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">_Archivo</property>
-                <property name="use_underline">True</property>
-                <child type="submenu">
-                  <object class="GtkMenu" id="menu_File">
-                    <property name="visible">True</property>
-                    <child>
-                      <object class="GtkImageMenuItem" id="itemQuit">
-                        <property name="label">gtk-quit</property>
-                        <property name="visible">True</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
-                        <property name="accel_group">accelgroup</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkMenuItem" id="menuHelp">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">Ay_uda</property>
-                <property name="use_underline">True</property>
-                <child type="submenu">
-                  <object class="GtkMenu" id="menu_Help">
-                    <property name="visible">True</property>
-                    <child>
-                      <object class="GtkImageMenuItem" id="itemAbout">
-                        <property name="label">gtk-about</property>
-                        <property name="visible">True</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
-                        <property name="accel_group">accelgroup</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="right_attach">9</property>
-            <property name="x_options">GTK_FILL</property>
-            <property name="y_options">GTK_FILL</property>
-          </packing>
-        </child>
         <child>
           <object class="GtkStatusbar" id="statusbar">
             <property name="visible">True</property>
@@ -387,6 +335,8 @@
             <property name="right_attach">9</property>
             <property name="top_attach">2</property>
             <property name="bottom_attach">17</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -779,6 +729,20 @@
           <packing>
             <property name="top_attach">2</property>
             <property name="bottom_attach">21</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkVBox" id="vbox_menubar">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="right_attach">9</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
       </object>
