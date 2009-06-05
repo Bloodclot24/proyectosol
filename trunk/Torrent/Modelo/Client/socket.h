@@ -31,7 +31,18 @@ public:
 	  if(s == -1)
 	       error=errno;
 	  else{
-	       host=gethostbyname(direccion.c_str());
+	       std::string hostName;
+	       size_t inicio,fin,limite;
+	       limite = direccion.find('.');
+	       inicio = direccion.find("://");
+	       fin = direccion.find('/', limite);
+	       
+	       if(inicio != std::string::npos && fin != std::string::npos){
+		    hostName= direccion.substr(inicio+3,fin-(inicio+3));
+	       }
+	       else hostName = direccion;
+
+	       host=gethostbyname(hostName.c_str());
 	       
 	       if(host == NULL)
 		    error = errno;
