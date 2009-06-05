@@ -49,7 +49,7 @@ public:
 	  for(int i=7;i>=0;i--){
 	       byteActual = ((char*)&numero)[i];
 	       for(bitActual=0;bitActual<8;bitActual++){
-		    appendBit(byteActual & (1<<bitActual) );
+		    appendBit(byteActual & (1<<(7-bitActual)) );
 	       }
 	  }
      }
