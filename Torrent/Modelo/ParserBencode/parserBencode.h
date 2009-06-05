@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <list>
@@ -31,7 +32,7 @@ typedef struct BeNode {
 	BeType typeNode;
 	std::string beStr;
 	long long beInt;
-        BeList*	beList;
+    BeList*	beList;
 	BeDict*	beDict;
 } BeNode;
 
@@ -54,8 +55,7 @@ class ParserBencode {
 		BeDict* beDecodeDict(std::string stringDict, 
 						std::string::size_type startPosition,
 						std::string::size_type &endPosition);	
-	
-	public:
+
 		/*
 		 * Devuelve el primer BeNode encontrado a partir de la posicion pasada
 		 * por parametro en inicioNodo; a su vez devuelve la ultima posicion 
@@ -65,12 +65,13 @@ class ParserBencode {
 		 * typeNode; y luego, a partir de este, leer el dato correspondiente.
 		 * */
 		BeNode* beDecode(std::string &cadena,
-				 std::string::size_type inicioNodo,
+				         std::string::size_type inicioNodo,
 		                 std::string::size_type &finNodo);
-
-		/* Dado un archivo, parsea el contenido y lo devuelve
-		 * en una lista de nodos */
-		std::list<BeNode*>* beDecode(const char* NombreArchivo);
+	
+	public:
+		/* Dado un archivo, parsea el contenido y lo devuelve en una lista 
+		 * de nodos */
+		std::list<BeNode*>* beDecode(const char* nombreArchivo);
 };
 
 /****************************************************************************/
