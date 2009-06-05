@@ -41,25 +41,21 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 	uint32_t longitudCadena = this->bitStream.bitLength();
 	int i = 0;
 	//completo con 0's hasta que la longitud en bits sea 448
-	for(i=longitudCadena;(i % 448) != 0;i++){
+	for(i=0;((longitudCadena+i - 448) % 512) != 0;i++){
 		this->bitStream.appendBit(0);
 	}
 	//agrego los 64 bits 
 	//del tamaño en bit's del mensaje original
 	this->bitStream.append64BitsBE(tamanioMsjOriginal);
-	//this->bitStream.append64BitsLE(tamanioMsjOriginal);
-	
-//	std::string bitString = this->bitStream.getBitString();
 
 	longitudCadena = this->bitStream.length();
-
 	//TODO
 	//Divido el mensaje en partes de 512 bit
 	std::string chunk;
 	for(int parte=0;parte<(longitudCadena/64);parte++){
 	     chunk.clear();
 	     // obtengo la (parte)-esima parte
-	     chunk.append(bitStream.getChunk(parte, 64));
+	     chunk.append(bitStream.getChunk(parte*64, 64));
 	     
 	     //Armo las palabras de 32 bits
 	     uint32_t palabra[80];
@@ -71,8 +67,6 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 		  puntero[1] = chunk[numPalabra*4+2];
 		  puntero[2] = chunk[numPalabra*4+1];
 		  puntero[3] = chunk[numPalabra*4+0];
-		  puntero++;
-		  puntero--;
 	     }
 
 	     for(i=16;i<=79;i++){
@@ -119,10 +113,10 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 		  c = leftRotate(b, 30);
 		  b = a;
 		  a = auxiliar;
-		  std::cout << "Paso " <<std::dec<< i <<": ";
-		  std::cout.width(8);
-		  std::cout.fill('0');
-		  std::cout << std::hex << a << "  "<< b << "  " << c << "  " << d << "  " << e << std::endl;
+ 		  std::cout << "Paso " <<std::dec<< i <<": ";
+ 		  std::cout.width(8);
+ 		  std::cout.fill('0');
+ 		  std::cout << std::hex << a << "  "<< b << "  " << c << "  " << d << "  " << e << std::endl;
 
 	     }
 
@@ -132,22 +126,13 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 	     h3 += d;
 	     h4 += e;
 
-	     std::cout << "Parte : " << parte << std::endl;
 	}
-	//Resultado
-	//Convierto h0...h4 de int a string y los concateno
-// 	std::string resultadoH0 = intAstring(h0);
-// 	std::string resultadoH1 = intAstring(h1);
-// 	std::string resultadoH2 = intAstring(h2);
-// 	std::string resultadoH3 = intAstring(h3);
-// 	std::string resultadoH4 = intAstring(h4);
-// 	std::string resultado = resultadoH0.append(resultadoH1.append(resultadoH2.append(resultadoH3.append(resultadoH4))));
 	BitStream res;
-	res.append32BitsBE(h0);
-	res.append32BitsBE(h1);
-	res.append32BitsBE(h2);
-	res.append32BitsBE(h3);
-	res.append32BitsBE(h4);
+	res.append32Bits(h0);
+	res.append32Bits(h1);
+	res.append32Bits(h2);
+	res.append32Bits(h3);
+	res.append32Bits(h4);
 	return res.getString();
 }
 
