@@ -125,7 +125,9 @@ std::string ProtocoloBitTorrent::int64Astring(uint64_t valor){
 	//convierto de int a string
 	std::string snumero;
 	std::stringstream cvz;
-	cvz << valor;
+	cvz.width(8);
+	cvz.fill('\0');
+	cvz << std::hex << valor;
 	snumero = cvz.str();
 	return snumero;
 }
@@ -134,7 +136,7 @@ std::string ProtocoloBitTorrent::int32Astring(uint32_t valor) {
 	//convierto de int a string
 	std::string snumero;
 	std::stringstream cvz;
-	cvz.width(8);
+	cvz.width(4);
 	cvz.fill('\0');
 	cvz << std::hex << valor;
 	snumero = cvz.str();
