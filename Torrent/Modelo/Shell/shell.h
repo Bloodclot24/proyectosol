@@ -5,6 +5,7 @@
 #include <string.h>
 
 #define PROMPT "SUN:~$ "
+#define ESPACIO "     "
 
 /*Main Key*/
 #define SHOW_TRACKERS "trackers"
@@ -41,6 +42,7 @@ class Shell {
 		void correr();	
 	
 		/*Archivo*/
+		void mostrarArchivos();
 		void mostrarArchivo(std::string file, int piece, std::string size,
 		                    int done, std::string status, std::string 
 		                    downSpeed, std::string upSpeed);
@@ -50,15 +52,18 @@ class Shell {
 		 							  std::string availability);
 		
 		/*Trackers*/
+		void mostrarTrackers();
 		void mostrarTracker(std::string name, std::string status,
 		                    int seed);
 
 		/*Peers*/
+		void mostrarPeers();
 		void mostrarCliente(std::string ip, std::string cliente);
 		                    
 		/*Pieces*/
-		void mostrarPieces(int number, std::string size, int blocks, int block,
-		                   int completed);
+		void mostrarPieces();
+		void mostrarPiece(int number, std::string size, int blocks, int block,
+		                  int completed);
 };
 
 /****************************************************************************/

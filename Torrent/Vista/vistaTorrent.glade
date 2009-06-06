@@ -296,7 +296,7 @@
                 </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="column_status">
-                    <property name="title">Size</property>
+                    <property name="title">Status</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_status"/>
                       <attributes>
