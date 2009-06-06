@@ -6,6 +6,7 @@
 #include <iostream>
 #include <netdb.h>
 #include <strings.h>
+#include <string.h>
 
 /* Encapsulacion de sockets */
 class Socket{
