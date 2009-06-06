@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <list>
+#include <stdlib.h>
 
 #define ID_CHOKE 0
 #define ID_UNCHOKE 1
