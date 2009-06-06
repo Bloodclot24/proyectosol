@@ -4,7 +4,7 @@
 VistaTorrent::VistaTorrent() {
 	
 	try {
-		this->refXml= Gtk::Builder::create_from_file("vistaTorrent.cpp");
+		this->refXml= Gtk::Builder::create_from_file(PATH_VISTA);
 	} catch(const Gtk::BuilderError &be) {
 		std::cerr << "Gtk::BuilderError code:" << be.code() << std::endl;
 	} catch(const Glib::FileError &fe) {
