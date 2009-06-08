@@ -20,8 +20,8 @@
 #define SHOW_PEERS "peers"
 
 /*Torrent Keys*/
-#define ADD_TORRENT "t"
-#define ADD_URL_TORRENT "ut"
+#define ADD_TORRENT "torrent"
+#define ADD_URL_TORRENT "url torrent"
 
 /*File Keys*/
 #define REMOVE "remove"
@@ -33,6 +33,7 @@
 /*General Keys*/
 #define HELP "help"
 #define EXIT "exit"
+#define PARAMETRO " "
 
 /****************************************************************************/
 class Shell {
@@ -68,8 +69,10 @@ class Shell {
 		void mostrarPieces();
 		void mostrarPiece(int number, std::string size, int blocks, int block,
 		                  int completed);
+		                  
+		/*Mensajes*/
+		void archivoNoEncontrado();
 };
 
 /****************************************************************************/
 #endif /*SHELL_H_*/
-class Shell;
