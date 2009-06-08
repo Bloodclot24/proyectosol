@@ -12,9 +12,6 @@ private:
      std::list<Torrent*> torrents;
 
 public:
-     /* Crea un nuevo cliente */
-     Client();
-     
      /* Agrega un torrent */
      int addTorrent(const char* file);
 

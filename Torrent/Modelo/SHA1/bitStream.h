@@ -54,7 +54,7 @@ public:
 	  }
      }
 
-     void append32Bits(uint32_t numero){
+     void append32BitsBE(uint32_t numero){
 	  unsigned char bitActual=0;
 	  unsigned char byteActual=0;
 	  for(int i=3;i>=0;i--){
@@ -64,6 +64,19 @@ public:
 	       }
 	  }
      }
+
+     void append32BitsLE(uint32_t numero){
+	  unsigned char bitActual=0;
+	  unsigned char byteActual=0;
+	  for(int i=3;i>=0;i--){
+	       byteActual = ((char*)&numero)[i];
+	       for(bitActual=0;bitActual<8;bitActual++){
+		    appendBit(byteActual & (1<<(7-bitActual)) );
+	       }
+	  }
+     }
+
+
 
 
      int bitLength(void){

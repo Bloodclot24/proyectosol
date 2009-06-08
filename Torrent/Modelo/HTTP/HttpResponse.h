@@ -23,6 +23,9 @@ public:
      /* Devuelve los datos que nos interesan */
      std::string getContent();
 
+     /* Devuelve la longitud del area de datos */
+     int getContentLength();
+
      /* Dado un string codificado en URL, decodifica los datos */
      static std::string UrlDecode(std::string datos);
 };

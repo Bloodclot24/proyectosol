@@ -17,6 +17,10 @@ std::string HttpResponse::getContent(){
      return response.substr(offsetContenido);
 }
 
+int HttpResponse::getContentLength(){
+     return longitudContenido;
+}
+
 /* Dado un string codificado en URL, decodifica los datos */
 std::string HttpResponse::UrlDecode(std::string datos){
      std::string decodificado;

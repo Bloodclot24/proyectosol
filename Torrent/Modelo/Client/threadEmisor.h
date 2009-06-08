@@ -81,7 +81,7 @@ private:
 		    colaDeEspera.pop_front();
 		    mutexCola.unlock();
 		    socket->enviar(mensaje->getDatos(), mensaje->getTamanio());
-		    delete mensaje;
+		    //delete mensaje;
 	       }
 	       else{
 		    mutexPedido.lock();
