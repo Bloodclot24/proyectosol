@@ -15,10 +15,12 @@ class Controlador {
 	public: 
 		static Controlador* getInstancia();
 
+		void correrConsola();
+
 		void mostrarGeneral();	
 		void mostrarTrackers();
 		void mostrarPeers();
-		void mostrarPieces();
+		void mostrarPieces(std::string numFile);
 		void mostrarAll();
 		void mostrarDownloading();
 		void mostrarCompleted();
@@ -27,8 +29,11 @@ class Controlador {
 		void mostrarAddTorrent();
 		void mostrarAddUrlTorrent();
 		
+		void removeFile(std::string numFile);
+		void startFile(std::string numFile);
+		void pauseFile(std::string numFile);
+		void stopFile(std::string numFile);
 };
 
 /****************************************************************************/
 #endif /*CONTROLADOR_H_*/
-class Controlador;

@@ -1,66 +1,76 @@
 #include "shell.h"
-#include "../Controlador/controlador.h"
+#include "../../Controlador/controlador.h"
 
 /****************************************************************************/
+void commandNoEncontrado() {
+	std::cerr << "Comando no encontrado. ";
+	std::cerr << "Intente con el comando help." << std::endl;
+}
+
 void Shell::correr() {
 
 	this->command= "";
+	std::string file= "";
 	
 	while(command.compare(EXIT) != 0) {
 	
 		std::cout << PROMPT;
-		std::cin >> command;
+		std::getline(std::cin, command);
+		size_t finParametro= command.find(" ", 0);
 
 		if(command.compare(SHOW_TRACKERS) == 0) {
-			
-			std::cout << "SHOW_TRACKERS" << std::endl;
+			Controlador::getInstancia()->mostrarTrackers();
 			
 		} else if(command.compare(SHOW_PEERS) == 0) {
-			
-			std::cout << "SHOW_PEERS" << std::endl;
-			
+			Controlador::getInstancia()->mostrarPeers();
+
 		} else if(command.compare(SHOW_GENERAL) == 0) {
-			
-			std::cout << "SHOW_GENERAL" << std::endl;
+			Controlador::getInstancia()->mostrarGeneral();	
 			
 		} else if(command.compare(SHOW_ALL) == 0) {
-			
-			std::cout << "SHOW_ALL" << std::endl;
+			Controlador::getInstancia()->mostrarAll();
 			
 		} else if(command.compare(SHOW_DOWNLOADING) == 0) {
-			
-			std::cout << "SHOW_DOWNLOADING" << std::endl;
+			Controlador::getInstancia()->mostrarDownloading();
 			
 		} else if(command.compare(SHOW_COMPLETED) == 0) {
-			
-			std::cout << "SHOW_COMPLETED" << std::endl;
+			Controlador::getInstancia()->mostrarCompleted();
 			
 		} else if(command.compare(SHOW_ACTIVE) == 0) {
-			
-			std::cout << "SHOW_ACTIVE" << std::endl;
+			Controlador::getInstancia()->mostrarActive();
 			
 		} else if(command.compare(SHOW_INACTIVE) == 0) {
-			
-			std::cout << "SHOW_INACTIVE" << std::endl;
+			Controlador::getInstancia()->mostrarInactive();
 			
 		} else if(command.compare(ADD_TORRENT) == 0) {
-			
-			std::cout << "ADD_TORRENT" << std::endl;
+			Controlador::getInstancia()->mostrarAddTorrent();
 			
 		} else if(command.compare(ADD_URL_TORRENT) == 0) {
- 
-			std::cout << "ADD_URL_TORRENT" << std::endl;			
+			Controlador::getInstancia()->mostrarAddUrlTorrent();
 		
-		} else if(command.compare(SHOW_PIECES) == 0) {
+		} else if(command.compare(HELP) == 0) {
+			mostrarHelp();
+		
+		} else if(finParametro != std::string::npos) {
 			
-			std::cout << "SHOW_PIECES" << std::endl;
-		}
-		 else if(command.compare(HELP) == 0) {
-			mostrarHelp();			
-		} else {
-			std::cout << "Comando no encontrado. ";
-			std::cout << "Intente con el comando help." << std::endl;
-		 }
+			file.assign(command, finParametro+1, 
+			                               command.length()-finParametro);
+						
+			if(command.compare(0, finParametro, REMOVE) == 0)
+				Controlador::getInstancia()->removeFile(file);
+			else if(command.compare(0, finParametro, START) == 0)
+				Controlador::getInstancia()->startFile(file);
+			else if(command.compare(0, finParametro, PAUSE) == 0)
+				Controlador::getInstancia()->pauseFile(file);
+			else if(command.compare(0, finParametro, STOP) == 0)
+				Controlador::getInstancia()->stopFile(file);
+			else if(command.compare(0, finParametro, SHOW_PIECES) == 0)
+				Controlador::getInstancia()->mostrarPieces(file);
+			else
+				commandNoEncontrado();
+							
+		} else if(command.compare(EXIT) != 0)
+			commandNoEncontrado();
 	}	
 }
 
@@ -150,26 +160,47 @@ void Shell::mostrarPiece(int number, std::string size, int blocks, int block,
 /*--------------------------------------------------------------------------*/
 void Shell::mostrarHelp() {
 	
-	std::cout << "t: agrega un torrent a partir de un archivo." << std::endl;
-	std::cout << "ut: agrega un torrent a partir de un URL." << std::endl;
-	std::cout << "trackers: muestra todos los trackers." << std::endl;
-	std::cout << "peers #: muestra los peers del # tracker." << std::endl;		 
-	std::cout << "general: muestra la informacion general." << std::endl;
-	std::cout << "all: muestra todos los archivos." << std::endl;
-	std::cout << "downloading: muestra todos los archivos que ";  
+	std::cout << ADD_TORRENT; 
+	std::cout << ": agrega un torrent a partir de un archivo." << std::endl;
+	std::cout << ADD_URL_TORRENT; 
+	std::cout << ": agrega un torrent a partir de un URL." << std::endl;
+	std::cout << SHOW_TRACKERS; 
+	std::cout << ": muestra todos los trackers." << std::endl;
+	std::cout << SHOW_PEERS; 
+	std::cout << " #: muestra los peers del # tracker." << std::endl;		 
+	std::cout << SHOW_GENERAL; 
+	std::cout << ": muestra la informacion general." << std::endl;
+	std::cout << SHOW_ALL; 
+	std::cout << ": muestra todos los archivos." << std::endl;
+	std::cout << SHOW_DOWNLOADING; 
+	std::cout << ": muestra todos los archivos que ";  
 	std::cout << "se estan bajando." << std::endl;		 
-	std::cout << "completed: muestra todos los archivos ";  
+	std::cout << SHOW_COMPLETED; 
+	std::cout << ": muestra todos los archivos ";  
 	std::cout << "completos." << std::endl;		 
-	std::cout << "active: muestra todos los archivos ";  
-	std::cout << "activos." << std::endl;		 
-	std::cout << "inactive: muestra todos los archivos ";  
-	std::cout << "inactivos." << std::endl;
-	std::cout << "remove #: se borra el # archivo." << std::endl;
-	std::cout << "start #: se comienza a bajar el # archivo." << std::endl;
-	std::cout << "pause #: se pausa la bajada del # archivo." << std::endl;
-	std::cout << "stop #: se detiene la bajada del # archivo." << std::endl;
-	std::cout << "pieces #: se muestra las piezas del # archivo." << std::endl;
-	std::cout << "exit: salir del programa." << std::endl;		 
+	std::cout << SHOW_ACTIVE; 
+	std::cout << ": muestra todos los archivos activos." << std::endl;		 
+	std::cout << SHOW_INACTIVE; 
+	std::cout << ": muestra todos los archivos inactivos." << std::endl;
+	std::cout << REMOVE; 
+	std::cout << " #: se borra el # archivo." << std::endl;
+	std::cout << START; 
+	std::cout << " #: se comienza a bajar el # archivo." << std::endl;
+	std::cout << PAUSE; 
+	std::cout << " #: se pausa la bajada del # archivo." << std::endl;
+	std::cout << STOP; 
+	std::cout << " #: se detiene la bajada del # archivo." << std::endl;
+	std::cout << SHOW_PIECES; 
+	std::cout << " #: se muestra las piezas del # archivo." << std::endl;
+	std::cout << EXIT; 
+	std::cout << ": salir del programa." << std::endl;		 
+}
+
+/*--------------------------------------------------------------------------*/
+/*Mensajes*/
+void Shell::archivoNoEncontrado() {
+	
+	std::cerr << "El archivo seleccionado no existe" << std::endl;		 		
 }
 
 /****************************************************************************/
