@@ -29,30 +29,33 @@ typedef struct{
 }BeDict;
 
 typedef struct BeNode {
-	BeType typeNode;
-	std::string beStr;
-	long long beInt;
-    BeList*	beList;
-	BeDict*	beDict;
+     BeType typeNode;
+     std::string beStr;
+     long long beInt;
+     BeList*	beList;
+     BeDict*	beDict;
+     const std::string *buffer;
+     std::string::size_type start;
+     std::string::size_type end;
 } BeNode;
 
 /****************************************************************************/
 class ParserBencode {
 	
 	private:
-		std::string beDecodeStr(std::string stringStr, 
+		std::string beDecodeStr(const std::string *stringStr, 
 		                        std::string::size_type startPosition,
 		                        std::string::size_type &endPosition);
 	
-		long long beDecodeInt(std::string stringInt,
+		long long beDecodeInt(const std::string *stringInt,
 				      std::string::size_type startPosition,
 		                      std::string::size_type &endPosition);
 		
-		BeList* beDecodeList(std::string stringList, 
+		BeList* beDecodeList(const std::string *stringList, 
 						std::string::size_type startPosition,
 		                                std::string::size_type &endPosition);
 		
-		BeDict* beDecodeDict(std::string stringDict, 
+		BeDict* beDecodeDict(const std::string *stringDict, 
 						std::string::size_type startPosition,
 						std::string::size_type &endPosition);	
 
@@ -64,7 +67,7 @@ class ParserBencode {
 		 * Para saber el tipo de dato que almacena el BeNode se debe leer el 
 		 * typeNode; y luego, a partir de este, leer el dato correspondiente.
 		 * */
-		BeNode* beDecode(std::string &cadena,
+		BeNode* beDecode(const std::string *cadena,
 				         std::string::size_type inicioNodo,
 		                 std::string::size_type &finNodo);
 	

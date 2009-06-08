@@ -73,11 +73,11 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 		  palabra[i] = leftRotate(palabra[i-3] ^ palabra[i-8] ^ palabra[i-14] ^ palabra[i-16], 1);
 	     }
 
-	     for(i=0;i<80;i++){
-		  std::cout.width(8);
-		  std::cout.fill('0');
-		  std::cout << std::hex << palabra[i] << std::endl;
-	     }
+// 	     for(i=0;i<80;i++){
+// 		  std::cout.width(8);
+// 		  std::cout.fill('0');
+// 		  std::cout << std::hex << palabra[i] << std::endl;
+// 	     }
 	
 	     uint32_t a = h0;
 	     uint32_t b = h1;
@@ -113,10 +113,10 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 		  c = leftRotate(b, 30);
 		  b = a;
 		  a = auxiliar;
- 		  std::cout << "Paso " <<std::dec<< i <<": ";
- 		  std::cout.width(8);
- 		  std::cout.fill('0');
- 		  std::cout << std::hex << a << "  "<< b << "  " << c << "  " << d << "  " << e << std::endl;
+//  		  std::cout << "Paso " <<std::dec<< i <<": ";
+//  		  std::cout.width(8);
+//  		  std::cout.fill('0');
+//  		  std::cout << std::hex << a << "  "<< b << "  " << c << "  " << d << "  " << e << std::endl;
 
 	     }
 
@@ -128,12 +128,14 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 
 	}
 	BitStream res;
-	res.append32Bits(h0);
-	res.append32Bits(h1);
-	res.append32Bits(h2);
-	res.append32Bits(h3);
-	res.append32Bits(h4);
-	return res.getString();
+	res.append32BitsLE(h0);
+	res.append32BitsLE(h1);
+	res.append32BitsLE(h2);
+	res.append32BitsLE(h3);
+	res.append32BitsLE(h4);
+	std::string hash = res.getString();
+	hash.erase(hash.end()-1);
+	return hash;
 }
 
 Sha1::~Sha1()

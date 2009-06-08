@@ -35,14 +35,18 @@ private:
      /* Codificacion */
      int encoding;
 
+     std::string idHash;
+
      EstadoTorrent estado;
 
      Socket* socket;
      ThreadReceptor *receptor;
      ThreadEmisor *emisor;
 
+     bool valido;
+
 public:
-     Torrent(std::list<BeNode*> *info);
+     Torrent(const char* fileName);
 
      /* Comienza el torrent */
      int start();
@@ -50,6 +54,9 @@ public:
      /* Devuelve el tamaño total de todos los archivos contenidos en
       * el torrent */
      int getTotalSize();
+
+     /* Indica si el objeto es valido o no */
+     bool isValid();
 };
 
 #endif /* TORRENT_H_INCLUDED */

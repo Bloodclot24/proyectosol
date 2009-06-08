@@ -14,7 +14,7 @@ int main(int argc, char** argv){
 
      for(int i=0;i<5;i++){
 	  uint32_t *palabra = (uint32_t*)((hash.c_str())+i*4);
-	  std::cout.width(4);
+	  std::cout.width(8);
 	  std::cout.fill('0');
 	  std::cout << std::hex << *palabra; 
      }

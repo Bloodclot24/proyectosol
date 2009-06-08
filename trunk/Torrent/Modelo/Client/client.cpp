@@ -6,34 +6,23 @@
 #include <list>
 
 
-Client::Client(){
-
-}
-
 /****************************************************************************/
 int Client::addTorrent(const char* file){
-     ParserBencode parser;
-     /* Decodifico todo el .torrent y obtengo una lista con toda la
-      * informacion */
-     std::list<BeNode*> *lista = parser.beDecode(file);
-
-     if(lista!= NULL){
-	  Torrent *torrent = new Torrent(lista);
+     Torrent *torrent = new Torrent(file);
+     if(torrent->isValid()){
 	  torrents.push_back(torrent);
-	  /* TODO: liberar cada elemento antes de eliminar */
-	  delete lista;
 	  return 1;
      }
-
-     else return 0;
+     else {
+	  delete torrent;
+	  return 0;
+     }
 }
 
 /****************************************************************************/
 int Client::start(){
-     /* por ahora, nada mas para probar comienza solo el promer torrent */
+     /* por ahora, nada mas para probar comienza solo el primer torrent */
      Torrent* torrent = torrents.front();
 
-     torrent->start();
-     
-
+     return torrent->start();
 }
