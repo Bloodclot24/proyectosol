@@ -13,6 +13,7 @@
 #define INFO_MD5      "md5sum"
 #define INFO_PATH     "path"
 
+/****************************************************************************/
 std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 
      TorrentFile *newFile = new TorrentFile();
@@ -89,4 +90,11 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
      }
 
      return fileList;
+}
+
+/****************************************************************************/
+TorrentFile::~TorrentFile(){
+
+     
+
 }

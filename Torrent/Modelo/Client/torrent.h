@@ -57,6 +57,8 @@ public:
 
      /* Indica si el objeto es valido o no */
      bool isValid();
+
+     ~Torrent();
 };
 
 #endif /* TORRENT_H_INCLUDED */

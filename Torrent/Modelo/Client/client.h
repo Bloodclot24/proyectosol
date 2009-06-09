@@ -17,6 +17,9 @@ public:
 
      /* comienza a descargar un torrent */
      int start();
+
+     /* Destruye el cliente y libera todos los torrents */
+     ~Client();
 };
 
 #endif /* CLIENT_H_INCLUDED */

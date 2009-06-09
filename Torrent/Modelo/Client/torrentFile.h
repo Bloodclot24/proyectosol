@@ -33,6 +33,8 @@ public:
      /* Devuelve el tamaño del archivo */
      int getSize(){ return length; }
 
+     ~TorrentFile();
+
 };
 
 #endif /* TORRENTFILE_H_INCLUDED */

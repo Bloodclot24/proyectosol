@@ -7,14 +7,12 @@
 
 class Sha1
 {
-	private:
-		BitStream bitStream;
-		
-		std::string intAstring(uint32_t valor);
-	public:
-		Sha1();
-		std::string ejecutarSha1(std::string cadena);
-		~Sha1();
+private:
+     BitStream bitStream;
+     
+     std::string intAstring(uint32_t valor);
+public:
+     std::string ejecutarSha1(std::string cadena);
 };
 
 #endif /*SHA1_H_*/
