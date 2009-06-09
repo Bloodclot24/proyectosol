@@ -66,7 +66,7 @@ class ProtocoloBitTorrent
 			
 			std::string cancel(int index, int begin, int length);
 			
-			std::string port(int listenPort);
+			std::string port(uint32_t listenPort);
 			
 			Message* decode(const char* mensaje);	
 };

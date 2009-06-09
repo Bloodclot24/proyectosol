@@ -121,7 +121,7 @@ std::string ProtocoloBitTorrent::cancel(int index, int begin, int length) {
 	       int32Astring(begin) + int32Astring(length);
 }
 			
-std::string ProtocoloBitTorrent::port(int listenPort) {
+std::string ProtocoloBitTorrent::port(uint32_t listenPort) {
 	uint32_t len= 3;
 	len= this->bitStream.swap32ABigEndian(len);
 	char id= ID_PORT;
@@ -163,9 +163,9 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 	
 	std::string length;
 	length.assign(msg, 0, 4);
-//	const char* longitud = length.c_str();
-//	uint32_t* longitudMsj = (uint32_t*)longitud[0];
-//	uint32_t longMsj = this->bitStream.swap32ABigEndian(*longitudMsj);
+	const char* longitud = length.c_str();
+	uint32_t* longitudMsj = (uint32_t*)longitud[0];
+	uint32_t longMsj = this->bitStream.swap32ABigEndian(*longitudMsj);
 	if(msg.length() > 4) {
 	
 		std::string idS;
@@ -192,48 +192,79 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 		} else if(id == ID_HAVE) {
 			std::cout << "have" << std::endl;
 			message->id= HAVE;
-			message->piece.assign(msg, 8, 4);
+			message->piece.assign(msg, 5,longMsj-5 );
 
 		} else if(id == ID_BITFIELD) {
 			std::cout << "bitfield" << std::endl;
 			message->id= BITFIELD;
-			message->bitfield.assign(msg, 8, atoi(length.c_str())-8);
+			//TODO ver tema de que bitfield es un string, ver si va
+			//a seguir siendolo y hay que transformarlo en un int
+			message->bitfield.assign(msg, 5, longMsj-5);
 
 		} else if(id == ID_REQUEST) {
 			std::cout << "request" << std::endl;
 			message->id= REQUEST;
-			auxiliar.assign(msg, 8, 4);
-			message->index= atoi(auxiliar.c_str());
-			auxiliar.assign(msg, 12, 4);
-			message->begin= atoi(auxiliar.c_str());
-			auxiliar.assign(msg, 16, atoi(length.c_str())-16);
-			message->length= atoi(auxiliar.c_str());
+			auxiliar.assign(msg, 5, 4);
+			const char* indiceAux = auxiliar.c_str();
+			uint32_t* pIndice = (uint32_t*)indiceAux[0];
+			uint32_t indice = this->bitStream.swap32ABigEndian(*pIndice);
+			message->index= indice;
+			auxiliar.assign(msg, 9, 4);
+			const char* beginAux = auxiliar.c_str();
+			uint32_t* pBegin = (uint32_t*)beginAux[0];
+			uint32_t begin = this->bitStream.swap32ABigEndian(*pBegin);
+			message->begin= begin;
+			auxiliar.assign(msg, 13, longMsj-13);
+			const char* lengthAux = auxiliar.c_str();
+			uint32_t* pLength = (uint32_t*)lengthAux[0];
+			uint32_t length = this->bitStream.swap32ABigEndian(*pLength);
+			message->length= length;
 
 		} else if(id == ID_PIECE) {
 			std::cout << "piece" << std::endl;
 			message->id= PIECE;
-			auxiliar.assign(msg, 8, 4);
-			message->index= atoi(auxiliar.c_str());
-			auxiliar.assign(msg, 12, 4);
-			message->begin= atoi(auxiliar.c_str());
-			auxiliar.assign(msg, 16, atoi(length.c_str())-16);
+			auxiliar.assign(msg, 5, 4);
+			const char* indiceAux = auxiliar.c_str();
+			uint32_t* pIndice = (uint32_t*)indiceAux[0];
+			uint32_t indice = this->bitStream.swap32ABigEndian(*pIndice);
+			message->index= indice;
+			auxiliar.assign(msg, 9, 4);
+			const char* beginAux = auxiliar.c_str();
+			uint32_t* pBegin = (uint32_t*)beginAux[0];
+			uint32_t begin = this->bitStream.swap32ABigEndian(*pBegin);
+			message->begin= begin;
+			auxiliar.assign(msg, 13, longMsj-13);
+			//TODO ver tema de block, xq es un string, ver si va a seguir siendolo
+			//y hay que convertir a int o si va a ser un int directamente
 			message->block= atoi(auxiliar.c_str());
 	
 		} else if(id == ID_CANCEL) {
 			std::cout << "cancel" << std::endl;
 			message->id= CANCEL;
-			auxiliar.assign(msg, 8, 4);
-			message->index= atoi(auxiliar.c_str());
-			auxiliar.assign(msg, 12, 4);
-			message->begin= atoi(auxiliar.c_str());
-			auxiliar.assign(msg, 16, atoi(length.c_str())-16);
-			message->length= atoi(auxiliar.c_str());
-		
+			auxiliar.assign(msg, 5, 4);
+			const char* indiceAux = auxiliar.c_str();
+			uint32_t* pIndice = (uint32_t*)indiceAux[0];
+			uint32_t indice = this->bitStream.swap32ABigEndian(*pIndice);
+			message->index= indice;
+			auxiliar.assign(msg, 9, 4);
+			const char* beginAux = auxiliar.c_str();
+			uint32_t* pBegin = (uint32_t*)beginAux[0];
+			uint32_t begin = this->bitStream.swap32ABigEndian(*pBegin);
+			message->begin= begin;
+			auxiliar.assign(msg, 13, longMsj-13);
+			const char* lengthAux = auxiliar.c_str();
+			uint32_t* pLength = (uint32_t*)lengthAux[0];
+			uint32_t length = this->bitStream.swap32ABigEndian(*pLength);
+			message->length= length;
+
 		} else if(id == ID_PORT) {
 			std::cout << "port" << std::endl;
 			message->id= PORT;
-			auxiliar.assign(msg, 8, atoi(length.c_str())-8);
-			message->listenPort= atoi(auxiliar.c_str());
+			auxiliar.assign(msg, 5,4);
+			const char* portAux = auxiliar.c_str();
+			uint32_t* pPort = (uint32_t*)portAux[0];
+			uint32_t port = this->bitStream.swap32ABigEndian(*pPort);
+			message->listenPort= port;
 			
 		}
 	} else 
