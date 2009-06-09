@@ -26,3 +26,12 @@ int Client::start(){
 
      return torrent->start();
 }
+
+/****************************************************************************/
+Client::~Client(){
+     std::list<Torrent*>::iterator it;
+     for(it=torrents.begin();it!=torrents.end();it++){
+	  //(*it)->stop();
+	  delete (*it);
+     }
+}

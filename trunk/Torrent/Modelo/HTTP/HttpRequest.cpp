@@ -22,7 +22,7 @@ void HttpRequest::addParam(std::string param, std::string value){
 std::string HttpRequest::UrlEncode(std::string datos){
      std::stringstream codificado;
      unsigned char byte;
-     for(int i=0;i<datos.length();i++){
+     for(size_t i=0;i<datos.length();i++){
 	  byte = datos[i];
 	  if( isalnum(byte) ){
 	       codificado << byte;
@@ -69,7 +69,8 @@ std::string* HttpRequest::getRequest(void){
      *paquete += "Host: ";
      *paquete += host;
      *paquete += "\r\nAccept: */*\r\n";
-     *paquete += "Accept-Encoding: deflate, gzip\r\n\r\n";
+     *paquete += "Accept-Encoding: text/plain\r\n\r\n";
+     //deflate, gzip\r\n\r\n";
 
      return paquete;
 }

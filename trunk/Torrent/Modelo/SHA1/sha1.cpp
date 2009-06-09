@@ -1,10 +1,6 @@
 #include "sha1.h"
 
-Sha1::Sha1()
-{
-	
-}
-
+/****************************************************************************/
 std::string Sha1::intAstring(uint32_t valor)
 {
 	//convierto de int a string
@@ -16,12 +12,13 @@ std::string Sha1::intAstring(uint32_t valor)
 	return snumero;
 }
 
-
+/****************************************************************************/
 static uint32_t leftRotate(uint32_t numero, int cuanto){
      
      return  (numero << cuanto) | (numero >> 32-cuanto);
 }
 
+/****************************************************************************/
 std::string Sha1::ejecutarSha1(std::string cadena)
 {
 	//escribo las constantes en BIG ENDIAN
@@ -52,7 +49,7 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 	//TODO
 	//Divido el mensaje en partes de 512 bit
 	std::string chunk;
-	for(int parte=0;parte<(longitudCadena/64);parte++){
+	for(size_t parte=0;parte<(longitudCadena/64);parte++){
 	     chunk.clear();
 	     // obtengo la (parte)-esima parte
 	     chunk.append(bitStream.getChunk(parte*64, 64));
@@ -138,7 +135,3 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 	return hash;
 }
 
-Sha1::~Sha1()
-{
-	
-}

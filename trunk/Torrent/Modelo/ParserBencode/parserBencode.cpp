@@ -2,18 +2,26 @@
 
 /****************************************************************************/
 std::list<BeNode*>* ParserBencode::beDecode(const char* nombreArchivo){
-     
      std::fstream archTorrent;
      archTorrent.open(nombreArchivo, std::fstream::in);   
      std::stringbuf buf;
      
      archTorrent >> &buf;
 
-     std::string *str= new std::string(buf.str());
+     std::list<BeNode*> *list = beDecode(buf.str());
      
+     archTorrent.close();
+
+     return list;
+}
+
+/****************************************************************************/
+std::list<BeNode*>* ParserBencode::beDecode(const std::string& buffer){
      std::list<BeNode*> *list= new std::list<BeNode*>;
     
      BeNode* beNode;
+
+     std::string *str= new std::string(buffer);
      
      std::string::size_type endPosition= 0;
 
@@ -21,10 +29,8 @@ std::list<BeNode*>* ParserBencode::beDecode(const char* nombreArchivo){
 	  beNode= beDecode(str, endPosition, endPosition);
 	  list->push_back(beNode);
      } while(endPosition != BE_END);
-     
-     archTorrent.close();
 
-     return(list);
+     return list;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -144,3 +150,65 @@ BeDict* ParserBencode::beDecodeDict(const std::string *stringDict,
 }
 
 /****************************************************************************/
+void ParserBencode::beFree(std::list<BeNode*>* nodeList){
+     std::list<BeNode*>::iterator it;
+
+     if(nodeList == NULL)
+	  return;
+
+      if( nodeList->front()->buffer!=NULL)
+ 	  delete nodeList->front()->buffer;
+
+     for(it=nodeList->begin();it!=nodeList->end();it++)
+	  beFree(*it);
+}
+
+/****************************************************************************/
+void ParserBencode::beFree(BeNode* beNode){
+     if(beNode == NULL)
+	  return;
+
+     switch(beNode->typeNode) {
+     case BE_STR:
+	  break;
+     case BE_INT:
+	  break;
+     case BE_LIST:
+	  beFree(beNode->beList);
+	  break;
+     case BE_DICT:
+	  beFree(beNode->beDict);
+	  break;
+     case BE_END:
+	  //Nada
+	  break;
+     }
+     delete beNode;
+}
+
+/****************************************************************************/
+void ParserBencode::beFree(BeList* list){
+     if(list == NULL)
+	  return;
+     
+     std::list<BeNode*>::iterator it;
+     
+     for(it=list->elements.begin();it!=list->elements.end();it++)
+	  beFree(*it);
+
+     delete list;
+}
+
+/****************************************************************************/
+void ParserBencode::beFree(BeDict* dict){
+     if(dict == NULL)
+	  return;
+     
+     std::map<std::string, BeNode*>::iterator it;
+     
+     for(it=dict->elements.begin();it!=dict->elements.end();it++)
+	  beFree((*it).second);
+
+     delete dict;
+}
+

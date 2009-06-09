@@ -119,15 +119,25 @@ protected:
 			 auxiliar.erase(0,1);
 		    }
 
-		    datos.append(1,auxiliar[0]);datos.append(1,auxiliar[1]);datos.append(1,auxiliar[2]);
+		    datos.append(1,auxiliar[0]);
+		    datos.append(1,auxiliar[1]);
+		    datos.append(1,auxiliar[2]);
 
 		    HttpResponse resp(datos);
 		    int longitud = resp.getContentLength();
 		    
-		    char *contenido = new char[longitud];
-		    socket->recibir(contenido, longitud);
+		    if(longitud == -1){
+			 char c;
+			 while(socket->recibir(&c, 1) > 0){
+			      datos.append(1,c);
+			 }
+		    }
+		    else{
+			 char *contenido = new char[longitud];
+			 socket->recibir(contenido, longitud);
 
-		    datos.append(contenido, longitud);
+			 datos.append(contenido, longitud);
+		    }
 		    mensaje->copiarDatos(datos.c_str(), datos.length());
 	       }
 	       else{

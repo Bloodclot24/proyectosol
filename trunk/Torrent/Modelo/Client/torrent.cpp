@@ -5,18 +5,28 @@
 #include "torrent.h"
 #include "mensaje.h"
 
+/* Claves del .torrent */
+#define DICT_TRACKER    "announce"
+#define DICT_DATE       "creation date"
+#define DICT_COMMENTS   "comments"
+#define DICT_CREATOR    "created by"
+#define DICT_ENCODING   "encoding"
+#define DICT_INFO       "info"
 
-#define DICT_TRACKER  "announce"
-#define DICT_DATE     "creation date"
-#define DICT_COMMENTS "comments"
-#define DICT_CREATOR  "created by"
-#define DICT_ENCODING "encoding"
-#define DICT_INFO     "info"
+/* Claves del response del tracker */
+#define DICT_WARNING    "warning message"
+#define DICT_FAIL       "failure reason"
+#define DICT_INTERVAL   "interval"
+#define DICT_MININT     "min interval"
+#define DICT_TRCKID     "tracker id"
+#define DICT_COMPLETE   "complete"
+#define DICT_INCOMPLETE "incomplete"
+#define DICT_PEERS      "peers"
 
 /****************************************************************************/
 Torrent::Torrent(const char* fileName){
      
-ParserBencode parser;
+     ParserBencode parser;
      /* Decodifico todo el .torrent y obtengo una lista con toda la
       * informacion */
      std::list<BeNode*> *info = parser.beDecode(fileName);
@@ -73,7 +83,8 @@ ParserBencode parser;
 
 	  }
 	  
-	  /* TODO: liberar cada elemento antes de eliminar */
+	  /* libero los elementos antes de eliminar */
+	  ParserBencode::beFree(info);
 	  delete info;
      }
      else{
@@ -85,15 +96,16 @@ ParserBencode parser;
 /****************************************************************************/
 int Torrent::start(){
      /* Creo un request con la direccion del tracker */
+
      HttpRequest req(announce);
 
 //      std::string scrape("announce");
 //      size_t pos = announce.find_last_of('/');
 //      if(pos != std::string::npos){
-// 	  pos = announce.find(scrape, pos);
-// 	  if(pos != std::string::npos){
-// 	       announce.replace(pos, scrape.length(),"scrape");
-// 	  }
+//  	  pos = announce.find(scrape, pos);
+//  	  if(pos != std::string::npos){
+//  	       announce.replace(pos, scrape.length(),"scrape");
+//  	  }
 //      }
 
 
@@ -142,6 +154,7 @@ int Torrent::start(){
 
      /* TODO: convertir getTotalSize() a string */
 //      req.addParam("left", getTotalSize);
+     req.addParam("left", "1000");
 
      req.addParam("compact", "1");
 
@@ -159,7 +172,7 @@ int Torrent::start(){
 	       << request->length() << "\n";
 
      /* Creo un mensaje con el request */
-     Mensaje *mensaje;
+     Mensaje *mensaje = new Mensaje;
 
      mensaje->copiarDatos(req.getRequest()->c_str(),	\
 			  req.getRequest()->length());
@@ -173,9 +186,85 @@ int Torrent::start(){
      mensaje = receptor->recibirMensaje();
      
      /* Obtengo la respuesta y la muestro, solo para debugging */
-     std::cout << "Mensaje obtenido del servidor:\n" << mensaje->getDatos();
+     std::cout << "Mensaje obtenido del servidor:\n" << mensaje->getDatos() << std::endl;
      
-     HttpResponse resp(mensaje->getDatos());
+     std::string datos(mensaje->getDatos(), mensaje->getTamanio());
+	       
+     HttpResponse resp(datos);
+
+     ParserBencode parser;
+     
+
+     std::list<BeNode*>* list = parser.beDecode(resp.getContent());
+
+     BeNode* primero;
+
+     if(list == NULL ||	(primero = list->front()) == NULL	\
+	|| primero->typeNode != BE_DICT){
+
+	  std::cout <<							\
+	       "ERROR: No se pudo decodificarla respuesta del tracker." \
+		    << std::endl;
+	  emisor->finalizar();
+	  receptor->finalizar();
+	  socket->cerrar();
+	  delete emisor;
+	  delete receptor;
+	  delete socket;
+	  return -1;
+     }
+
+     std::map<std::string, BeNode*>* dict = &(primero->beDict->elements);
+     
+     BeNode* elemento;
+	       
+     /* Extraigo todos los elementos que necesito */
+     elemento = (*dict)[DICT_FAIL];
+     if(elemento != NULL)
+	  std::cout << "ERROR: " << elemento->beStr << std::endl;
+     
+     elemento = (*dict)[DICT_WARNING];
+     if(elemento != NULL)
+	  std::cout << "WARNING: " << elemento->beStr << std::endl;
+
+     elemento = (*dict)[DICT_INTERVAL];
+     if(elemento != NULL)
+	  std::cout << "INFO: intervalo de requests -> " \
+		    << elemento->beInt << "s" << std::endl;
+
+     elemento = (*dict)[DICT_MININT];
+     if(elemento != NULL)
+	  std::cout << "INFO: intervalo MINIMO de requests -> "	\
+		    << elemento->beInt << "s" << std::endl;
+
+     elemento = (*dict)[DICT_TRCKID];
+     if(elemento != NULL)
+	  std::cout << "INFO: ID TRACKER -> "		\
+		    << elemento->beStr << std::endl;
+
+     elemento = (*dict)[DICT_COMPLETE];
+     if(elemento != NULL)
+	  std::cout << "INFO: Cantidad de veces completo -> "	\
+		    << elemento->beInt << std::endl;
+
+     elemento = (*dict)[DICT_INCOMPLETE];
+     if(elemento != NULL)
+	  std::cout << "INFO: Cantidad de veces incompleto -> "	\
+		    << elemento->beInt << std::endl;
+
+     elemento = (*dict)[DICT_PEERS];
+     if(elemento != NULL){
+	  std::cout << "INFO: Lista de PEERS -> " << std::endl;
+	  
+	  for(size_t i=0;i<elemento->beStr.length();i+=6){
+	       std::cout << ((int)elemento->beStr[i] & 0xff) << "."	\
+			 << ((int)elemento->beStr[i+1] & 0xff) << "."	\
+			 << ((int)elemento->beStr[i+2] & 0xff) << "."	\
+			 << ((int)elemento->beStr[i+3] & 0xff) << ":"	\
+			 << ntohs(*(uint16_t*)elemento->beStr.c_str()+i+4) \
+			 << std::endl;
+	  }
+     }
      
      return 0;
 }
@@ -195,4 +284,14 @@ int Torrent::getTotalSize(){
 /****************************************************************************/
 bool Torrent::isValid(){
      return valido;
+}
+
+/****************************************************************************/
+Torrent::~Torrent(){
+     std::list<TorrentFile*>::iterator it;
+
+     for(it=archivos->begin();it!=archivos->end();it++)
+	  delete (*it);
+
+     delete archivos;
 }

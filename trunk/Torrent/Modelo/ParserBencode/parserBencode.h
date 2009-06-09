@@ -41,41 +41,51 @@ typedef struct BeNode {
 
 /****************************************************************************/
 class ParserBencode {
-	
-	private:
-		std::string beDecodeStr(const std::string *stringStr, 
-		                        std::string::size_type startPosition,
-		                        std::string::size_type &endPosition);
-	
-		long long beDecodeInt(const std::string *stringInt,
-				      std::string::size_type startPosition,
-		                      std::string::size_type &endPosition);
-		
-		BeList* beDecodeList(const std::string *stringList, 
-						std::string::size_type startPosition,
-		                                std::string::size_type &endPosition);
-		
-		BeDict* beDecodeDict(const std::string *stringDict, 
-						std::string::size_type startPosition,
-						std::string::size_type &endPosition);	
+private:
+     std::string beDecodeStr(const std::string *stringStr, 
+			     std::string::size_type startPosition,
+			     std::string::size_type &endPosition);
+     
+     long long beDecodeInt(const std::string *stringInt,
+			   std::string::size_type startPosition,
+			   std::string::size_type &endPosition);
+     
+     BeList* beDecodeList(const std::string *stringList, 
+			  std::string::size_type startPosition,
+			  std::string::size_type &endPosition);
+     
+     BeDict* beDecodeDict(const std::string *stringDict, 
+			  std::string::size_type startPosition,
+			  std::string::size_type &endPosition);	
+     
+     /*
+      * Devuelve el primer BeNode encontrado a partir de la posicion pasada
+      * por parametro en inicioNodo; a su vez devuelve la ultima posicion 
+      * leida de la cadena. En caso de leer el ultimo BeNode devuelve en
+      * finNodo BE_END.
+      * Para saber el tipo de dato que almacena el BeNode se debe leer el 
+      * typeNode; y luego, a partir de este, leer el dato correspondiente.
+      * */
+     BeNode* beDecode(const std::string *cadena,
+		      std::string::size_type inicioNodo,
+		      std::string::size_type &finNodo);
 
-		/*
-		 * Devuelve el primer BeNode encontrado a partir de la posicion pasada
-		 * por parametro en inicioNodo; a su vez devuelve la ultima posicion 
-		 * leida de la cadena. En caso de leer el ultimo BeNode devuelve en
-		 * finNodo BE_END.
-		 * Para saber el tipo de dato que almacena el BeNode se debe leer el 
-		 * typeNode; y luego, a partir de este, leer el dato correspondiente.
-		 * */
-		BeNode* beDecode(const std::string *cadena,
-				         std::string::size_type inicioNodo,
-		                 std::string::size_type &finNodo);
-	
-	public:
-		/* Dado un archivo, parsea el contenido y lo devuelve en una lista 
-		 * de nodos */
-		std::list<BeNode*>* beDecode(const char* nombreArchivo);
+     /* Metodos utilizados por beFree para liberar cada nodo */
+     static void beFree(BeNode* beNode);
+     static void beFree(BeDict* dict);
+     static void beFree(BeList* list);
+public:
+     /* Dado un archivo, parsea el contenido y lo devuelve en una lista 
+      * de nodos */
+     std::list<BeNode*>* beDecode(const char* nombreArchivo);
+
+     /* Dado un buffer, parsea el contenido y lo devuelve en una lista
+      * de nodos */
+     std::list<BeNode*>* beDecode(const std::string& buffer);
+
+     /* Libera la lista de nodos devuelta por beDecode  */
+     static void beFree(std::list<BeNode*>* nodeList);
 };
 
-/****************************************************************************/
+/******************************************************************************/
 #endif /*PARSERBENCODING_H_*/
