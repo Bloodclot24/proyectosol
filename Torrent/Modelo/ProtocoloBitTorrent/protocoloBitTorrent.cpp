@@ -81,7 +81,7 @@ std::string ProtocoloBitTorrent::bitfield(std::string bitfield) {
 	return int32Astring(len) + /*int32Astring(id)*/ id + bitfield;
 }
 					
-std::string ProtocoloBitTorrent::request(int index, int begin, int length) {
+std::string ProtocoloBitTorrent::request(uint32_t index, uint32_t begin, uint32_t length) {
 	//length = 2^14(16KB)
 	uint32_t len= 13;
 	len= this->bitStream.swap32ABigEndian(len);
@@ -96,7 +96,7 @@ std::string ProtocoloBitTorrent::request(int index, int begin, int length) {
 	       int32Astring(length);
 }
 			
-std::string ProtocoloBitTorrent::piece(int index, int begin, std::string block) {
+std::string ProtocoloBitTorrent::piece(uint32_t index, uint32_t begin, std::string block) {
 	uint32_t len= 9 + block.length();
 	len= this->bitStream.swap32ABigEndian(len);
 	char id= ID_PIECE;
@@ -108,7 +108,7 @@ std::string ProtocoloBitTorrent::piece(int index, int begin, std::string block) 
 	       int32Astring(begin) + block;
 }
 			
-std::string ProtocoloBitTorrent::cancel(int index, int begin, int length) {
+std::string ProtocoloBitTorrent::cancel(uint32_t index, uint32_t begin, uint32_t length) {
 	uint32_t len= 13; 
 	len= this->bitStream.swap32ABigEndian(len);
 	char id= ID_CANCEL;
@@ -164,7 +164,7 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 	std::string length;
 	length.assign(msg, 0, 4);
 	const char* longitud = length.c_str();
-	uint32_t* longitudMsj = (uint32_t*)longitud[0];
+	uint32_t* longitudMsj = (uint32_t*)longitud;
 	uint32_t longMsj = this->bitStream.swap32ABigEndian(*longitudMsj);
 	if(msg.length() > 4) {
 	
@@ -206,17 +206,17 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 			message->id= REQUEST;
 			auxiliar.assign(msg, 5, 4);
 			const char* indiceAux = auxiliar.c_str();
-			uint32_t* pIndice = (uint32_t*)indiceAux[0];
+			uint32_t* pIndice = (uint32_t*)indiceAux;
 			uint32_t indice = this->bitStream.swap32ABigEndian(*pIndice);
 			message->index= indice;
 			auxiliar.assign(msg, 9, 4);
 			const char* beginAux = auxiliar.c_str();
-			uint32_t* pBegin = (uint32_t*)beginAux[0];
+			uint32_t* pBegin = (uint32_t*)beginAux;
 			uint32_t begin = this->bitStream.swap32ABigEndian(*pBegin);
 			message->begin= begin;
 			auxiliar.assign(msg, 13, longMsj-13);
 			const char* lengthAux = auxiliar.c_str();
-			uint32_t* pLength = (uint32_t*)lengthAux[0];
+			uint32_t* pLength = (uint32_t*)lengthAux;
 			uint32_t length = this->bitStream.swap32ABigEndian(*pLength);
 			message->length= length;
 
@@ -225,12 +225,12 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 			message->id= PIECE;
 			auxiliar.assign(msg, 5, 4);
 			const char* indiceAux = auxiliar.c_str();
-			uint32_t* pIndice = (uint32_t*)indiceAux[0];
+			uint32_t* pIndice = (uint32_t*)indiceAux;
 			uint32_t indice = this->bitStream.swap32ABigEndian(*pIndice);
 			message->index= indice;
 			auxiliar.assign(msg, 9, 4);
 			const char* beginAux = auxiliar.c_str();
-			uint32_t* pBegin = (uint32_t*)beginAux[0];
+			uint32_t* pBegin = (uint32_t*)beginAux;
 			uint32_t begin = this->bitStream.swap32ABigEndian(*pBegin);
 			message->begin= begin;
 			auxiliar.assign(msg, 13, longMsj-13);
@@ -243,17 +243,17 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 			message->id= CANCEL;
 			auxiliar.assign(msg, 5, 4);
 			const char* indiceAux = auxiliar.c_str();
-			uint32_t* pIndice = (uint32_t*)indiceAux[0];
+			uint32_t* pIndice = (uint32_t*)indiceAux;
 			uint32_t indice = this->bitStream.swap32ABigEndian(*pIndice);
 			message->index= indice;
 			auxiliar.assign(msg, 9, 4);
 			const char* beginAux = auxiliar.c_str();
-			uint32_t* pBegin = (uint32_t*)beginAux[0];
+			uint32_t* pBegin = (uint32_t*)beginAux;
 			uint32_t begin = this->bitStream.swap32ABigEndian(*pBegin);
 			message->begin= begin;
 			auxiliar.assign(msg, 13, longMsj-13);
 			const char* lengthAux = auxiliar.c_str();
-			uint32_t* pLength = (uint32_t*)lengthAux[0];
+			uint32_t* pLength = (uint32_t*)lengthAux;
 			uint32_t length = this->bitStream.swap32ABigEndian(*pLength);
 			message->length= length;
 
@@ -262,7 +262,7 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 			message->id= PORT;
 			auxiliar.assign(msg, 5,4);
 			const char* portAux = auxiliar.c_str();
-			uint32_t* pPort = (uint32_t*)portAux[0];
+			uint32_t* pPort = (uint32_t*)portAux;
 			uint32_t port = this->bitStream.swap32ABigEndian(*pPort);
 			message->listenPort= port;
 			
