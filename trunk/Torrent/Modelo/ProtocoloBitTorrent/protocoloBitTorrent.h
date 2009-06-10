@@ -60,11 +60,11 @@ class ProtocoloBitTorrent
 			
 			std::string bitfield(std::string bitfield);
 					
-			std::string request(int index, int begin, int length);
+			std::string request(uint32_t index, uint32_t begin, uint32_t length);
 			
-			std::string piece(int index, int begin, std::string block);
+			std::string piece(uint32_t index, uint32_t begin, std::string block);
 			
-			std::string cancel(int index, int begin, int length);
+			std::string cancel(uint32_t index, uint32_t begin, uint32_t length);
 			
 			std::string port(uint32_t listenPort);
 			
