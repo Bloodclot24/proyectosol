@@ -60,13 +60,12 @@ void ControladorShell::mostrarFiles() {
 /*--------------------------------------------------------------------------*/
 void ControladorShell::mostrarGeneral(std::string numFile) {
 
-	std::cout << "numFile: " << numFile << std::endl;	
 	//PEDIR DATOS
 	bool valido= validarNumFile(numFile);
 	
 	if(valido) {
 		std::cout << "Valido" << std::endl;	
-		shell->mostrarGeneralDownloaded( "120 kb/s", "80 kb/s");
+		shell->mostrarGeneral( numFile, "80 kb/s");
 	}
 }
 
