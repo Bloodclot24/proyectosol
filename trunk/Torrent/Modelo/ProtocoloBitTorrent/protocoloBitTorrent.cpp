@@ -9,7 +9,7 @@ std::string ProtocoloBitTorrent::handshake(std::string str, std::string info_has
 //	
 //	std::string pstrlen=  int32Astring(length);
 
-	std::cout << "pstrlen: " << pstrlen << std::endl;
+	std::cout << "pstrlen: " << (int)pstrlen << std::endl;
 	
 	
 	std::string mensajeHandshake;
@@ -170,7 +170,6 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 	
 		std::string idS;
 		idS.assign(msg, 4, 1);
-		
 		int id= atoi(idS.c_str());
 		
 		if(id == ID_CHOKE) {
