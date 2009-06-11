@@ -263,7 +263,22 @@ int Torrent::start(){
 			 << ((int)elemento->beStr[i+3] & 0xff) << ":"	\
 			 << ntohs(*(uint16_t*)elemento->beStr.c_str()+i+4) \
 			 << std::endl;
+       
 	  }
+	  std::string snumero;
+	  std::stringstream cvz;
+	  cvz << ((int)elemento->beStr[0] & 0xff) << "."		\
+	      << ((int)elemento->beStr[1] & 0xff) << "."		\
+	      << ((int)elemento->beStr[2] & 0xff) << "."		\
+	      << ((int)elemento->beStr[3] & 0xff);
+	  snumero = cvz.str();
+	  
+	  
+	  Peer *peer = new Peer(snumero,ntohs(*(uint16_t*)elemento->beStr.c_str()+4), this);
+	  peer->start(idHash);
+
+	  sleep(100000);
+
      }
      
      return 0;

@@ -1,12 +1,15 @@
 #ifndef TORRENT_H_INCLUDED
 #define TORRENT_H_INCLUDED
 
+class Peer;
+
 #include "socket.h"
 #include "threadEmisor.h"
 #include "threadReceptor.h"
 
 #include "torrentFile.h"
 #include "../ParserBencode/parserBencode.h"
+#include "peer.h"
 
 #include <iostream>
 
@@ -44,6 +47,8 @@ private:
      ThreadEmisor *emisor;
 
      bool valido;
+     
+     std::list<Peer*> listaPeers;
 
 public:
      Torrent(const char* fileName);

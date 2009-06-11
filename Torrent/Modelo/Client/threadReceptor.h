@@ -131,18 +131,22 @@ protected:
 			 while(socket->recibir(&c, 1) > 0){
 			      datos.append(1,c);
 			 }
+			 corriendo = false;
 		    }
 		    else{
 			 char *contenido = new char[longitud];
-			 socket->recibir(contenido, longitud);
+			 if(socket->recibir(contenido, longitud)<1)
+			      corriendo = false;
 
 			 datos.append(contenido, longitud);
 		    }
 		    mensaje->copiarDatos(datos.c_str(), datos.length());
 	       }
 	       else{
-//		    socket->recibir(mensaje->datos, mensaje->tamanio);
-		    //	    mensaje->datos[mensaje->tamanio]=0;
+		    mensaje->datos = new char[100];
+		    mensaje->tamanio = 0;
+		    socket->recibir(mensaje->datos, 20);
+		    mensaje->datos[mensaje->tamanio]=0;
 	       }
 	       mutexCola.lock();
 	       colaDeMensajes.push_back(mensaje);

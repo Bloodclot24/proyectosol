@@ -5,6 +5,8 @@
 #include <iostream>
 #include <list>
 
+#define CLIENT_ID "-SN0100-abcdefghijkl"
+
 /* Modelo del cliente torrent */
 class Client{
 private:
