@@ -184,7 +184,15 @@ int Torrent::start(){
      /* espero la respuesta */
      receptor->esperarRecepcion();
      mensaje = receptor->recibirMensaje();
+
+	  emisor->finalizar();
+	  receptor->finalizar();
+	  socket->cerrar();
+	  delete emisor;
+	  delete receptor;
+	  delete socket;
      
+
      /* Obtengo la respuesta y la muestro, solo para debugging */
      std::cout << "Mensaje obtenido del servidor:\n" << mensaje->getDatos() << std::endl;
      
@@ -205,12 +213,6 @@ int Torrent::start(){
 	  std::cout <<							\
 	       "ERROR: No se pudo decodificarla respuesta del tracker." \
 		    << std::endl;
-	  emisor->finalizar();
-	  receptor->finalizar();
-	  socket->cerrar();
-	  delete emisor;
-	  delete receptor;
-	  delete socket;
 	  return -1;
      }
 
@@ -261,22 +263,22 @@ int Torrent::start(){
 			 << ((int)elemento->beStr[i+1] & 0xff) << "."	\
 			 << ((int)elemento->beStr[i+2] & 0xff) << "."	\
 			 << ((int)elemento->beStr[i+3] & 0xff) << ":"	\
-			 << ntohs(*(uint16_t*)elemento->beStr.c_str()+i+4) \
+			 << ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)) \
 			 << std::endl;
-       
-	  }
-	  std::string snumero;
-	  std::stringstream cvz;
-	  cvz << ((int)elemento->beStr[0] & 0xff) << "."		\
-	      << ((int)elemento->beStr[1] & 0xff) << "."		\
-	      << ((int)elemento->beStr[2] & 0xff) << "."		\
-	      << ((int)elemento->beStr[3] & 0xff);
-	  snumero = cvz.str();
-	  
-	  
-	  Peer *peer = new Peer(snumero,ntohs(*(uint16_t*)elemento->beStr.c_str()+4), this);
-	  peer->start(idHash);
 
+	       std::string snumero;
+	       std::stringstream cvz;
+	       cvz << ((int)elemento->beStr[i+0] & 0xff) << "."		\
+		   << ((int)elemento->beStr[i+1] & 0xff) << "."		\
+		   << ((int)elemento->beStr[i+2] & 0xff) << "."		\
+		   << ((int)elemento->beStr[i+3] & 0xff);
+	       snumero = cvz.str();
+	       
+	       Peer *peer = new Peer(snumero,ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)), this);
+	       peer->start(idHash);
+
+	  }
+	  
 	  sleep(100000);
 
      }
@@ -305,8 +307,10 @@ bool Torrent::isValid(){
 Torrent::~Torrent(){
      std::list<TorrentFile*>::iterator it;
 
-     for(it=archivos->begin();it!=archivos->end();it++)
-	  delete (*it);
-
-     delete archivos;
+     if(archivos != NULL){
+	  for(it=archivos->begin();it!=archivos->end();it++)
+	       delete (*it);
+	  
+	  delete archivos;
+     }
 }
