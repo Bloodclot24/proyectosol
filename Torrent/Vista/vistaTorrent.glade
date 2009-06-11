@@ -206,7 +206,7 @@
         <child>
           <object class="GtkScrolledWindow" id="scrolledwindow_activities">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
+            <property name="can_focus">False</property>
             <property name="border_width">1</property>
             <property name="hscrollbar_policy">automatic</property>
             <property name="vscrollbar_policy">automatic</property>
@@ -271,6 +271,8 @@
                 <child>
                   <object class="GtkTreeViewColumn" id="column_file">
                     <property name="resizable">True</property>
+                    <property name="sizing">fixed</property>
+                    <property name="fixed_width">350</property>
                     <property name="title">File</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_file"/>
@@ -356,7 +358,6 @@
             <property name="right_attach">9</property>
             <property name="top_attach">2</property>
             <property name="bottom_attach">17</property>
-            <property name="x_options">GTK_FILL</property>
             <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
@@ -387,8 +388,11 @@
                         <property name="visible">True</property>
                         <property name="xalign">0.019999999552965164</property>
                         <property name="xpad">5</property>
+                        <property name="width_chars">45</property>
                       </object>
                       <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -419,6 +423,8 @@
                         <property name="xpad">5</property>
                       </object>
                       <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -431,6 +437,9 @@
                   </packing>
                 </child>
               </object>
+              <packing>
+                <property name="tab_fill">False</property>
+              </packing>
             </child>
             <child type="tab">
               <object class="GtkHBox" id="hbox_general">

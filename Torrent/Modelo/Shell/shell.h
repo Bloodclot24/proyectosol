@@ -10,15 +10,7 @@
 
 /*Main Key*/
 #define SHOW_TRACKERS "trackers"
-#define SHOW_GENERAL "general"
-#define SHOW_ALL "all"
-#define SHOW_DOWNLOADING "downloading"
-#define SHOW_COMPLETED "completed"
-#define SHOW_ACTIVE "active"
-#define SHOW_INACTIVE "inactive"
-
-/*Tracker Keys*/
-#define SHOW_PEERS "peers"
+#define SHOW_FILES "files"
 
 /*Torrent Keys*/
 #define ADD_TORRENT "torrent"
@@ -29,6 +21,8 @@
 #define START "start"
 #define PAUSE "pause"
 #define STOP "stop"
+#define SHOW_GENERAL "general"
+#define SHOW_PEERS "peers"
 #define SHOW_PIECES "pieces"
 
 /*General Keys*/
@@ -75,7 +69,7 @@ class Shell {
 		                  int completed);
 		                  
 		/*Mensajes*/
-		void archivoNoEncontrado();
+		void mostrarMensaje(std::string mensaje);
 };
 
 /****************************************************************************/

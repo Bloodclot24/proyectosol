@@ -18,16 +18,10 @@ class Controlador {
 		virtual void correr()= 0;
 		
 		/*Files*/
-		virtual void mostrarAll() {};
-		virtual void mostrarDownloading() {};
-		virtual void mostrarCompleted() {};
-		virtual void mostrarActive() {};
-		virtual void mostrarInactive() {};
-	
-		virtual void mostrarAddTorrent() {};
-		virtual void mostrarAddUrlTorrent() {};
-		virtual bool addTorrent(std::string pathTorrent) { return false;};
-		virtual void addUrlTorrent() {};
+		virtual void mostrarFiles() {};
+
+		virtual bool addTorrent(std::string pathTorrent)= 0;
+		virtual void addUrlTorrent()= 0;
 
 		virtual void removeFile(std::string file)= 0;
 		virtual void startFile(std::string file)= 0;
@@ -43,7 +37,7 @@ class Controlador {
 		                               std::string upSpeed) {};	
 
 		/*General*/
-		virtual void mostrarGeneral() {};
+		virtual void mostrarGeneral(std::string numfile) {};
 		
 		/*Trackers*/
 		virtual void mostrarTrackers() {};
@@ -53,7 +47,7 @@ class Controlador {
 		virtual void eliminarTracker(std::string name) {};
 		
 		/*Peers*/
-		virtual void mostrarPeers() {};
+		virtual void mostrarPeers(std::string numfile) {};
 		
 		/*Pieces*/
 		virtual void mostrarPieces(std::string numFile) {};
