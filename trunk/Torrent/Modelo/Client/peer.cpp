@@ -32,6 +32,8 @@ void Peer::run(){
 	  return;
      }
 
+     std::cout << "CONECTADO EXITOSAMENTE -----------------------------<<<<" << std::endl;
+     sleep(10000);
      receptor.comenzar();
      emisor.comenzar();
 
