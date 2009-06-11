@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string.h>
+#include "../../Controlador/controlador.h"
 
 #define PROMPT "SUN:~$ "
 #define ESPACIO "     "
@@ -40,10 +41,13 @@ class Shell {
 		
 	private:
 		std::string command;
+		Controlador* controlador;
 		
 		void mostrarHelp();
 		
 	public:
+		Shell(Controlador* controlador);
+		
 		void correr();	
 		
 		/*Archivo*/
@@ -76,3 +80,4 @@ class Shell {
 
 /****************************************************************************/
 #endif /*SHELL_H_*/
+class Shell;

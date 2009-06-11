@@ -3,27 +3,30 @@
 
 #include <gtkmm.h>
 #include <iostream>
+#include "../Controlador/controlador.h"
 
 #define PATH_VISTA "Vista/vistaTorrent.glade"
 
 /*Iconos status*/
-#define PATH_DOWN_FAIL "./Vista/images/statusIcons/down_fail.png"
-#define PATH_DOWN_OK "./Vista/images/statusIcons/down_ok.png"
-#define PATH_DOWN_QUEUED "./Vista/images/statusIcons/down_queued.png"
-#define PATH_SEED_FAIL "./Vista/images/statusIcons/seed_fail.png"
-#define PATH_SEED_OK "./Vista/images/statusIcons/seed_ok.png"
-#define PATH_SEED_QUEUED "./Vista/images/statusIcons/seed_queued.png"
-#define PATH_COMPLETE "./Vista/images/statusIcons/complete.png"
-#define PATH_PAUSED "./Vista/images/statusIcons/paused.png"
-#define PATH_STOPPED "./Vista/images/statusIcons/stopped.png"
-#define PATH_ERROR "./Vista/images/statusIcons/error.png"
-#define PATH_ACTIVE "./Vista/images/statusIcons/active.png"
-#define PATH_ALL "./Vista/images/statusIcons/all.png"
+#define PATH_DOWN_FAIL "Vista/images/statusIcons/down_fail.png"
+#define PATH_DOWN_OK "Vista/images/statusIcons/down_ok.png"
+#define PATH_DOWN_QUEUED "Vista/images/statusIcons/down_queued.png"
+#define PATH_SEED_FAIL "Vista/images/statusIcons/seed_fail.png"
+#define PATH_SEED_OK "Vista/images/statusIcons/seed_ok.png"
+#define PATH_SEED_QUEUED "Vista/images/statusIcons/seed_queued.png"
+#define PATH_COMPLETE "Vista/images/statusIcons/complete.png"
+#define PATH_PAUSED "Vista/images/statusIcons/paused.png"
+#define PATH_STOPPED "Vista/images/statusIcons/stopped.png"
+#define PATH_ERROR "Vista/images/statusIcons/error.png"
+#define PATH_ACTIVE "Vista/images/statusIcons/active.png"
+#define PATH_ALL "Vista/images/statusIcons/all.png"
 
 /****************************************************************************/
 class VistaTorrent {
 	
 	private:
+		Controlador* controlador;
+	
 		Glib::RefPtr<Gtk::Builder> refXml;
 		
 		/*MENUBAR*/
@@ -75,6 +78,8 @@ class VistaTorrent {
 		ModelColumns_transf columns_transf;
 		  
 		Gtk::TreeModel::Row buscarRow_transf(std::string file, int piece);
+		Glib::RefPtr<Gtk::TreeSelection> refTreeSelection;
+		void on_selection_changed();
 		
 		/*TREEVIEW ACTIVITIES*/
 		Glib::RefPtr<Gtk::TreeView> treeView_activities;
@@ -85,16 +90,19 @@ class VistaTorrent {
 				ModelColumns_activities() {
 			  		add(col_icon);
 			  		add(col_activity);
+			  		add(col_amount);
 			  	}
 		
 		    	Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf> > col_icon;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_activity;
+		    	Gtk::TreeModelColumn<Glib::ustring> col_amount;
 		};
 		
 		Glib::RefPtr<Gtk::ListStore> treeModel_activities;
 		ModelColumns_activities columns_activities;
 		
 		void agregarActividad(std::string activity);
+		Gtk::TreeModel::Row buscarRow_activity(std::string activity);
 		
 		/*TREEVIEW TRAKERS*/
 		Glib::RefPtr<Gtk::TreeView> treeView_trackers;
@@ -136,8 +144,6 @@ class VistaTorrent {
 		Glib::RefPtr<Gtk::ListStore> treeModel_peers;
 		ModelColumns_peers columns_peers;
 		
-		Gtk::TreeModel::Row buscarRow_peers(std::string ip);
-		
 		/*TREEVIEW PIECES*/
 		Glib::RefPtr<Gtk::TreeView> treeView_pieces;
 		
@@ -161,9 +167,12 @@ class VistaTorrent {
 		
 		Glib::RefPtr<Gtk::ListStore> treeModel_pieces;
 		ModelColumns_pieces columns_pieces;
+		
+		bool exit(GdkEventAny *event);
+		void on_exit();
 						
 	public:
-		VistaTorrent();
+		VistaTorrent(Controlador* controlador);
 		void correr();
 		
 		/*Panel Descargas y Subidas*/
@@ -179,10 +188,15 @@ class VistaTorrent {
 		                       std::string upSpeed);
 
 		/*Panel Actividades*/
+		void modificarCantAll(std::string cantAll);
+		void modificarCantDownloading(std::string cantDownloading);
+		void modificarCantCompleted(std::string cantCompleted);
+		void modificarCantActive(std::string cantActive);
+		void modificarCantInactive(std::string cantInactive);
 		                    
 		/*Pestania General*/
+		void modificarFilename(std::string filename);
 		void modificarDownloaded(std::string downloaded);
-		void modificarAvailability(std::string availability);
 		
 		/*Pestania Trackers*/
 		void agregarTracker(std::string name, std::string status,
@@ -193,12 +207,24 @@ class VistaTorrent {
 
 		/*Pestania Peers*/
 		void agregarCliente(std::string ip, std::string cliente);
-		void eliminarCliente(std::string ip);
+		void limpiarListaClientes();
 		                    
 		/*Pestania Pieces*/
 		void agregarPiece(int number, std::string size, int blocks, int block,
 		                  int completed);
+		void limpiarListaPieces();
+		
+		/*ToolBar*/
+		void disableAddUrlTorrent();
+		void disableMoveUp();
+		void disableMoveDown();
+		
+		/*FileChooser*/
+		void cerrarFileChooser();
+		void mostrarMensaje(std::string mensaje);
+		void borrarMensaje();
 };
 
 /****************************************************************************/
 #endif /*VISTATORRENT_H_*/
+class VistaTorrent;

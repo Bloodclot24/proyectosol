@@ -1,7 +1,7 @@
 #include "vistaTorrent.h"
 
 /****************************************************************************/
-VistaTorrent::VistaTorrent() {
+VistaTorrent::VistaTorrent(Controlador* controlador) {
 	
 	try {
 		this->refXml= Gtk::Builder::create_from_file(PATH_VISTA);
@@ -12,6 +12,8 @@ VistaTorrent::VistaTorrent() {
 	} catch(const Glib::MarkupError &me) {
 		std::cerr << "Glib::MarkupError code:" << me.code() << std::endl;
 	}
+	
+	this->controlador= controlador;
 }
 		
 /*--------------------------------------------------------------------------*/
@@ -20,6 +22,8 @@ void VistaTorrent::correr() {
 	/*MAIN WINDOW*/
   	Gtk::Window* main_window;
   	refXml->get_widget("main_window", main_window);
+    main_window->signal_delete_event().connect(sigc::mem_fun(*this, &VistaTorrent::exit));
+
 	main_window->maximize();   
 	
 	/*MENUBAR*/
@@ -41,6 +45,10 @@ void VistaTorrent::correr() {
 	
 	treeModel_transf= Gtk::ListStore::create(columns_transf);
   	treeView_transf->set_model(treeModel_transf);
+  	
+  	refTreeSelection= treeView_transf->get_selection();
+  	refTreeSelection->signal_changed().connect(sigc::mem_fun(*this, 
+  	                                           &VistaTorrent::on_selection_changed));
 	
 	/*TREEVIEW ACTIVITIES*/ 
     Glib::RefPtr<Glib::Object> obj_treeView_activities= 
@@ -89,57 +97,6 @@ void VistaTorrent::correr() {
                                           refXml->get_object("liststore_pieces");   	
 	treeModel_pieces= Glib::RefPtr<Gtk::ListStore>::cast_static(obj_treeModel_pieces); 
 	
-/***************************************************************************************/
-//PRUEBASSSSSSSSSSS//
-/***************************************************************************************/
-	agregarArchivo("Mr. Brightside - The Killers", 1, "108 MB", 25, "Seeding", "", "400 kb/s");
-    agregarArchivo("Nothing else matters - Metallica", 10, "1 GB", 70, "Downloading", "12.2 kb/s", "");
-    agregarArchivo("Wonderfull tonight - Eric Clapton", 2, "108 MB", 1, "Seeding fail", "", "400 kb/s");
-    agregarArchivo("Jingo - Carlos Santana", 11, "1 GB", 80, "Downloading fail", "12.2 kb/s", "");
-    agregarArchivo("Rompe - Daddy Yankee", 3, "108 MB", 75, "Seeding queued", "", "400 kb/s");
-    agregarArchivo("Losing my religion - REM", 12, "1 GB", 30, "Downloading queued", "12.2 kb/s", "");
-    agregarArchivo("Iris - Goo Goo Dolls", 4, "108 MB", 100, "Complete", "", "");
-    agregarArchivo("Always - Air Supply", 13, "1 GB", 45, "Error", "12.2 kb/s", "");
-    agregarArchivo("That the way it is - Celine Dion", 5, "108 MB", 15, "Stopped", "", "400 kb/s");
-    agregarArchivo("Bette Davis Eyes - Kim Carnes", 14, "1 GB", 70, "Error", "12.2 kb/s", "");
-    agregarArchivo("Every breath you take - The Police", 6, "108 MB", 4, "Stopped", "", "400 kb/s");
-    agregarArchivo("Bitter sweet symphony - The Verve", 15, "1 GB", 90, "Error", "12.2 kb/s", "");
-    agregarArchivo("Book of Days - Enya", 7, "108 MB", 85, "Downloading", "", "400 kb/s");
-    agregarArchivo("Complicated - Avril Lavigne", 16, "1 GB", 99, "Downloading", "12.2 kb/s", "");
-    agregarArchivo("Desde que te vi - Victor Fuentes", 8, "108 MB", 91, "Stopped", "", "");
-
-	actualizarDone("Every breath you take - The Police", 6, 13);
-	actualizarStatus("Always - Air Supply", 13, "Downloading");
-	actualizarUpSpeed("Book of Days - Enya", 7, "13 kb/s");
-    actualizarDownSpeed("Complicated - Avril Lavigne", 16, "18 kb/s");
-
-	/*Pestania General*/
-	modificarDownloaded("500 kb/s");
-	modificarAvailability("200 kb/s");
-
-	/*Pestania Trackers*/
-	agregarTracker("Vero Land's", "Working", 20);
-	agregarTracker("uTorrent", "Offline", 0);
-	agregarTracker("Volaras", "", 0);	
-		
-	modificarStatusTracker("uTorrent", "AVAILABLE");
-	agregarSeedTracker("uTorrent", 13);
-	eliminarTracker("Volaras");
-	
-	/*Pestania Peers*/
-	agregarCliente("127.0.0.1", "Lucas");
-	agregarCliente("13.13.13", "Vero");
-	agregarCliente("18.0.0.1", "Guido");
-	agregarCliente("1.1.1.1", "Volaras");
-		
-	eliminarCliente("1.1.1.1");
-	
-	/*Pestania Pieces*/
-	agregarPiece(1, "400 MB", 40, 13, 38);
-    
-/***************************************************************************************/
-/***************************************************************************************/
-	
     Gtk::Main::run(*main_window);    
 }
 
@@ -177,6 +134,17 @@ std::string getPathStatusIcon(std::string status) {
 }
 
 /*--------------------------------------------------------------------------*/
+void VistaTorrent::on_selection_changed() {
+	
+	Gtk::TreeModel::iterator iter= refTreeSelection->get_selected();
+	if(iter) {
+  		Gtk::TreeModel::Row row= *iter;	
+  		Glib::ustring filename= row[columns_transf.col_file];
+		controlador->actualizarPestanias(filename);
+	}
+}
+
+/*--------------------------------------------------------------------------*/
 /**MENUBAR**/
 void VistaTorrent::load_menuBar(Gtk::Window* main_window) {
 
@@ -185,9 +153,10 @@ void VistaTorrent::load_menuBar(Gtk::Window* main_window) {
 
   	//File menu:
   	m_refActionGroup->add(Gtk::Action::create("FileMenu", "File"));
+  	
   	m_refActionGroup->add(Gtk::Action::create("FileQuit", Gtk::Stock::QUIT),
-                        sigc::ptr_fun(Gtk::Main::quit));
-
+                          sigc::mem_fun(*this, &VistaTorrent::on_exit));
+	
   	//Help menu:
   	m_refActionGroup->add(Gtk::Action::create("HelpMenu", "Help"));
   	m_refActionGroup->add(Gtk::Action::create("HelpAbout", Gtk::Stock::ABOUT),
@@ -286,17 +255,40 @@ void VistaTorrent::load_toolBar() {
 /*---*/
 void VistaTorrent::on_tool_add_torrent_clicked() {
 
-	std::cout << "Se clickeo boton add torrent" << std::endl;
 	Gtk::FileChooserDialog* fileChooserDialog;
     refXml->get_widget("fileChooserDialog", fileChooserDialog);
-    fileChooserDialog->run();
-    fileChooserDialog->hide();
+  	bool fin= false;
+  	int result;
+  	while(!fin) {
+		result= fileChooserDialog->run();
+		
+		switch(-result) {
+		  	case Gtk::RESPONSE_ACCEPT: {
+		      Glib::ustring file= fileChooserDialog->get_filename();
+		      fin= controlador->addTorrent(file);
+		  	}
+		      break;
+		    default: {
+		      fileChooserDialog->hide();
+		      borrarMensaje();
+		      fin= true;
+		    }
+			  break;
+		  	}      
+  	}
 }
 
 /*---*/
 void VistaTorrent::on_tool_add_url_torrent_clicked() {
 	
-	std::cout << "Se clickeo boton add url torrent" << std::endl;
+	controlador->addUrlTorrent();
+}
+
+void VistaTorrent::disableAddUrlTorrent() {
+	
+	Gtk::ToolButton* add_url_torrent;
+    refXml->get_widget("tool_add_url_torrent", add_url_torrent);
+	add_url_torrent->set_sensitive(false); 
 }
 
 /*---*/
@@ -311,8 +303,12 @@ void VistaTorrent::on_tool_remove_clicked() {
   		Gtk::TreeModel::Row row= *iter;
   		Gtk::TreePath path_iter(iter);
   		
+  		Glib::ustring file= row[columns_transf.col_file];
+  		controlador->removeFile(file); 
+  		
   		std::cout << "Se borro el archivo: " << row[columns_transf.col_file] << std::endl;
   		treeModel_transf->erase(iter);
+  		
   		
   		if(path_iter.prev())   	
   			refTreeSelection->select(path_iter);
@@ -326,7 +322,25 @@ void VistaTorrent::on_tool_remove_clicked() {
 void VistaTorrent::on_tool_start_clicked() {
 	
 	std::cout << "Se clickeo boton START" << std::endl;
-
+	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection= 
+												treeView_transf->get_selection();
+	Gtk::TreeModel::iterator iter= refTreeSelection->get_selected();
+	if(iter) {
+  		Gtk::TreeModel::Row row= *iter;
+  		
+  		if(row[columns_transf.col_status] == "Paused" && row[columns_transf.col_status] == "Stopped") {
+  			
+  			Glib::ustring file= row[columns_transf.col_file];
+  			controlador->startFile(file); 
+  			
+  			row[columns_transf.col_status]= "Downloading";
+  			row[columns_transf.col_icon]= Gdk::Pixbuf::create_from_file(
+  												 getPathStatusIcon("Downloading"));
+  			row[columns_transf.col_upSpeed]= "";
+  			row[columns_transf.col_downSpeed]= "";
+  		}
+	}
+	
 }
 
 /*---*/
@@ -340,6 +354,8 @@ void VistaTorrent::on_tool_pause_clicked() {
   		Gtk::TreeModel::Row row= *iter;
   		
   		if(row[columns_transf.col_status] == "Downloading") {
+  			Glib::ustring file= row[columns_transf.col_file];
+  			controlador->pauseFile(file);
   			row[columns_transf.col_status]= "Paused";
   			row[columns_transf.col_icon]= Gdk::Pixbuf::create_from_file(
   												 getPathStatusIcon("Paused"));
@@ -361,6 +377,8 @@ void VistaTorrent::on_tool_stop_clicked() {
   		Gtk::TreeModel::Row row= *iter;
   		
   		if(row[columns_transf.col_status] == "Downloading") {
+  			Glib::ustring file= row[columns_transf.col_file];
+  			controlador->stopFile(file);
   			row[columns_transf.col_status]= "Stopped";
   			row[columns_transf.col_icon]= Gdk::Pixbuf::create_from_file(
   												 getPathStatusIcon("Stopped"));
@@ -397,6 +415,13 @@ void VistaTorrent::on_tool_move_up_clicked() {
 	}
 }
 
+void VistaTorrent::disableMoveUp() {
+	
+	Gtk::ToolButton* move_up;
+    refXml->get_widget("tool_move_up", move_up);
+	move_up->set_sensitive(false); 
+}
+
 /*---*/
 void VistaTorrent::on_tool_move_down_clicked() {
 	
@@ -427,6 +452,13 @@ void VistaTorrent::on_tool_move_down_clicked() {
  			treeModel_transf->iter_swap(row, destination);
   		}
 	}
+}
+
+void VistaTorrent::disableMoveDown() {
+	
+	Gtk::ToolButton* move_down;
+    refXml->get_widget("tool_move_down", move_down);
+	move_down->set_sensitive(false); 
 }
 
 /*--------------------------------------------------------------------------*/
@@ -483,7 +515,6 @@ void VistaTorrent::actualizarDownSpeed(std::string file, int piece,
 	std::cout << " a " << downSpeed << std::endl;
 
 	row[columns_transf.col_downSpeed]= downSpeed;
-	
 }
 
 /*--------------------------------------------------------------------------*/
@@ -525,24 +556,79 @@ void VistaTorrent::agregarActividad(std::string activity) {
 	Gtk::TreeModel::Row row= *(treeModel_activities->append());
   	
   	row[columns_activities.col_icon]= Gdk::Pixbuf::create_from_file(getPathStatusIcon(activity));
-	row[columns_activities.col_activity]= activity + " (0)";
+	row[columns_activities.col_activity]= activity;
+	row[columns_activities.col_amount]= "(0)";
+}
+
+/*--------------------------------------------------------------------------*/
+Gtk::TreeModel::Row VistaTorrent::buscarRow_activity(std::string activity) {
+	
+	typedef Gtk::TreeModel::Children type_children;
+	type_children children = treeModel_activities->children();
+	Gtk::TreeModel::Row row;
+	bool found= false;
+	
+	for(type_children::iterator iter= children.begin(); !found&&  
+	    iter != children.end(); ++iter) {
+  		
+  		row= *iter;
+  		if(row[columns_activities.col_activity] == activity)
+  		   found= true;
+	}
+	
+	return(row);
+}
+
+/*--------------------------------------------------------------------------*/
+void VistaTorrent::modificarCantAll(std::string cantAll) {
+	
+	Gtk::TreeModel::Row row= buscarRow_activity("All");
+	row[columns_activities.col_amount]= "(" + cantAll + ")";	
+}
+
+/*--------------------------------------------------------------------------*/
+void VistaTorrent::modificarCantDownloading(std::string cantDownloading) {
+	
+	Gtk::TreeModel::Row row= buscarRow_activity("Downloading");
+	row[columns_activities.col_amount]= "(" + cantDownloading + ")";	
+}
+
+/*--------------------------------------------------------------------------*/
+void VistaTorrent::modificarCantCompleted(std::string cantCompleted) {
+
+	Gtk::TreeModel::Row row= buscarRow_activity("Completed");
+	row[columns_activities.col_amount]= "(" + cantCompleted + ")";		
+}
+
+/*--------------------------------------------------------------------------*/
+void VistaTorrent::modificarCantActive(std::string cantActive) {
+	
+	Gtk::TreeModel::Row row= buscarRow_activity("Active");
+	row[columns_activities.col_amount]= "(" + cantActive + ")";
+}
+
+/*--------------------------------------------------------------------------*/
+void VistaTorrent::modificarCantInactive(std::string cantInactive) {
+	
+	Gtk::TreeModel::Row row= buscarRow_activity("Inactive");
+	row[columns_activities.col_amount]= "(" + cantInactive + ")";
 }
 
 /*--------------------------------------------------------------------------*/
 /**Pestania General**/
+void VistaTorrent::modificarFilename(std::string filename) {
+	
+	Gtk::Label* labelFilename;
+    refXml->get_widget("general_entry_filename", labelFilename);
+	labelFilename->set_label(filename);
+}
+
+/*--------------------------------------------------------------------------*/
 void VistaTorrent::modificarDownloaded(std::string downloaded) {
 	
 	Gtk::Label* labelDownloaded;
     refXml->get_widget("general_entry_downloaded", labelDownloaded);
 	labelDownloaded->set_label(downloaded);
-}
-
-/*--------------------------------------------------------------------------*/
-void VistaTorrent::modificarAvailability(std::string availability) {
-	
-	Gtk::Label* labelAvailability;
-    refXml->get_widget("general_entry_availability", labelAvailability);
-	labelAvailability->set_label(availability);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -620,31 +706,9 @@ void VistaTorrent::agregarCliente(std::string ip, std::string cliente) {
 }
 
 /*--------------------------------------------------------------------------*/
-void VistaTorrent::eliminarCliente(std::string ip) {
+void VistaTorrent::limpiarListaClientes() {
 	
-	Gtk::TreeModel::Row row= buscarRow_peers(ip);
-	
-	treeModel_peers->erase(row);
-	
-	std::cout << "Se elimino el cliente con ip " << ip << std::endl;	                    	     	
-}
-
-/*--------------------------------------------------------------------------*/
-Gtk::TreeModel::Row VistaTorrent::buscarRow_peers(std::string ip) {
-	
-	typedef Gtk::TreeModel::Children type_children;
-	type_children children = treeModel_peers->children();
-	Gtk::TreeModel::Row row;
-	bool found= false;
-	for(type_children::iterator iter= children.begin(); !found&&  
-	    iter != children.end(); ++iter) {
-  	
-  		row= *iter;
-  		if(row[columns_peers.col_ip] == ip)
-  		   found= true;
-	}
-	
-	return(row);
+	treeModel_peers->clear();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -659,6 +723,52 @@ void VistaTorrent::agregarPiece(int number, std::string size, int blocks,
   	row[columns_pieces.col_blocks]= blocks;
   	row[columns_pieces.col_block]= block;
   	row[columns_pieces.col_completed]= completed;
+}
+
+/*--------------------------------------------------------------------------*/
+void VistaTorrent::limpiarListaPieces() {
+
+	treeModel_pieces->clear();	
+}
+
+/*--------------------------------------------------------------------------*/
+/**FileChooser**/
+void VistaTorrent::mostrarMensaje(std::string mensaje) {
+	
+	Gtk::Label* message;
+    refXml->get_widget("message", message);
+    message->set_label(mensaje);
+}
+
+void VistaTorrent::borrarMensaje() {
+
+	Gtk::Label* message;
+    refXml->get_widget("message", message);
+    message->set_label("");	
+}
+
+/*--------------------------------------------------------------------------*/
+/**EXIT**/
+void VistaTorrent::cerrarFileChooser() {
+	
+	Gtk::FileChooserDialog* fileChooserDialog;
+    refXml->get_widget("fileChooserDialog", fileChooserDialog);
+    fileChooserDialog->hide();
+}
+
+/*--------------------------------------------------------------------------*/
+bool VistaTorrent::exit(GdkEventAny *event) {
+	
+	controlador->exit();
+	Gtk::Main::quit();
+	return true;	
+}
+
+/*--------------------------------------------------------------------------*/
+void VistaTorrent::on_exit() {
+
+	controlador->exit();
+	Gtk::Main::quit();	
 }
 
 /****************************************************************************/

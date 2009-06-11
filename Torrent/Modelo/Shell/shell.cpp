@@ -1,7 +1,12 @@
 #include "shell.h"
-#include "../../Controlador/controlador.h"
 
 /****************************************************************************/
+Shell::Shell(Controlador* controlador) {
+	
+	this->controlador= controlador;
+}
+		
+/*--------------------------------------------------------------------------*/
 void commandNoEncontrado() {
 	std::cerr << "Comando no encontrado. ";
 	std::cerr << "Intente con el comando help." << std::endl;
@@ -18,54 +23,54 @@ void Shell::correr() {
 		std::getline(std::cin, command);
 		size_t finParametro= command.find(" ", 0);
 
-		if(command.compare(SHOW_TRACKERS) == 0) {
-			Controlador::getInstancia()->mostrarTrackers();
-			
-		} else if(command.compare(SHOW_PEERS) == 0) {
-			Controlador::getInstancia()->mostrarPeers();
+		if(command.compare(SHOW_TRACKERS) == 0)
+			controlador->mostrarTrackers();
+					
+		else if(command.compare(SHOW_PEERS) == 0)
+			controlador->mostrarPeers();
 
-		} else if(command.compare(SHOW_GENERAL) == 0) {
-			Controlador::getInstancia()->mostrarGeneral();	
+		else if(command.compare(SHOW_GENERAL) == 0)
+			controlador->mostrarGeneral();	
 			
-		} else if(command.compare(SHOW_ALL) == 0) {
-			Controlador::getInstancia()->mostrarAll();
+		else if(command.compare(SHOW_ALL) == 0)
+			controlador->mostrarAll();
 			
-		} else if(command.compare(SHOW_DOWNLOADING) == 0) {
-			Controlador::getInstancia()->mostrarDownloading();
+		else if(command.compare(SHOW_DOWNLOADING) == 0)
+			controlador->mostrarDownloading();
 			
-		} else if(command.compare(SHOW_COMPLETED) == 0) {
-			Controlador::getInstancia()->mostrarCompleted();
+		else if(command.compare(SHOW_COMPLETED) == 0)
+			controlador->mostrarCompleted();
 			
-		} else if(command.compare(SHOW_ACTIVE) == 0) {
-			Controlador::getInstancia()->mostrarActive();
+		else if(command.compare(SHOW_ACTIVE) == 0)
+			controlador->mostrarActive();
 			
-		} else if(command.compare(SHOW_INACTIVE) == 0) {
-			Controlador::getInstancia()->mostrarInactive();
+		else if(command.compare(SHOW_INACTIVE) == 0)
+			controlador->mostrarInactive();
 			
-		} else if(command.compare(ADD_TORRENT) == 0) {
-			Controlador::getInstancia()->mostrarAddTorrent();
+		else if(command.compare(ADD_TORRENT) == 0)
+			controlador->mostrarAddTorrent();
 			
-		} else if(command.compare(ADD_URL_TORRENT) == 0) {
-			Controlador::getInstancia()->mostrarAddUrlTorrent();
+		else if(command.compare(ADD_URL_TORRENT) == 0)
+			controlador->mostrarAddUrlTorrent();
 		
-		} else if(command.compare(HELP) == 0) {
+		else if(command.compare(HELP) == 0)
 			mostrarHelp();
 		
-		} else if(finParametro != std::string::npos) {
+		else if(finParametro != std::string::npos) {
 			
 			file.assign(command, finParametro+1, 
 			                               command.length()-finParametro);
 						
 			if(command.compare(0, finParametro, REMOVE) == 0)
-				Controlador::getInstancia()->removeFile(file);
+				controlador->removeFile(file);
 			else if(command.compare(0, finParametro, START) == 0)
-				Controlador::getInstancia()->startFile(file);
+				controlador->startFile(file);
 			else if(command.compare(0, finParametro, PAUSE) == 0)
-				Controlador::getInstancia()->pauseFile(file);
+				controlador->pauseFile(file);
 			else if(command.compare(0, finParametro, STOP) == 0)
-				Controlador::getInstancia()->stopFile(file);
+				controlador->stopFile(file);
 			else if(command.compare(0, finParametro, SHOW_PIECES) == 0)
-				Controlador::getInstancia()->mostrarPieces(file);
+				controlador->mostrarPieces(file);
 			else
 				commandNoEncontrado();
 							
