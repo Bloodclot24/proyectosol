@@ -33,7 +33,9 @@ std::string ProtocoloBitTorrent::choke() {
 	char id = ID_CHOKE;
 //	uint32_t id= ID_CHOKE;
 //	id= this->bitStream.swap32ABigEndian(id);
-	return int32Astring(len) + id;//int32Astring(id);
+	std::string aux((char*)&len, 4);           
+    aux += id;                                 
+    return aux;
 }
 			
 std::string ProtocoloBitTorrent::unchoke() {
@@ -42,7 +44,9 @@ std::string ProtocoloBitTorrent::unchoke() {
 	char id= ID_UNCHOKE;
 //	uint32_t id= ID_UNCHOKE;
 //	id= this->bitStream.swap32ABigEndian(id);
-	return int32Astring(len) + id;//int32Astring(id);
+	std::string aux((char*)&len, 4);           
+    aux += id;                                 
+    return aux;
 }
 			
 std::string ProtocoloBitTorrent::interested() {
@@ -51,7 +55,9 @@ std::string ProtocoloBitTorrent::interested() {
 	char id= ID_INTERESTED;
 //	uint32_t id= ID_INTERESTED;
 //	id= this->bitStream.swap32ABigEndian(id);
-	return int32Astring(len) + id;//int32Astring(id);
+	std::string aux((char*)&len, 4);           
+    aux += id;                                 
+    return aux;
 }
 			
 std::string ProtocoloBitTorrent::not_interested() {
@@ -60,7 +66,9 @@ std::string ProtocoloBitTorrent::not_interested() {
 	char id = ID_NOT_INTERESTED;
 //	uint32_t id= ID_NOT_INTERESTED;
 //	id= this->bitStream.swap32ABigEndian(id);
-	return int32Astring(len) + id;//int32Astring(id);
+	std::string aux((char*)&len, 4);           
+    aux += id;                                 
+    return aux;
 }
 			
 std::string ProtocoloBitTorrent::have(std::string piece) {
@@ -69,7 +77,10 @@ std::string ProtocoloBitTorrent::have(std::string piece) {
 	char id= ID_HAVE;
 //	uint32_t id= ID_HAVE;
 //	id = this->bitStream.swap32ABigEndian(id);
-	return int32Astring(len) + /*int32Astring(id)*/ id + piece;
+	std::string aux((char*)&len, 4);           
+    aux += id;
+    aux += piece;                                 
+    return aux;
 }
 
 std::string ProtocoloBitTorrent::bitfield(std::string bitfield) {
@@ -78,7 +89,10 @@ std::string ProtocoloBitTorrent::bitfield(std::string bitfield) {
 	char id = ID_BITFIELD;
 //	uint32_t id = ID_BITFIELD;
 //	id= this->bitStream.swap32ABigEndian(id);
-	return int32Astring(len) + /*int32Astring(id)*/ id + bitfield;
+	std::string aux((char*)&len, 4);           
+    aux += id;
+    aux += bitfield;                                 
+    return aux;
 }
 					
 std::string ProtocoloBitTorrent::request(uint32_t index, uint32_t begin, uint32_t length) {
@@ -91,9 +105,15 @@ std::string ProtocoloBitTorrent::request(uint32_t index, uint32_t begin, uint32_
 	index= this->bitStream.swap32ABigEndian(index);
 	begin= this->bitStream.swap32ABigEndian(begin);
 	length= this->bitStream.swap32ABigEndian(length);
-	return int32Astring(len) + /*int32Astring(id)*/ id +
-	       int32Astring(index) + int32Astring(begin) +
-	       int32Astring(length);
+	std::string aux((char*)&len, 4);           
+    aux += id;
+    std::string aux1((char*)&index,4);
+    aux += aux1;
+    std::string aux2((char*)&begin,4);
+    aux += aux2;
+    std::string aux3((char*)&length,4);
+    aux += aux3;                              
+    return aux;
 }
 			
 std::string ProtocoloBitTorrent::piece(uint32_t index, uint32_t begin, std::string block) {
@@ -104,8 +124,14 @@ std::string ProtocoloBitTorrent::piece(uint32_t index, uint32_t begin, std::stri
 //	id= this->bitStream.swap32ABigEndian(id);
 	index= this->bitStream.swap32ABigEndian(index);
 	begin= this->bitStream.swap32ABigEndian(begin);
-	return int32Astring(len) + /*int32Astring(id)*/ id + int32Astring(index) +
-	       int32Astring(begin) + block;
+	std::string aux((char*)&len, 4);           
+    aux += id;
+    std::string aux1((char*)&index,4);
+    aux += aux1;
+    std::string aux2((char*)&begin,4);
+    aux += aux2;
+   	aux += block;
+	return aux;
 }
 			
 std::string ProtocoloBitTorrent::cancel(uint32_t index, uint32_t begin, uint32_t length) {
@@ -117,8 +143,15 @@ std::string ProtocoloBitTorrent::cancel(uint32_t index, uint32_t begin, uint32_t
 	index= this->bitStream.swap32ABigEndian(index);
 	begin= this->bitStream.swap32ABigEndian(begin);
 	length= this->bitStream.swap32ABigEndian(length);
-	return int32Astring(len) + /*int32Astring(id)*/ id + int32Astring(index) +
-	       int32Astring(begin) + int32Astring(length);
+	std::string aux((char*)&len, 4);           
+    aux += id;
+    std::string aux1((char*)&index,4);
+    aux += aux1;
+    std::string aux2((char*)&begin,4);
+    aux += aux2;
+    std::string aux3((char*)&length,4);
+    aux += aux3;                              
+    return aux;
 }
 			
 std::string ProtocoloBitTorrent::port(uint32_t listenPort) {
@@ -128,7 +161,11 @@ std::string ProtocoloBitTorrent::port(uint32_t listenPort) {
 //	uint32_t id= ID_PORT;
 //	id= this->bitStream.swap32ABigEndian(id);
 	listenPort= this->bitStream.swap32ABigEndian(listenPort);
-	return  int32Astring(len) + /*int32Astring(id)*/ id + int32Astring(listenPort);
+	std::string aux((char*)&len, 4);           
+    aux += id;
+    std::string aux1((char*)&listenPort,4);
+    aux += aux1;
+	return aux;
 }
 
 std::string ProtocoloBitTorrent::int64Astring(uint64_t valor){
