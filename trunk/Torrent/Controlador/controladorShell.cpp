@@ -1,33 +1,32 @@
-#include "controlador.h"
-Controlador Controlador::controlador;
+#include "controladorShell.h"
 
 /****************************************************************************/
-Controlador::Controlador() {
-	
-	this->shell= new Shell();
+ControladorShell::ControladorShell() {
+
+	this->shell= new Shell(this);	
 }
 
 /*--------------------------------------------------------------------------*/
-Controlador* Controlador::getInstancia() {
-	
-	return(&controlador);
+ControladorShell::~ControladorShell() {
+
+	delete shell;
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::correrConsola() {
+void ControladorShell::correr() {
 	
 	shell->correr();
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::mostrarGeneral() {
+void ControladorShell::mostrarGeneral() {
 	
 	//PEDIR DATOS
 	shell->mostrarGeneralDownloaded( "120 kb/s", "80 kb/s");
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::mostrarTrackers() {
+void ControladorShell::mostrarTrackers() {
 	
 	shell->mostrarTrackers();
 	//PEDIR TRACKERS
@@ -35,7 +34,7 @@ void Controlador::mostrarTrackers() {
 } 
 
 /*--------------------------------------------------------------------------*/
-void Controlador::mostrarPeers() {
+void ControladorShell::mostrarPeers() {
 	
 	shell->mostrarPeers();
 	//PEDIR CLIENTES
@@ -43,7 +42,7 @@ void Controlador::mostrarPeers() {
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::mostrarPieces(std::string numFile) {
+void ControladorShell::mostrarPieces(std::string numFile) {
 	
 	std::cout << "numFile: " << numFile << std::endl;	
 	shell->mostrarPieces();
@@ -52,7 +51,7 @@ void Controlador::mostrarPieces(std::string numFile) {
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::mostrarAll() {
+void ControladorShell::mostrarAll() {
 	
 	shell->mostrarArchivos();
 	//PEDIR TODOS LOS ARCHIVOS
@@ -61,7 +60,7 @@ void Controlador::mostrarAll() {
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::mostrarDownloading() {
+void ControladorShell::mostrarDownloading() {
 
 	shell->mostrarArchivos();
 	//PEDIR TODOS LOS ARCHIVOS BAJANDO
@@ -70,7 +69,7 @@ void Controlador::mostrarDownloading() {
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::mostrarCompleted() {
+void ControladorShell::mostrarCompleted() {
 	
 	shell->mostrarArchivos();
 	//PEDIR TODOS LOS ARCHIVOS COMPLETOS
@@ -79,7 +78,7 @@ void Controlador::mostrarCompleted() {
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::mostrarActive() {
+void ControladorShell::mostrarActive() {
 	
 	shell->mostrarArchivos();
 	//PEDIR TODOS LOS ARCHIVOS ACTIVOS
@@ -88,7 +87,7 @@ void Controlador::mostrarActive() {
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::mostrarInactive() {
+void ControladorShell::mostrarInactive() {
 
 	shell->mostrarArchivos();
 	//PEDIR TODOS LOS ARCHIVOS INACTIVOS
@@ -97,7 +96,7 @@ void Controlador::mostrarInactive() {
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::mostrarAddTorrent() {
+void ControladorShell::mostrarAddTorrent() {
 	
 	//INFORMAR TORRENT NUEVO
 	
@@ -105,31 +104,31 @@ void Controlador::mostrarAddTorrent() {
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::mostrarAddUrlTorrent() {
+void ControladorShell::mostrarAddUrlTorrent() {
 	
 	/*EN UN FUTURO??*/
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::removeFile(std::string numFile) {
+void ControladorShell::removeFile(std::string numFile) {
 
 	std::cout << "numFile: " << numFile << std::endl;		
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::startFile(std::string numFile) {
+void ControladorShell::startFile(std::string numFile) {
 
 	std::cout << "numFile: " << numFile << std::endl;		
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::pauseFile(std::string numFile) {
+void ControladorShell::pauseFile(std::string numFile) {
 	
 	std::cout << "numFile: " << numFile << std::endl;		
 }
 
 /*--------------------------------------------------------------------------*/
-void Controlador::stopFile(std::string numFile) {
+void ControladorShell::stopFile(std::string numFile) {
 	
 	std::cout << "numFile: " << numFile << std::endl;		
 }
