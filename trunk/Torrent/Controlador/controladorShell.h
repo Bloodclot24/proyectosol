@@ -1,6 +1,8 @@
 #ifndef CONTROLADORSHELL_H_
 #define CONTROLADORSHELL_H_
 
+#include <stdlib.h>
+#include <limits.h>
 #include "controlador.h"
 #include "../Modelo/Shell/shell.h"
 
@@ -10,29 +12,27 @@ class ControladorShell: public Controlador {
 	private:
 		Shell* shell;
 		
+		bool validarNumFile(std::string numFile);
+		
 	public:
 		ControladorShell(); 
 		virtual ~ControladorShell();
 	
 		virtual void correr();
 
-		virtual void mostrarGeneral();	
+		virtual bool addTorrent(std::string pathTorrent);
+		virtual void addUrlTorrent();
 		virtual void mostrarTrackers();
-		virtual void mostrarPeers();
+		virtual void mostrarFiles();
+		virtual void mostrarGeneral(std::string numFile);	
+		virtual void mostrarPeers(std::string numFile);
 		virtual void mostrarPieces(std::string numFile);
-		virtual void mostrarAll();
-		virtual void mostrarDownloading();
-		virtual void mostrarCompleted();
-		virtual void mostrarActive();
-		virtual void mostrarInactive();
-		virtual void mostrarAddTorrent();
-		virtual void mostrarAddUrlTorrent();
-		
 		virtual void removeFile(std::string numFile);
 		virtual void startFile(std::string numFile);
 		virtual void pauseFile(std::string numFile);
 		virtual void stopFile(std::string numFile);
-		virtual void exit() {};
+		
+		virtual void exit();
 };
 
 /****************************************************************************/

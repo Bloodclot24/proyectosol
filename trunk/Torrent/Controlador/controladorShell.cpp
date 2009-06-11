@@ -19,10 +19,25 @@ void ControladorShell::correr() {
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorShell::mostrarGeneral() {
+bool ControladorShell::addTorrent(std::string pathTorrent) {
 	
-	//PEDIR DATOS
-	shell->mostrarGeneralDownloaded( "120 kb/s", "80 kb/s");
+	//INFORMAR TORRENT NUEVO
+	//FALTA TODO LO QUE SIGNIFICA AGREGAR UN NUEVO TORRENT
+	bool valido= validarExtensionFile(pathTorrent);
+	
+	if(valido) {
+		std::cout << "Path Valido: " << pathTorrent << std::endl;
+		return true;
+	} else {
+		shell->mostrarMensaje("Debe seleccionar un archivo .torrent");
+		return false;
+	}
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorShell::addUrlTorrent() {
+	
+	/*UNDER CONSTRUCTION*/
 }
 
 /*--------------------------------------------------------------------------*/
@@ -34,24 +49,7 @@ void ControladorShell::mostrarTrackers() {
 } 
 
 /*--------------------------------------------------------------------------*/
-void ControladorShell::mostrarPeers() {
-	
-	shell->mostrarPeers();
-	//PEDIR CLIENTES
-	shell->mostrarCliente("127.0.0.1", "home");
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorShell::mostrarPieces(std::string numFile) {
-	
-	std::cout << "numFile: " << numFile << std::endl;	
-	shell->mostrarPieces();
-	//PEDIR PIEZAS
-	shell->mostrarPiece(1, "200 mb", 50, 4, 2);
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorShell::mostrarAll() {
+void ControladorShell::mostrarFiles() {
 	
 	shell->mostrarArchivos();
 	//PEDIR TODOS LOS ARCHIVOS
@@ -60,77 +58,105 @@ void ControladorShell::mostrarAll() {
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorShell::mostrarDownloading() {
+void ControladorShell::mostrarGeneral(std::string numFile) {
 
-	shell->mostrarArchivos();
-	//PEDIR TODOS LOS ARCHIVOS BAJANDO
-	shell->mostrarArchivo("Nothing else matters - Metalica", 4, "120 mb",
-		                    45, "Downloading", "12.2 kb/s", "");	
+	std::cout << "numFile: " << numFile << std::endl;	
+	//PEDIR DATOS
+	bool valido= validarNumFile(numFile);
+	
+	if(valido) {
+		std::cout << "Valido" << std::endl;	
+		shell->mostrarGeneralDownloaded( "120 kb/s", "80 kb/s");
+	}
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorShell::mostrarCompleted() {
+void ControladorShell::mostrarPeers(std::string numFile) {
+
+	std::cout << "numFile: " << numFile << std::endl;	
+	bool valido= validarNumFile(numFile);
 	
-	shell->mostrarArchivos();
-	//PEDIR TODOS LOS ARCHIVOS COMPLETOS
-	shell->mostrarArchivo("Nothing else matters - Metalica", 4, "120 mb",
-		                    45, "Completed", "12.2 kb/s", "");
+	if(valido) {
+		std::cout << "Valido" << std::endl;	
+		shell->mostrarPeers();
+		//PEDIR CLIENTES
+		shell->mostrarCliente("127.0.0.1", "home");
+	}
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorShell::mostrarActive() {
+void ControladorShell::mostrarPieces(std::string numFile) {
 	
-	shell->mostrarArchivos();
-	//PEDIR TODOS LOS ARCHIVOS ACTIVOS
-	shell->mostrarArchivo("Nothing else matters - Metalica", 4, "120 mb",
-		                    45, "Downloading", "12.2 kb/s", "");	
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorShell::mostrarInactive() {
-
-	shell->mostrarArchivos();
-	//PEDIR TODOS LOS ARCHIVOS INACTIVOS
-	shell->mostrarArchivo("Nothing else matters - Metalica", 4, "120 mb",
-		                    45, "Stopped", "12.2 kb/s", "");	
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorShell::mostrarAddTorrent() {
+	std::cout << "numFile: " << numFile << std::endl;	
+	bool valido= validarNumFile(numFile);
 	
-	//INFORMAR TORRENT NUEVO
-	
-	//FALTA TODO LO QUE SIGNIFICA AGREGAR UN NUEVO TORRENT
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorShell::mostrarAddUrlTorrent() {
-	
-	/*EN UN FUTURO??*/
+	if(valido) {
+		std::cout << "Valido" << std::endl;	
+		shell->mostrarPieces();
+		//PEDIR PIEZAS
+		shell->mostrarPiece(1, "200 mb", 50, 4, 2);
+	}
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorShell::removeFile(std::string numFile) {
-
-	std::cout << "numFile: " << numFile << std::endl;		
+	
+	std::cout << "numFile: " << numFile << std::endl;
+	bool valido= validarNumFile(numFile);
+	
+	if(valido) {
+		std::cout << "Valido" << std::endl;	
+	}		
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorShell::startFile(std::string numFile) {
 
-	std::cout << "numFile: " << numFile << std::endl;		
+	std::cout << "numFile: " << numFile << std::endl;
+	bool valido= validarNumFile(numFile);
+	
+	if(valido) {
+		std::cout << "Valido" << std::endl;	
+	}		
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorShell::pauseFile(std::string numFile) {
 	
-	std::cout << "numFile: " << numFile << std::endl;		
+	std::cout << "numFile: " << numFile << std::endl;
+	bool valido= validarNumFile(numFile);
+	
+	if(valido) {
+		std::cout << "Valido" << std::endl;	
+	}		
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorShell::stopFile(std::string numFile) {
 	
-	std::cout << "numFile: " << numFile << std::endl;		
+	std::cout << "numFile: " << numFile << std::endl;
+	bool valido= validarNumFile(numFile);
+	
+	if(valido) {
+		std::cout << "Valido" << std::endl;	
+	}		
+}
+
+/*--------------------------------------------------------------------------*/
+bool ControladorShell::validarNumFile(std::string numFile) {
+	
+	int num= atoi(numFile.c_str());
+	
+	if(num != 0 && num != INT_MAX && num != INT_MIN)
+		return true;
+	else
+		return false;
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorShell::exit() {
+
+	std::cout << "EXIT" << std::endl;		
 }
 
 /****************************************************************************/
