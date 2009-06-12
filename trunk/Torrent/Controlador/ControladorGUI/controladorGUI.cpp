@@ -1,19 +1,19 @@
-#include "controladorVista.h"
+#include "controladorGUI.h"
 
 /****************************************************************************/
-ControladorVista::ControladorVista() {
+ControladorGUI::ControladorGUI() {
 	
 	this->vista= new VistaTorrent(this);
 }
 
 /*--------------------------------------------------------------------------*/
-ControladorVista::~ControladorVista() {
+ControladorGUI::~ControladorGUI() {
 
 	delete vista;	
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::correr() {
+void ControladorGUI::correr() {
 	
 	//provisoriamente estos botones no estaran habilitados
 	vista->disableAddUrlTorrent();
@@ -23,21 +23,25 @@ void ControladorVista::correr() {
 }
 
 /*--------------------------------------------------------------------------*/
-bool ControladorVista::addTorrent(std::string pathTorrent) {
+bool ControladorGUI::addTorrent(std::string pathTorrent) {
 
 	//GESTIONAR CON CLIENTE
 	//checkeo que sea un .torrent
 	bool valido= validarExtensionFile(pathTorrent);
 	
 	if(valido) {
-		vista->cerrarFileChooser();
-		actualizarCantActividades();
-		vista->agregarTracker("SUN", "working", 10);
-		vista->agregarArchivo(pathTorrent, 1, "200 MB", 0, "Downloading", 
+//		if(cliente.addTorrent(pathTorrent.c_str()))
+			vista->cerrarFileChooser();
+			actualizarCantActividades();
+			vista->agregarTracker("SUN", "working", 10);
+			vista->agregarArchivo(pathTorrent, 1, "200 MB", 0, "Downloading", 
 							  "", "");
-		//actualizarPestanias(pathTorrent);
-		vista->borrarMensaje();
-		return true;
+			vista->borrarMensaje();
+			return true;
+//		else {
+//			vista->mostrarMensaje("Error al cargar el archivo");
+//			return false;
+//		}
 	} else {
 		vista->mostrarMensaje("Debe seleccionar un archivo .torrent");
 		return false;
@@ -45,38 +49,38 @@ bool ControladorVista::addTorrent(std::string pathTorrent) {
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::addUrlTorrent() {
+void ControladorGUI::addUrlTorrent() {
 	
 	/*UNDER CONSTRUCTION*/
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::removeFile(std::string file) {
+void ControladorGUI::removeFile(std::string file) {
 	
 	//GESTIONAR CON CLIENTE
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::startFile(std::string file) {
+void ControladorGUI::startFile(std::string file) {
 	
 	//GESTIONAR CON CLIENTE
 	//checkear si se trata de una bajada o subida y actualizar la velocidad!!
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::pauseFile(std::string file) {
+void ControladorGUI::pauseFile(std::string file) {
 	
 	//GESTIONAR CON CLIENT
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::stopFile(std::string file) {
+void ControladorGUI::stopFile(std::string file) {
 
 	//GESTIONAR CON CLIENT	
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::exit() {
+void ControladorGUI::exit() {
 
 	//GESTIONAR CON CLIENT
 	//tenemos que ver que se va a cerrar
@@ -84,13 +88,13 @@ void ControladorVista::exit() {
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::actualizarDone(std::string file, int piece, int done) {
+void ControladorGUI::actualizarDone(std::string file, int piece, int done) {
 
 	vista->actualizarDone(file, piece, done);	
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::actualizarStatus(std::string file, int piece, 
+void ControladorGUI::actualizarStatus(std::string file, int piece, 
 		                                std::string status) {
 	
 	vista->actualizarStatus(file, piece, status);
@@ -98,21 +102,21 @@ void ControladorVista::actualizarStatus(std::string file, int piece,
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::actualizarDownSpeed(std::string file, int piece, 
+void ControladorGUI::actualizarDownSpeed(std::string file, int piece, 
 		                                   std::string downSpeed) {
 	
 	vista->actualizarDownSpeed(file, piece, downSpeed);
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::actualizarUpSpeed(std::string file, int piece, 
+void ControladorGUI::actualizarUpSpeed(std::string file, int piece, 
 		                                 std::string upSpeed) {	
 	
 	vista->actualizarUpSpeed(file, piece, upSpeed);
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::actualizarCantActividades() {
+void ControladorGUI::actualizarCantActividades() {
 	
 	//PEDIR AL CLIENTE LAS CANTIDADES
 	vista->modificarCantAll("1");
@@ -124,32 +128,34 @@ void ControladorVista::actualizarCantActividades() {
 
 /*--------------------------------------------------------------------------*/
 /**Trackers**/
-void ControladorVista::modificarStatusTracker(std::string name, 
+void ControladorGUI::modificarStatusTracker(std::string name, 
                                               std::string status) {
 	
 	vista->modificarStatusTracker(name, status);
 }		
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::agregarSeedTracker(std::string name, int seed) {
+void ControladorGUI::agregarSeedTracker(std::string name, int seed) {
 	
 	vista->agregarSeedTracker(name, seed);
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorVista::eliminarTracker(std::string name) {
+void ControladorGUI::eliminarTracker(std::string name) {
 	
 	vista->eliminarTracker(name);
 }
 
 /*--------------------------------------------------------------------------*/
 /**Todas las Pestanias**/
-void ControladorVista::actualizarPestanias(std::string filename) {
+void ControladorGUI::actualizarPestanias(std::string filename) {
 	
 	//General
 	vista->modificarFilename(filename);
-	//pedir completado y usar
+	//pedir completado
 	vista->modificarDownloaded("4%");
+	//pedir estado del archivo 
+	vista->modificarInformacion("Waiting...");
 	
 	//Peers
 	vista->limpiarListaClientes();

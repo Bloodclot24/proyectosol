@@ -632,6 +632,14 @@ void VistaTorrent::modificarDownloaded(std::string downloaded) {
 }
 
 /*--------------------------------------------------------------------------*/
+void VistaTorrent::modificarInformacion(std::string information) {
+	
+	Gtk::Label* labelInformant;
+    refXml->get_widget("informant", labelInformant);
+	labelInformant->set_label(information);	
+}
+
+/*--------------------------------------------------------------------------*/
 /**Pestania Trackers**/
 void VistaTorrent::agregarTracker(std::string name, std::string status,
 		                          int seed) {

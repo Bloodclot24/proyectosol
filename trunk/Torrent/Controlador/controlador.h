@@ -2,6 +2,7 @@
 #define CONTROLADOR_H_
 
 #include <iostream>
+#include "../Modelo/Client/client.h"
 
 #define EXTENSION ".torrent"
 #define TAM_EXTENSION 8
@@ -11,8 +12,10 @@ class Controlador {
 	
 	protected:
 		bool validarExtensionFile(std::string path);
+		Client cliente;
 	
 	public:
+		Controlador();
 		virtual ~Controlador() {};
 
 		virtual void correr()= 0;

@@ -1,11 +1,11 @@
 #ifndef CONTROLADORVISTA_H_
 #define CONTROLADORVISTA_H_
 
-#include "controlador.h"
-#include "../Vista/vistaTorrent.h"
+#include "../../Controlador/controlador.h"
+#include "../../Vista/GUI/vistaTorrent.h"
 
 /****************************************************************************/
-class ControladorVista: public Controlador {
+class ControladorGUI: public Controlador {
 
 	private:
 		VistaTorrent* vista;	
@@ -13,8 +13,8 @@ class ControladorVista: public Controlador {
 		void actualizarCantActividades();
 		
 	public:
-		ControladorVista(); 
-		virtual ~ControladorVista();
+		ControladorGUI(); 
+		virtual ~ControladorGUI();
 
 		virtual void correr();
 		
