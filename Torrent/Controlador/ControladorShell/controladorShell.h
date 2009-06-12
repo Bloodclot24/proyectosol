@@ -3,8 +3,8 @@
 
 #include <stdlib.h>
 #include <limits.h>
-#include "controlador.h"
-#include "../Modelo/Shell/shell.h"
+#include "../../Controlador/controlador.h"
+#include "../../Vista/Shell/shell.h"
 
 /****************************************************************************/
 class ControladorShell: public Controlador {

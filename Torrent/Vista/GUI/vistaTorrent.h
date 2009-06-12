@@ -3,23 +3,23 @@
 
 #include <gtkmm.h>
 #include <iostream>
-#include "../Controlador/controlador.h"
+#include "../../Controlador/controlador.h"
 
-#define PATH_VISTA "Vista/vistaTorrent.glade"
+#define PATH_VISTA "Vista/GUI/vistaTorrent.glade"
 
 /*Iconos status*/
-#define PATH_DOWN_FAIL "Vista/images/statusIcons/down_fail.png"
-#define PATH_DOWN_OK "Vista/images/statusIcons/down_ok.png"
-#define PATH_DOWN_QUEUED "Vista/images/statusIcons/down_queued.png"
-#define PATH_SEED_FAIL "Vista/images/statusIcons/seed_fail.png"
-#define PATH_SEED_OK "Vista/images/statusIcons/seed_ok.png"
-#define PATH_SEED_QUEUED "Vista/images/statusIcons/seed_queued.png"
-#define PATH_COMPLETE "Vista/images/statusIcons/complete.png"
-#define PATH_PAUSED "Vista/images/statusIcons/paused.png"
-#define PATH_STOPPED "Vista/images/statusIcons/stopped.png"
-#define PATH_ERROR "Vista/images/statusIcons/error.png"
-#define PATH_ACTIVE "Vista/images/statusIcons/active.png"
-#define PATH_ALL "Vista/images/statusIcons/all.png"
+#define PATH_DOWN_FAIL "Vista/GUI/images/statusIcons/down_fail.png"
+#define PATH_DOWN_OK "Vista/GUI/images/statusIcons/down_ok.png"
+#define PATH_DOWN_QUEUED "Vista/GUI/images/statusIcons/down_queued.png"
+#define PATH_SEED_FAIL "Vista/GUI/images/statusIcons/seed_fail.png"
+#define PATH_SEED_OK "Vista/GUI/images/statusIcons/seed_ok.png"
+#define PATH_SEED_QUEUED "Vista/GUI/images/statusIcons/seed_queued.png"
+#define PATH_COMPLETE "Vista/GUI/images/statusIcons/complete.png"
+#define PATH_PAUSED "Vista/GUI/images/statusIcons/paused.png"
+#define PATH_STOPPED "Vista/GUI/images/statusIcons/stopped.png"
+#define PATH_ERROR "Vista/GUI/images/statusIcons/error.png"
+#define PATH_ACTIVE "Vista/GUI/images/statusIcons/active.png"
+#define PATH_ALL "Vista/GUI/images/statusIcons/all.png"
 
 /****************************************************************************/
 class VistaTorrent {
@@ -197,6 +197,7 @@ class VistaTorrent {
 		/*Pestania General*/
 		void modificarFilename(std::string filename);
 		void modificarDownloaded(std::string downloaded);
+		void modificarInformacion(std::string information);
 		
 		/*Pestania Trackers*/
 		void agregarTracker(std::string name, std::string status,

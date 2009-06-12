@@ -27,7 +27,12 @@ bool ControladorShell::addTorrent(std::string pathTorrent) {
 	
 	if(valido) {
 		std::cout << "Path Valido: " << pathTorrent << std::endl;
-		return true;
+//		if(cliente.addTorrent(pathTorrent.c_str()))
+//			return true;
+//		else {
+//			shell->mostrarMensaje("Error al cargar el archivo");
+//			return false;
+//		}
 	} else {
 		shell->mostrarMensaje("Debe seleccionar un archivo .torrent");
 		return false;
@@ -65,7 +70,7 @@ void ControladorShell::mostrarGeneral(std::string numFile) {
 	
 	if(valido) {
 		std::cout << "Valido" << std::endl;	
-		shell->mostrarGeneral( numFile, "80 kb/s");
+		shell->mostrarGeneral( numFile, "80 kb/s", "Waiting...");
 	}
 }
 

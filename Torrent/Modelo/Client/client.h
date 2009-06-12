@@ -5,13 +5,16 @@
 #include <iostream>
 #include <list>
 
+
 #define CLIENT_ID "-SN0100-abcdefghijkl"
 
 /* Modelo del cliente torrent */
+class Controlador;
 class Client{
 private:
      std::string nickUsuario;
      std::list<Torrent*> torrents;
+     Controlador* controlador;
 
 public:
      /* Agrega un torrent */

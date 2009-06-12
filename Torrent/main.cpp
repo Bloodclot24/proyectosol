@@ -1,15 +1,15 @@
 #include <gtkmm.h>
-#include "Controlador/controladorShell.h"
-#include "Controlador/controladorVista.h"
+#include "Controlador/ControladorShell/controladorShell.h"
+#include "Controlador/ControladorGUI/controladorGUI.h"
 
 int main(int argc, char *argv[]) {
-
-   	if(argc > 1 && strcmp(argv[1], "consola") == 0) {
+	
+   	if(argc > 1 && strcmp(argv[1], "console") == 0) {
    		ControladorShell controlador;   
    		controlador.correr();	
    	} else {
 		Gtk::Main kit(argc, argv);
-   		ControladorVista controlador;   
+   		ControladorGUI controlador;   
    		controlador.correr();
 	}
 	
