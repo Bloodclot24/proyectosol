@@ -18,16 +18,24 @@ class ThreadReceptor:Thread{
      int tamanioBuffer;
 
      Mutex mutexCola;
-     Deque<char*> colaDeDatos;
-     HttpResponse *response: /* respuesta http */
-
+     Deque<char> colaDeDatos;
      Mutex mutexPedido;
      Mutex mutexEstado;
      CVariable pedido;
      CVariable estado;
-
+     HttpResponse *response;
      
 public:
+     ThreadReceptor(Socket *socket, bool http);
+     
+     void esperarRecepcion();
+
+     void comenzar();
+
+     void finalizar(void);
+		     
+protected:
+     void run();
 };
 
 #endif

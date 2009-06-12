@@ -5,7 +5,7 @@
 #include "mensaje.h"
 
 Peer::Peer(const std::string& host, int puerto , Torrent* torrent):	\
-     socket(host, puerto),emisor(&socket),receptor(&socket){
+     socket(host, puerto),emisor(&socket),receptor(&socket, false){
 
      am_choking = 1;
      am_interested = 0;
@@ -48,7 +48,7 @@ void Peer::run(){
 
      while(corriendo){
 
-	  mensaje = receptor.recibirMensaje();
+////////////	  mensaje = receptor.recibirMensaje();
 
 	  respuesta = proto.decode(mensaje->getDatos());
 	  

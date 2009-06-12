@@ -2,10 +2,11 @@
 #define DEQUE_H_INCLUDED
 
 #include "threads.h"
+#include <deque>
 
 /* Cola threadsafe */
-tamplate class t;
-class Deque<t>{
+template <class t>
+class Deque{
 private:
      Mutex mutex;
      CVariable condition;
@@ -43,4 +44,4 @@ public:
      
 };
 
-#Endif /* DEQUE_H_INCLUDED */
+#endif /* DEQUE_H_INCLUDED */
