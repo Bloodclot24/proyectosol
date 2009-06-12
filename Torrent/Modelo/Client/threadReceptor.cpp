@@ -4,13 +4,15 @@
  * Crea un nuevo thread para la recepcion de datos mediante un
  * socket.
  */
-ThreadReceptor::ThreadReceptor(Socket *socket, bool http=false):pedido(&mutexPedido),estado(&mutexEstado){
+/****************************************************************************/
+ThreadReceptor::ThreadReceptor(Socket *socket, bool http):	\
+     pedido(&mutexPedido),estado(&mutexEstado){
+     
      this->socket = socket;
      corriendo = false;
      ocupado = false;
      buffer = NULL;
      tamanioBuffer = 0;
-     primero = true;
      this->http = http; // indica si es o no para recibir informacion http
      response = NULL;
 }
@@ -18,37 +20,37 @@ ThreadReceptor::ThreadReceptor(Socket *socket, bool http=false):pedido(&mutexPed
 
 /* Si no hay datos en la cola, espera a que haya algo. En el caso de
  * un receptor del tipo http, espera a recibir la respuesta http. */
-void esperarRecepcion(){
+/****************************************************************************/
+void ThreadReceptor::esperarRecepcion(){
      mutexPedido.lock();
      if(http){
 	  if(response == NULL)
 	       pedido.wait();
      }
      else{
-	  while(colaDeMensajes.empty())
+	  while(colaDeDatos.empty())
 	       pedido.wait();
      }
      mutexPedido.unlock();
 }
 
 /* Activa el thread */
-void comenzar(){
+void ThreadReceptor::comenzar(){
      corriendo = true;
      start();
 }
      
 /* finaliza el thread y cierra el socket */
-void finalizar(void){
+/****************************************************************************/
+void ThreadReceptor::finalizar(void){
      if(corriendo)
 	  corriendo = false;
      socket->setTimeout(0,1);
      socket->cerrar();
 }
      
-protected:
-
 /* Rutina principal del thread */
-void run(){
+void ThreadReceptor::run(){
      while(corriendo){
 	  if(http){
 	       // es un response http
@@ -94,14 +96,13 @@ void run(){
 		    datos.append(contenido, longitud);
 	       }
 	       response = new HttpResponse(datos);
-	       free datos;
 	       corriendo = false;
 	  }
 	  else{
 
 	       // es un mensaje NO http
 	       char c;
-	       if(socket->recibir(c, 1)>0)
+	       if(socket->recibir(&c, 1)>0)
 		    colaDeDatos.push(c);
 	       else{
 		    std::cerr << "Se cerro el socket inesperadamente."	\

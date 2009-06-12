@@ -123,7 +123,7 @@ int Torrent::start(){
 	  return -1;
      }
 
-     receptor = new ThreadReceptor(socket);
+     receptor = new ThreadReceptor(socket, true);
      emisor = new ThreadEmisor(socket);
 
      if(receptor == NULL || emisor == NULL){
@@ -183,7 +183,7 @@ int Torrent::start(){
      
      /* espero la respuesta */
      receptor->esperarRecepcion();
-     mensaje = receptor->recibirMensaje();
+////////////////////     mensaje = receptor->recibirMensaje();
 
 	  emisor->finalizar();
 	  receptor->finalizar();
