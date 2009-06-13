@@ -1,6 +1,7 @@
 #include "torrentFile.h"
 
 #include "../ParserBencode/parserBencode.h"
+#include "../FileManager/fileManager.h"
 #include <iostream>
 #include <stdexcept>
 
@@ -94,7 +95,4 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 
 /****************************************************************************/
 TorrentFile::~TorrentFile(){
-
-     
-
 }

@@ -25,7 +25,7 @@ void BitField::setBlock(char c, int blockIndex){
 
 /* cambia el estado de un bit del bitfield */
 /****************************************************************************/
-void BitField::setField(int index, int state){
+void BitField::setField(int index, bool state){
      data[index/8] &= ~(1 << (7-(index&8)));
      if(state != 0)
 	  data[index/8] |= (1 << (7-(index&8)));
@@ -33,13 +33,13 @@ void BitField::setField(int index, int state){
 
 /* Obtiene la longitud del bitField en bits */
 /****************************************************************************/
-int BitField::getLength(){
+int BitField::getLength() const{
      return length;
 }
 
 /* obtiene el estado de un bit del bitfield */
 /****************************************************************************/
-int BitField::getField(int index){
+bool BitField::getField(int index) const{
      return data[index/8] & (1 << (7-(index&8)));
 }
 

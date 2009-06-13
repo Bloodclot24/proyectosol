@@ -4,6 +4,7 @@
 #include "client.h"
 #include "mensaje.h"
 
+/****************************************************************************/
 Peer::Peer(const std::string& host, int puerto , Torrent* torrent):	\
      socket(host, puerto),emisor(&socket),receptor(&socket, false){
 
@@ -16,12 +17,19 @@ Peer::Peer(const std::string& host, int puerto , Torrent* torrent):	\
      this->bitField = new BitField(torrent->getBitField()->getLength());
 }
 
+/****************************************************************************/
 void Peer::start(std::string hash){
      this->hash = hash;
      corriendo = true;
      Thread::start();
 }
 
+/****************************************************************************/
+const BitField* Peer::getBitField(){
+     return bitField;
+}
+
+/****************************************************************************/
 void Peer::run(){
 
      ProtocoloBitTorrent proto;
@@ -79,10 +87,28 @@ void Peer::run(){
 		    corriendo = false;
 	       break;
 	  case REQUEST:
-	       
+	       if(torrent->getBitField()->getField(respuesta->index) ==1){
+		    //OK, me piden una pieza que tengo
+		    //Genero el mensaje del protocolo
+		    std::string aux = proto.piece(respuesta->index, respuesta->begin, respuesta->length);
+		    mensaje->copiarDatos(aux.c_str(), aux.length());
+		    emisor.enviarMensaje(mensaje);
+		    //TODO pedirle los datos al filemanager
+	       }
 	       break;
 	  case PIECE:
-	       
+	       if(torrent->getBitField()->getField(respuesta->index) == 0){
+		    //OK, me envian datos que no tenia. TODO:
+		    //verificar que el offset se corresponda con datos
+		    //que no tenemos
+		    std::string bloque;
+		    while(bloque.length() < respuesta->length)
+			 bloque += datos->popFront();
+		    //TODO: obtener el archivo y guardar lo datos
+	       }
+	       else{
+		    corriendo = false;
+	       }
 	       break;
 	  case CANCEL:
 	       

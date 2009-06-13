@@ -33,6 +33,9 @@ public:
       * nuevo peer */
      Peer(const std::string& host, int puerto, Torrent* torrent);
 
+     /* Devuelve un bitField con las piezas del peer */
+     const BitField* getBitField();
+
      /* Comienza el procesamiento y flujo de datos. */
      void start(std::string hash);
 
