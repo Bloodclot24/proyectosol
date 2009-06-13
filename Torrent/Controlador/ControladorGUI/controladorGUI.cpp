@@ -32,6 +32,7 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 	if(valido) {
 //		if(cliente.addTorrent(pathTorrent.c_str()))
 			vista->cerrarFileChooser();
+			this->all++;
 			actualizarCantActividades();
 			vista->agregarTracker("SUN", "working", 10);
 			vista->agregarArchivo(pathTorrent, 1, "200 MB", 0, "Downloading", 
@@ -58,6 +59,8 @@ void ControladorGUI::addUrlTorrent() {
 void ControladorGUI::removeFile(std::string file) {
 	
 	//GESTIONAR CON CLIENTE
+	//ver si hay q restar downloading completed active
+	this->all--;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -119,7 +122,9 @@ void ControladorGUI::actualizarUpSpeed(std::string file, int piece,
 void ControladorGUI::actualizarCantActividades() {
 	
 	//PEDIR AL CLIENTE LAS CANTIDADES
-	vista->modificarCantAll("1");
+	char sAux[15];
+	sprintf(sAux, "%d", all);
+	vista->modificarCantAll(sAux);
 	vista->modificarCantDownloading("1");
 //	vista->modificarCantCompleted(cantCompleted);
 //	vista->modificarCantActive(cantActive);
