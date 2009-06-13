@@ -15,16 +15,16 @@ public:
      void setFields(char* bitField);
 
      /* cambia el estado de un bit del bitfield */
-     void setField(int index, int state);
+     void setField(int index, bool state);
 
      /* copia los datos de un bloque (8 bits) */
      void setBlock(char c, int blockIndex);
 
      /* obtiene el estado de un bit del bitfield */
-     int getField(int index);
+     bool getField(int index) const;
 
      /* Obtiene la longitud del bitField en bits */
-     int getLength();
+     int getLength() const;
 
      /* libera el area dedatos del bitfield */
      ~BitField();
