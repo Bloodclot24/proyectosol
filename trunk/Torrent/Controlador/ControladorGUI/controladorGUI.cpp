@@ -4,6 +4,10 @@
 ControladorGUI::ControladorGUI() {
 	
 	this->vista= new VistaTorrent(this);
+	this->all= 0;
+	this->downloading= 0;
+	this->completed= 0;
+	this->active= 0;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -59,6 +63,7 @@ void ControladorGUI::addUrlTorrent() {
 void ControladorGUI::removeFile(std::string file) {
 	
 	//GESTIONAR CON CLIENTE
+	
 	//ver si hay q restar downloading completed active
 	this->all--;
 }
@@ -68,18 +73,26 @@ void ControladorGUI::startFile(std::string file) {
 	
 	//GESTIONAR CON CLIENTE
 	//checkear si se trata de una bajada o subida y actualizar la velocidad!!
+	
+	//hay q restar en algun lado
+	this->active++;	
+	this->downloading++;
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::pauseFile(std::string file) {
 	
 	//GESTIONAR CON CLIENT
+	this->active--;		
+	this->downloading--;	
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::stopFile(std::string file) {
 
-	//GESTIONAR CON CLIENT	
+	//GESTIONAR CON CLIENT
+	this->active--;		
+	this->downloading--;		
 }
 
 /*--------------------------------------------------------------------------*/
@@ -125,10 +138,14 @@ void ControladorGUI::actualizarCantActividades() {
 	char sAux[15];
 	sprintf(sAux, "%d", all);
 	vista->modificarCantAll(sAux);
-	vista->modificarCantDownloading("1");
-//	vista->modificarCantCompleted(cantCompleted);
-//	vista->modificarCantActive(cantActive);
-//	vista->modificarCantInactive(cantInactive);	
+	sprintf(sAux, "%d", downloading);
+	vista->modificarCantDownloading(sAux);
+	sprintf(sAux, "%d", completed);
+	vista->modificarCantCompleted(sAux);
+	sprintf(sAux, "%d", active);
+	vista->modificarCantActive(sAux);
+	sprintf(sAux, "%d", all-active);
+	vista->modificarCantInactive(sAux);	
 }
 
 /*--------------------------------------------------------------------------*/

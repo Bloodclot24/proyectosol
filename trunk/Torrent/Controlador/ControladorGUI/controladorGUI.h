@@ -13,7 +13,6 @@ class ControladorGUI: public Controlador {
 		int all;
 		int downloading;
 		int completed;
-		int pause;
 		int active;
 		void actualizarCantActividades();
 		
