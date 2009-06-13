@@ -2,10 +2,12 @@
 #define CONTROLADOR_H_
 
 #include <iostream>
+#include <fstream>
 #include "../Modelo/Client/client.h"
 
 #define EXTENSION ".torrent"
 #define TAM_EXTENSION 8
+#define PATH_CONFIG  "Downloads/config"
 
 /****************************************************************************/
 class Controlador {
@@ -13,7 +15,8 @@ class Controlador {
 	protected:
 		bool validarExtensionFile(std::string path);
 		Client cliente;
-	
+		std::fstream config;	
+		
 	public:
 		Controlador();
 		virtual ~Controlador() {};
@@ -59,6 +62,9 @@ class Controlador {
 		virtual void actualizarPestanias(std::string filename) {};
 
 		virtual void exit()= 0;
+		
+		/*Persistencia*/
+		bool guardarConfig();
 };
 
 /****************************************************************************/

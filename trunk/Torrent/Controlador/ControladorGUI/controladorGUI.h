@@ -10,6 +10,11 @@ class ControladorGUI: public Controlador {
 	private:
 		VistaTorrent* vista;	
 		
+		int all;
+		int downloading;
+		int completed;
+		int pause;
+		int active;
 		void actualizarCantActividades();
 		
 	public:
