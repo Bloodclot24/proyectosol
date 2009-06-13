@@ -1,6 +1,6 @@
 #ifndef PROTOCOLOBITTORRENT_H_
 #define PROTOCOLOBITTORRENT_H_
-
+#include "../Client/deque.h"
 #include "../SHA1/bitStream.h"
 #include <iostream>
 #include <sstream>
@@ -36,7 +36,6 @@ class ProtocoloBitTorrent
 {
 	private:
 			BitStream bitStream;
-		
 			std::string int64Astring(uint64_t valor);
 			std::string int32Astring(uint32_t valor);
 
@@ -68,7 +67,7 @@ class ProtocoloBitTorrent
 			
 			std::string port(uint32_t listenPort);
 			
-			Message* decode(const char* mensaje);	
+			Message* decode(Deque<char> &deque);	
 };
 
 #endif /*PROTOCOLOBITTORRENT_H_*/
