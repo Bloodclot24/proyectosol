@@ -28,7 +28,7 @@ bool ControladorShell::addTorrent(std::string pathTorrent) {
 	if(valido) {
 		std::cout << "Path Valido: " << pathTorrent << std::endl;
 //		if(cliente.addTorrent(pathTorrent.c_str()))
-//			return true;
+		return true;
 //		else {
 //			shell->mostrarMensaje("Error al cargar el archivo");
 //			return false;

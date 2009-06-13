@@ -49,6 +49,7 @@
 #define SHOW_PIECES "pieces"
 
 /*General Keys*/
+#define CLEAR "clear"
 #define HELP "help"
 #define EXIT "exit"
 
