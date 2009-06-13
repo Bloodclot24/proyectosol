@@ -4,6 +4,7 @@
 #include "../SHA1/sha1.h"
 #include "torrent.h"
 #include "mensaje.h"
+#include "client.h"
 
 /* Claves del .torrent */
 #define DICT_TRACKER    "announce"
@@ -92,6 +93,10 @@ Torrent::Torrent(const char* fileName){
      }
 }
 
+/****************************************************************************/
+BitField* Torrent::getBitField(){
+     return bitField;
+}
 
 /****************************************************************************/
 int Torrent::start(){
@@ -141,7 +146,7 @@ int Torrent::start(){
      req.addParam("info_hash", HttpRequest::UrlEncode(idHash));
      
      /* 20 bytes TODO: pedirselos al cliente */
-     req.addParam("peer_id", "-SN1000-abcdefghijkl"); 
+     req.addParam("peer_id", CLIENT_ID); 
 
      /* Tambien pedirselo al cliente */
      req.addParam("port", "12345");
@@ -183,7 +188,7 @@ int Torrent::start(){
      
      /* espero la respuesta */
      receptor->esperarRecepcion();
-////////////////////     mensaje = receptor->recibirMensaje();
+     HttpResponse *resp = receptor->getResponse();
 
 	  emisor->finalizar();
 	  receptor->finalizar();
@@ -194,16 +199,11 @@ int Torrent::start(){
      
 
      /* Obtengo la respuesta y la muestro, solo para debugging */
-     std::cout << "Mensaje obtenido del servidor:\n" << mensaje->getDatos() << std::endl;
-     
-     std::string datos(mensaje->getDatos(), mensaje->getTamanio());
-	       
-     HttpResponse resp(datos);
+	  //std::cout << "Mensaje obtenido del servidor:\n" << r << std::endl;
 
      ParserBencode parser;
-     
 
-     std::list<BeNode*>* list = parser.beDecode(resp.getContent());
+     std::list<BeNode*>* list = parser.beDecode(resp->getContent());
 
      BeNode* primero;
 
@@ -211,7 +211,7 @@ int Torrent::start(){
 	|| primero->typeNode != BE_DICT){
 
 	  std::cout <<							\
-	       "ERROR: No se pudo decodificarla respuesta del tracker." \
+	       "ERROR: No se pudo decodificar la respuesta del tracker." \
 		    << std::endl;
 	  return -1;
      }
@@ -265,7 +265,7 @@ int Torrent::start(){
 			 << ((int)elemento->beStr[i+3] & 0xff) << ":"	\
 			 << ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)) \
 			 << std::endl;
-
+	       
 	       std::string snumero;
 	       std::stringstream cvz;
 	       cvz << ((int)elemento->beStr[i+0] & 0xff) << "."		\
@@ -279,8 +279,6 @@ int Torrent::start(){
 
 	  }
 	  
-	  sleep(100000);
-
      }
      
      return 0;

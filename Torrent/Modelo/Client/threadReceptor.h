@@ -30,9 +30,13 @@ public:
      
      void esperarRecepcion();
 
+     HttpResponse* getResponse();
+
      void comenzar();
 
      void finalizar(void);
+     
+     Deque<char>* getColaDeDatos();
 		     
 protected:
      void run();

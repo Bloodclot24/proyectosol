@@ -13,6 +13,7 @@ Peer::Peer(const std::string& host, int puerto , Torrent* torrent):	\
      peer_interested = 0;
      corriendo = false;
      this->torrent = torrent;
+     this->bitField = new BitField(torrent->getBitField()->getLength());
 }
 
 void Peer::start(std::string hash){
@@ -33,7 +34,7 @@ void Peer::run(){
      }
 
      std::cout << "CONECTADO EXITOSAMENTE -----------------------------<<<<" << std::endl;
-     sleep(10000);
+
      receptor.comenzar();
      emisor.comenzar();
 
@@ -44,41 +45,60 @@ void Peer::run(){
 
      emisor.enviarMensaje(mensaje);
 
-     Message *respuesta;
+     Deque<char> *datos = receptor.getColaDeDatos();
+     for(int i = 0; i <49+19;i++)
+	  datos->popFront();
 
      while(corriendo){
 
-////////////	  mensaje = receptor.recibirMensaje();
-
-	  respuesta = proto.decode(mensaje->getDatos());
+	  Message *respuesta = proto.decode(*datos);
 	  
 	  switch(respuesta->id){
-
+	       
 	  case CHOKE:
+	       peer_choking = 1;
 	       break;
 	  case UNCHOKE:
+	       peer_choking = 0;
 	       break;
 	  case INTERESTED:
+	       peer_interested = 1;
 	       break;
 	  case NOT_INTERESTED:
+	       peer_interested = 0;
 	       break;
 	  case HAVE:
+	       bitField->setField(respuesta->index, 1);
 	       break;
 	  case BITFIELD:
+	       if(respuesta->length == torrent->getBitField()->getLength()/8)
+		    for(int i=0;i < respuesta->length; i++)
+			 bitField->setBlock(datos->popFront(),i);
+	       else
+		    //Cerrar conexion y salir
+		    corriendo = false;
 	       break;
 	  case REQUEST:
+	       
 	       break;
 	  case PIECE:
+	       
 	       break;
 	  case CANCEL:
+	       
 	       break;
 	  case PORT:
+	       
 	       break;
 	  case KEEP_ALIVE:
+	       
 	       break;
 
 	  default:
 	       break;
 	  }
      }
+
+     receptor.finalizar();
+     emisor.finalizar();
 }

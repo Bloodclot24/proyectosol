@@ -7,6 +7,7 @@ class Torrent;
 #include "../ProtocoloBitTorrent/protocoloBitTorrent.h"
 #include "threads.h"
 #include "torrent.h"
+#include "bitField.h"
 
 class Peer:public Thread{
 private:
@@ -21,6 +22,8 @@ private:
      std::string hash;
 
      bool corriendo;
+     
+     BitField *bitField;
 
 protected:
      void run();
