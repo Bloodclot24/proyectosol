@@ -13,8 +13,9 @@ class Peer;
 #include "bitField.h"
 
 #include <iostream>
+#include <limits.h>
 
-typedef enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING};
+enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING};
 
 /* El modelo de cada Torrent que maneja el cliente */
 class Torrent{
@@ -52,6 +53,8 @@ private:
      std::list<Peer*> listaPeers;
 
      BitField *bitField; // BitField que representa las piezas que tenemos
+     
+     uint32_t rarestFirst();
 
 public:
      Torrent(const char* fileName);
@@ -59,7 +62,7 @@ public:
      /* Comienza el torrent */
      int start();
 
-     /* Devuelve el tamaño total de todos los archivos contenidos en
+     /* Devuelve el tamao total de todos los archivos contenidos en
       * el torrent */
      int getTotalSize();
 

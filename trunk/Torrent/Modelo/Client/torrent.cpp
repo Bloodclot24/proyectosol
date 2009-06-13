@@ -302,6 +302,55 @@ bool Torrent::isValid(){
 }
 
 /****************************************************************************/
+uint32_t Torrent::rarestFirst() 
+{
+	std::list<Peer*>::iterator it = this->listaPeers.begin();
+	const BitField* bitField = (*it)->getBitfield();
+	uint32_t tamanio = bitField.getLength();
+	uint32_t vectorPiezas[tamanio];
+	memset(vectorPiezas,0,tamanio*sizeof(uint32_t));
+	uint32_t pieza = 0;
+	//Recorro todos los bitfields de todos los peers
+	//y guardo en un vector la disponibilidad de las
+	//mismas
+	for(it ; it.begin() != it.end() ; it++){
+		bitField = (*it)->getBitfield();
+		for(uint32_t i = 0 ; i< tamanio ; i++){
+			pieza = bitfield.getField(i);
+			vectorPiezas[i] += pieza;
+		}
+	}
+	
+	uint32_t menor = vectorPiezas[0];
+	uint32_t posMenor = 0;
+	bool encontrado = false;
+	while(!encontrado){
+		//Busco la pieza que esta menor cantidad de veces,
+		//es decir la pieza mas rara.
+		for(i=1 ; i<tamanio ; i++){
+			if(menor > vectorPiezas[i]){
+				menor = vectorPiezas[i];
+				posMenor = i;
+			}
+		}
+		//Me fijo si tengo esa parte
+		uint32_t parteExistente = this->bitField->getField(posMenor); 
+		if(parteExistente){
+			//TODO ver lista de partes en proceso.
+			//si la tengo, seteo esa posicion con un valor
+			//muy grande asi no vuelve a ser el menor
+			vectorPiezas[posMenor] = INT_MAX;
+		}else{
+			//Si no la tenia, encontre la pieza mas rara
+			//de las que me faltan y devuelvo la posicion
+			encontrado = true;
+		}
+	}
+	return posMenor;		
+	
+}
+
+/****************************************************************************/
 Torrent::~Torrent(){
      std::list<TorrentFile*>::iterator it;
 
