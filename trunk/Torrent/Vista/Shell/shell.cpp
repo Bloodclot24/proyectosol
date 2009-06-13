@@ -43,6 +43,7 @@ void commandNoEncontrado() {
 void Shell::correr() {
 	
 	system("clear");	
+	std::cout << std::endl;
 	this->command= "";
 	std::string file= "";
 	
@@ -60,6 +61,9 @@ void Shell::correr() {
 
 		else if(command.compare(HELP) == 0)
 			mostrarHelp();
+			
+		else if(command.compare(CLEAR) == 0)
+			system("clear");		
 		
 		else if(finParametro != std::string::npos) {
 			
@@ -89,6 +93,9 @@ void Shell::correr() {
 							
 		} else if(command.compare(EXIT) != 0)
 			commandNoEncontrado();
+		
+		std::cout << std::endl;
+		
 	}
 	controlador->exit();	
 }
@@ -104,6 +111,10 @@ void mostrarSubrayado(int max) {
 /*--------------------------------------------------------------------------*/
 /**Archivo**/
 void Shell::mostrarArchivos() {
+
+	std::cout << std::endl;	 							  	
+	std::cout << "++ FILES ++"<< std::endl;
+	std::cout << "==========="<< std::endl;
 	
 	std::cout.width(MAX_FILE);
 	std::cout.fill(RELLENO);
@@ -165,9 +176,11 @@ void Shell::mostrarArchivo(std::string file, int piece, std::string size,
 /**General**/
 void Shell::mostrarGeneral(std::string file, std::string downloaded,
 						   std::string information) {
-		 							  	
-	std::cout << "General"<< std::endl;
 
+	std::cout << std::endl;	 							  	
+	std::cout << "++ GENERAL ++"<< std::endl;
+	std::cout << "============="<< std::endl;
+	
 	std::cout << "File: " << file << std::endl;
 	std::cout << "Downloaded: " << downloaded << std::endl;
 	std::cout << "Information: " << information << std::endl;		
@@ -176,8 +189,10 @@ void Shell::mostrarGeneral(std::string file, std::string downloaded,
 /*--------------------------------------------------------------------------*/
 /**Trackers**/
 void Shell::mostrarTrackers() {
-	
-	std::cout << "TRACKERS"<< std::endl;
+
+	std::cout << std::endl;	 							  	
+	std::cout << "++ TRACKERS ++"<< std::endl;
+	std::cout << "=============="<< std::endl;
 		
 	std::cout.width(MAX_NAME);
 	std::cout.fill(RELLENO);
@@ -212,8 +227,10 @@ void Shell::mostrarTracker(std::string name, std::string status, int seed) {
 /*--------------------------------------------------------------------------*/
 /*Peers*/
 void Shell::mostrarPeers() {
-	
-	std::cout << "PEERS"<< std::endl;
+
+	std::cout << std::endl;	 							  	
+	std::cout << "++ PEERS ++"<< std::endl;
+	std::cout << "==========="<< std::endl;
 		
 	std::cout.width(MAX_CLIENT);
 	std::cout.fill(RELLENO);
@@ -242,9 +259,11 @@ void Shell::mostrarCliente(std::string ip, std::string cliente) {
 /*--------------------------------------------------------------------------*/
 /**Pieces**/
 void Shell::mostrarPieces() {
-	
-	std::cout << "PIECES"<< std::endl;
 
+	std::cout << std::endl;	 							  	
+	std::cout << "++ PIECES ++"<< std::endl;
+	std::cout << "============"<< std::endl;
+	
 	std::cout.width(MAX_PIECE);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << "#";
