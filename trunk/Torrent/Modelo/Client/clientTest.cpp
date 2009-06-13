@@ -13,4 +13,10 @@ int main(int argc,char**argv){
      }
 
      cliente.start();
+
+     char auxiliar[2];
+     do
+	  std::cin.getline(auxiliar,2);
+     while(auxiliar[0] != 'q');
+     
 }

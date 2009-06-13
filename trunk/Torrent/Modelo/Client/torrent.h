@@ -10,6 +10,7 @@ class Peer;
 #include "torrentFile.h"
 #include "../ParserBencode/parserBencode.h"
 #include "peer.h"
+#include "bitField.h"
 
 #include <iostream>
 
@@ -50,6 +51,8 @@ private:
      
      std::list<Peer*> listaPeers;
 
+     BitField *bitField; // BitField que representa las piezas que tenemos
+
 public:
      Torrent(const char* fileName);
 
@@ -62,6 +65,8 @@ public:
 
      /* Indica si el objeto es valido o no */
      bool isValid();
+
+     BitField* getBitField();
 
      ~Torrent();
 };

@@ -17,6 +17,10 @@ ThreadReceptor::ThreadReceptor(Socket *socket, bool http):	\
      response = NULL;
 }
 
+/****************************************************************************/
+Deque<char>* ThreadReceptor::getColaDeDatos(){
+     return &colaDeDatos;
+}
 
 /* Si no hay datos en la cola, espera a que haya algo. En el caso de
  * un receptor del tipo http, espera a recibir la respuesta http. */
@@ -35,10 +39,17 @@ void ThreadReceptor::esperarRecepcion(){
 }
 
 /* Activa el thread */
+/****************************************************************************/
 void ThreadReceptor::comenzar(){
      corriendo = true;
      start();
 }
+
+/****************************************************************************/
+HttpResponse* ThreadReceptor::getResponse(){
+     return response;
+}
+
      
 /* finaliza el thread y cierra el socket */
 /****************************************************************************/
