@@ -11,7 +11,7 @@ private:
      bool isPrivate;
      std::string name;
 
-     /* SHA1 de las piezas totales y tamaño de c/u */
+     /* SHA1 de las piezas totales y tamao de c/u */
      std::string pieces;
      int pieceLength;
 
@@ -30,8 +30,11 @@ public:
      /* Devuelve los hashes de todas las piezas */
      const std::string& getPieces(){ return pieces; }
 
-     /* Devuelve el tamaño del archivo */
+     /* Devuelve el tamanio del archivo */
      int getSize(){ return length; }
+     
+     /* Devuelve el tamanio de las piezas */
+     int getPieceLength(){ return pieceLength;}
 
      ~TorrentFile();
 

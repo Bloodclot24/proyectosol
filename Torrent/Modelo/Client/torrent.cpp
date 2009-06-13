@@ -350,6 +350,27 @@ uint32_t Torrent::rarestFirst()
 	
 }
 
+TorrentFile* Torrent::obtenerArchivo(uint32_t index)
+{
+	std::list<TorrentFile*>::iterator it;
+	uint32_t tamanioPiezas = 0;
+	uint32_t tamanioArchivo = 0;
+	uint32_t cantidadBloques = 0;
+	uint32_t bloquesAcum = 0;
+	bool encontrado = false;
+	for(it = archivos->begin() ; it != archivos->end() && !encontrado ; it++){
+		tamanioPiezas = (*it)->getPieceLength();
+		tamanioArchivo = (*it)->getSize();
+		cantidadBloques = ceil( tamanioArchivo / tamanioPiezas);
+		bloquesAcum += cantidadBloques;
+		if(index <= bloquesAcum){
+			encontrado = true;
+		}
+	}
+	if(!encontrado) return NULL;
+	return *(--it);
+}
+
 /****************************************************************************/
 Torrent::~Torrent(){
      std::list<TorrentFile*>::iterator it;

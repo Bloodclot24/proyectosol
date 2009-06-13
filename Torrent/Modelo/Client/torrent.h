@@ -14,6 +14,7 @@ class Peer;
 
 #include <iostream>
 #include <limits.h>
+#include <math.h>
 
 enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING};
 
@@ -70,6 +71,9 @@ public:
      bool isValid();
 
      BitField* getBitField();
+     
+     /*Dado un indice, obtiene el FileTorrent al que corresponde*/
+     TorrentFile* obtenerArchivo(uint32_t index);
 
      ~Torrent();
 };
