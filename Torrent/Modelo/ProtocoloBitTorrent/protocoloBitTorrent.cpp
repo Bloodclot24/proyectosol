@@ -191,9 +191,15 @@ std::string ProtocoloBitTorrent::int32Astring(uint32_t valor) {
 }
 
 /*--------------------------------------------------------------------------*/
-Message* ProtocoloBitTorrent::decode(const char* mensaje) {
-	
-	std::string msg= mensaje;
+Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
+	uint32_t bytes = 0;
+	char aux[4];
+	//Obtengo los primeros 4 bytes
+	while(bytes<4){
+		aux[bytes] = deque.popFront();
+		bytes++;
+	}
+	std::string msg(aux,4);
 	std::string auxiliar;
 			
 	Message* message= new Message();
@@ -203,10 +209,12 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 	const char* longitud = length.c_str();
 	uint32_t* longitudMsj = (uint32_t*)longitud;
 	uint32_t longMsj = this->bitStream.swap32ABigEndian(*longitudMsj);
-	if(msg.length() > 4) {
-	
-		std::string idS;
-		idS.assign(msg, 4, 1);
+	if(/*msg.length() > 4*/longMsj != 0) {
+		//Obtengo el id, para lo cual, leo el proximo byte
+		bytes = 0;
+		aux[bytes] = deque.popFront();
+		std::string idS(aux,1);
+		//idS.assign(msg, 4, 1);
 		int id= atoi(idS.c_str());
 		
 		if(id == ID_CHOKE) {
@@ -228,29 +236,61 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 		} else if(id == ID_HAVE) {
 			std::cout << "have" << std::endl;
 			message->id= HAVE;
-			message->piece.assign(msg, 5,longMsj-5 );
+			bytes = 0;
+			while(bytes < (longMsj-5)){
+				aux[bytes] = deque.popFront();
+				bytes++;
+			}
+			message->piece.assign(aux,0,longMsj-5 );
+			//message->piece.assign(msg,5,longMsj-5 );
 
 		} else if(id == ID_BITFIELD) {
 			std::cout << "bitfield" << std::endl;
 			message->id= BITFIELD;
+			char auxPiece[longMsj-5];
+			bytes = 0;
+			while(bytes < (longMsj-5)){
+				auxPiece[bytes] = deque.popFront();
+				bytes++;
+			}
+			message->piece.assign(auxPiece,0,longMsj-5 );
 			//TODO ver tema de que bitfield es un string, ver si va
 			//a seguir siendolo y hay que transformarlo en un int
-			message->bitfield.assign(msg, 5, longMsj-5);
+			//message->bitfield.assign(msg, 5, longMsj-5);
 
 		} else if(id == ID_REQUEST) {
 			std::cout << "request" << std::endl;
 			message->id= REQUEST;
-			auxiliar.assign(msg, 5, 4);
+			bytes = 0;
+			while(bytes < 4){
+				aux[bytes] = deque.popFront();
+				bytes++;
+			}
+			auxiliar.assign(aux, 0, 4);
+			//auxiliar.assign(msg, 5, 4);
 			const char* indiceAux = auxiliar.c_str();
 			uint32_t* pIndice = (uint32_t*)indiceAux;
 			uint32_t indice = this->bitStream.swap32ABigEndian(*pIndice);
 			message->index= indice;
-			auxiliar.assign(msg, 9, 4);
+			bytes = 0;
+			while(bytes < 4){
+				aux[bytes] = deque.popFront();
+				bytes++;
+			}
+			auxiliar.assign(aux, 0, 4);
+//			auxiliar.assign(msg, 9, 4);
 			const char* beginAux = auxiliar.c_str();
 			uint32_t* pBegin = (uint32_t*)beginAux;
 			uint32_t begin = this->bitStream.swap32ABigEndian(*pBegin);
 			message->begin= begin;
-			auxiliar.assign(msg, 13, longMsj-13);
+			char auxLength[longMsj-13];
+			bytes = 0;
+			while(bytes < longMsj-13){
+				auxLength[bytes] = deque.popFront();
+				bytes++;
+			}
+			auxiliar.assign(auxLength, 0, longMsj-13);
+//			auxiliar.assign(msg, 13, longMsj-13);
 			const char* lengthAux = auxiliar.c_str();
 			uint32_t* pLength = (uint32_t*)lengthAux;
 			uint32_t length = this->bitStream.swap32ABigEndian(*pLength);
@@ -259,17 +299,36 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 		} else if(id == ID_PIECE) {
 			std::cout << "piece" << std::endl;
 			message->id= PIECE;
-			auxiliar.assign(msg, 5, 4);
+			bytes = 0;
+			while(bytes < 4){
+				aux[bytes] = deque.popFront();
+				bytes++;
+			}
+			auxiliar.assign(aux, 0, 4);
+//			auxiliar.assign(msg, 5, 4);
 			const char* indiceAux = auxiliar.c_str();
 			uint32_t* pIndice = (uint32_t*)indiceAux;
 			uint32_t indice = this->bitStream.swap32ABigEndian(*pIndice);
 			message->index= indice;
-			auxiliar.assign(msg, 9, 4);
+			bytes = 0;
+			while(bytes < 4){
+				aux[bytes] = deque.popFront();
+				bytes++;
+			}
+			auxiliar.assign(aux, 0, 4);
+//			auxiliar.assign(msg, 9, 4);
 			const char* beginAux = auxiliar.c_str();
 			uint32_t* pBegin = (uint32_t*)beginAux;
 			uint32_t begin = this->bitStream.swap32ABigEndian(*pBegin);
 			message->begin= begin;
-			auxiliar.assign(msg, 13, longMsj-13);
+			char auxBlock[longMsj-13];
+			bytes = 0;
+			while(bytes < longMsj-13){
+				auxBlock[bytes] = deque.popFront();
+				bytes++;
+			}
+			auxiliar.assign(auxBlock, 0, longMsj-13);
+//			auxiliar.assign(msg, 13, longMsj-13);
 			//TODO ver tema de block, xq es un string, ver si va a seguir siendolo
 			//y hay que convertir a int o si va a ser un int directamente
 			message->block= atoi(auxiliar.c_str());
@@ -277,17 +336,36 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 		} else if(id == ID_CANCEL) {
 			std::cout << "cancel" << std::endl;
 			message->id= CANCEL;
-			auxiliar.assign(msg, 5, 4);
+			bytes = 0;
+			while(bytes < 4){
+				aux[bytes] = deque.popFront();
+				bytes++;
+			}
+			auxiliar.assign(aux, 0, 4);
+//			auxiliar.assign(msg, 5, 4);
 			const char* indiceAux = auxiliar.c_str();
 			uint32_t* pIndice = (uint32_t*)indiceAux;
 			uint32_t indice = this->bitStream.swap32ABigEndian(*pIndice);
 			message->index= indice;
-			auxiliar.assign(msg, 9, 4);
+			bytes = 0;
+			while(bytes < 4){
+				aux[bytes] = deque.popFront();
+				bytes++;
+			}
+			auxiliar.assign(aux, 0, 4);
+//			auxiliar.assign(msg, 9, 4);
 			const char* beginAux = auxiliar.c_str();
 			uint32_t* pBegin = (uint32_t*)beginAux;
 			uint32_t begin = this->bitStream.swap32ABigEndian(*pBegin);
 			message->begin= begin;
-			auxiliar.assign(msg, 13, longMsj-13);
+			char auxLength[longMsj-13];
+			bytes = 0;
+			while(bytes < longMsj-13){
+				auxLength[bytes] = deque.popFront();
+				bytes++;
+			}
+			auxiliar.assign(auxLength, 0, longMsj-13);
+//			auxiliar.assign(msg, 13, longMsj-13);
 			const char* lengthAux = auxiliar.c_str();
 			uint32_t* pLength = (uint32_t*)lengthAux;
 			uint32_t length = this->bitStream.swap32ABigEndian(*pLength);
@@ -296,7 +374,13 @@ Message* ProtocoloBitTorrent::decode(const char* mensaje) {
 		} else if(id == ID_PORT) {
 			std::cout << "port" << std::endl;
 			message->id= PORT;
-			auxiliar.assign(msg, 5,4);
+			bytes = 0;
+			while(bytes < 4){
+				aux[bytes] = deque.popFront();
+				bytes++;
+			}
+			auxiliar.assign(aux, 0,4);
+//			auxiliar.assign(msg, 5,4);
 			const char* portAux = auxiliar.c_str();
 			uint32_t* pPort = (uint32_t*)portAux;
 			uint32_t port = this->bitStream.swap32ABigEndian(*pPort);
