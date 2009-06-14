@@ -4,6 +4,7 @@
 class Peer;
 
 #include "socket.h"
+#include "threads.h"
 #include "threadEmisor.h"
 #include "threadReceptor.h"
 
@@ -16,10 +17,11 @@ class Peer;
 #include <limits.h>
 #include <math.h>
 
-enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING};
+/* Estados posibles del torrent */
+enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING, ERROR};
 
 /* El modelo de cada Torrent que maneja el cliente */
-class Torrent{
+class Torrent:public Thread{
 private:
      /* El nombre del archivo .torrent */
      std::string nombreTorrent;
@@ -43,18 +45,30 @@ private:
 
      std::string idHash;
 
+     /* estado actual del torrent */
      EstadoTorrent estado;
 
      Socket* socket;
      ThreadReceptor *receptor;
      ThreadEmisor *emisor;
 
+     /* indica si es valido el torrent */
      bool valido;
      
+     /* Peers asociados a este torrent */
      std::list<Peer*> listaPeers;
 
      BitField *bitField; // BitField que representa las piezas que tenemos
-     
+
+     /* representa las piezas que estamos bajando. Como cada pieza se
+      * baja por partes, esto nos indica que partes de cada pieza
+      * tenemos y que partes nos faltan */
+     std::map<uint32_t, BitField*> piezasEnProceso;
+
+private:
+
+     /* Devuelve el numero de pieza que esmas dificil de conseguir (de
+      * las que no tenemos) */
      uint32_t rarestFirst();
 
 public:
@@ -70,8 +84,12 @@ public:
      /* Indica si el objeto es valido o no */
      bool isValid();
 
+     /* Devuelve el bitField asociado al torrent */
      BitField* getBitField();
-     
+
+     /* Rutina principal del torrent. Aqui se maneja la logica */
+     virtual void run();
+
      /*Dado un indice, obtiene el FileTorrent al que corresponde*/
      TorrentFile* obtenerArchivo(uint32_t index);
 
