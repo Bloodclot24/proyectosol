@@ -66,6 +66,13 @@ void ControladorGUI::removeFile(std::string file) {
 	
 	//ver si hay q restar downloading completed active
 	this->all--;
+	
+	std::cout << "all: " << all << std::endl;
+	std::cout << "downloading: " << downloading << std::endl;
+	std::cout << "completed: " << completed << std::endl;
+	std::cout << "active: " << active << std::endl;
+	
+	actualizarCantActividades();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -77,6 +84,7 @@ void ControladorGUI::startFile(std::string file) {
 	//hay q restar en algun lado
 	this->active++;	
 	this->downloading++;
+	actualizarCantActividades();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -84,7 +92,8 @@ void ControladorGUI::pauseFile(std::string file) {
 	
 	//GESTIONAR CON CLIENT
 	this->active--;		
-	this->downloading--;	
+	this->downloading--;
+	actualizarCantActividades();	
 }
 
 /*--------------------------------------------------------------------------*/
@@ -93,6 +102,7 @@ void ControladorGUI::stopFile(std::string file) {
 	//GESTIONAR CON CLIENT
 	this->active--;		
 	this->downloading--;		
+	actualizarCantActividades();
 }
 
 /*--------------------------------------------------------------------------*/

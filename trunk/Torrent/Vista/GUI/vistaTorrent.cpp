@@ -309,7 +309,6 @@ void VistaTorrent::on_tool_remove_clicked() {
   		std::cout << "Se borro el archivo: " << row[columns_transf.col_file] << std::endl;
   		treeModel_transf->erase(iter);
   		
-  		
   		if(path_iter.prev())   	
   			refTreeSelection->select(path_iter);
   		else {

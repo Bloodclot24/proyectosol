@@ -11,6 +11,7 @@
 #define TITLE '-'
 #define RELLENO ' '
 
+#define MAX_AMOUNT 3
 #define MAX_FILE 45
 #define MAX_PIECE 7
 #define MAX_SIZE 10
@@ -67,9 +68,9 @@ class Shell {
 		
 		/*Archivo*/
 		void mostrarArchivos();
-		void mostrarArchivo(std::string file, int piece, std::string size,
-		                    int done, std::string status, std::string 
-		                    upSpeed, std::string downSpeed);
+		void mostrarArchivo(int amount, std::string file, int piece, 
+							std::string size, int done, std::string status,
+							std::string upSpeed, std::string downSpeed);
 				                    
 		/*General*/
 		void mostrarGeneral(std::string file, std::string downloaded, 

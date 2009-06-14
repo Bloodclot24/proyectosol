@@ -116,12 +116,15 @@ void Shell::mostrarArchivos() {
 	std::cout << "++ FILES ++"<< std::endl;
 	std::cout << "==========="<< std::endl;
 	
+	std::cout.width(MAX_AMOUNT);
+	std::cout.fill(RELLENO);
+	std::cout << std::left << "#";
 	std::cout.width(MAX_FILE);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << "File";
 	std::cout.width(MAX_PIECE);
 	std::cout.fill(RELLENO);
-	std::cout << std::left << "#"; 
+	std::cout << std::left << "Piece"; 
 	std::cout.width(MAX_SIZE);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << "Size";
@@ -141,13 +144,16 @@ void Shell::mostrarArchivos() {
 	mostrarSubrayado(MAX_FILES);
 }	
 
-void Shell::mostrarArchivo(std::string file, int piece, std::string size,
-		                   int done, std::string status, std::string 
-		                   upSpeed, std::string downSpeed) {
+void Shell::mostrarArchivo(int amount, std::string file, int piece, 
+  						   std::string size, int done, std::string status,
+  						   std::string upSpeed, std::string downSpeed) {
 	
 	if(file.length() > MAX_FILE)
 		file.resize(MAX_FILE-1);
 		
+	std::cout.width(MAX_AMOUNT);
+	std::cout.fill(RELLENO);
+	std::cout << std::left << amount;
 	std::cout.width(MAX_FILE);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << file;
