@@ -88,16 +88,16 @@ std::string ParserBencode::beDecodeStr(const std::string *stringStr,
 }
 
 /*--------------------------------------------------------------------------*/
-long long ParserBencode::beDecodeInt(const std::string *stringInt, 
-                                     std::string::size_type startPosition,
-				     std::string::size_type &endPosition) {
+uint64_t ParserBencode::beDecodeInt(const std::string *stringInt, 
+				    std::string::size_type startPosition,
+				    std::string::size_type &endPosition) {
      
      std::string auxiliar;
      std::string::size_type startInt= stringInt->find(START_INT, 
 						      startPosition);
      std::string::size_type endInt= stringInt->find(END, startInt+1);
      auxiliar.assign(*stringInt, startInt+1, endInt-startInt-1);
-     long long Int= atoi(auxiliar.c_str());
+     uint64_t Int= atoll(auxiliar.c_str());
      endPosition= endInt;
      return(Int);	
 }

@@ -320,9 +320,9 @@ void Torrent::eliminarPeer(Peer* peer){
 }
 
 /****************************************************************************/
-int Torrent::getTotalSize(){
+uint64_t Torrent::getTotalSize(){
      std::list<TorrentFile*>::iterator it;
-     int acumulador=0;
+     uint64_t acumulador=0;
 
      for(it=archivos->begin();it!=archivos->end(); it++){
 	  std::cout << "Tamanio = " << (*it)->getSize() << "\n";
@@ -453,7 +453,7 @@ void Torrent::run(){
 	       }
 
 	       std::cout << "No hay peers conectados, reintentando en 10 segundos." << std::endl;
-	       sleep(20);
+	       sleep(10);
 	  }
 	  
      }

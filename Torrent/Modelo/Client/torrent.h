@@ -85,7 +85,7 @@ public:
 
      /* Devuelve el tamao total de todos los archivos contenidos en
       * el torrent */
-     int getTotalSize();
+     uint64_t getTotalSize();
 
      /* Devuelve el nombre del .torrent original*/
      const std::string& getName(){ return nombreTorrent; }

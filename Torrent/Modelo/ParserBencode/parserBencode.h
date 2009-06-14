@@ -31,7 +31,7 @@ typedef struct{
 typedef struct BeNode {
      BeType typeNode;
      std::string beStr;
-     long long beInt;
+     uint64_t beInt;
      BeList*	beList;
      BeDict*	beDict;
      const std::string *buffer;
@@ -46,7 +46,7 @@ private:
 			     std::string::size_type startPosition,
 			     std::string::size_type &endPosition);
      
-     long long beDecodeInt(const std::string *stringInt,
+     uint64_t beDecodeInt(const std::string *stringInt,
 			   std::string::size_type startPosition,
 			   std::string::size_type &endPosition);
      
