@@ -93,19 +93,16 @@ std::string ProtocoloBitTorrent::request(uint32_t index, uint32_t begin, uint32_
      return aux;
 }
 			
-std::string ProtocoloBitTorrent::piece(uint32_t index, uint32_t begin, std::string block) {
-     uint32_t len= 9 + block.length();
-     len= this->bitStream.swap32ABigEndian(len);
+std::string ProtocoloBitTorrent::piece(uint32_t index, uint32_t begin, uint32_t length){
+     uint32_t len= 9 + length;
+     len= htonl(len);
      char id= ID_PIECE;
-     index= this->bitStream.swap32ABigEndian(index);
-     begin= this->bitStream.swap32ABigEndian(begin);
-     std::string aux((char*)&len, 4);           
+     index= htonl(index);
+     begin= htonl(begin);
+     std::string aux((char*)&len, 4);
      aux += id;
-     std::string aux1((char*)&index,4);
-     aux += aux1;
-     std::string aux2((char*)&begin,4);
-     aux += aux2;
-     aux += block;
+     aux += index;
+     aux += begin;
      return aux;
 }
 			
