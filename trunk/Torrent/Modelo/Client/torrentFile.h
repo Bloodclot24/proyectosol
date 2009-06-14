@@ -17,7 +17,7 @@ private:
      int pieceLength;
 
      /* Longitud del archivo en bytes */
-     int length;
+     uint64_t length;
 
      std::string md5;
 
@@ -35,7 +35,7 @@ public:
      const std::string& getPieces(){ return pieces; }
 
      /* Devuelve el tamanio del archivo */
-     int getSize(){ return length; }
+     uint64_t getSize(){ return length; }
      
      /* Devuelve el tamanio de las piezas */
      int getPieceLength(){ return pieceLength;}
