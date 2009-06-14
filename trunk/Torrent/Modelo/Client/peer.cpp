@@ -104,7 +104,8 @@ void Peer::run(){
 		    std::string bloque;
 		    while(bloque.length() < respuesta->length)
 			 bloque += datos->popFront();
-		    //TODO: obtener el archivo y guardar lo datos
+		    TorrentFile* file = torrent->obtenerArchivo(respuesta->index);
+		    
 	       }
 	       else{
 		    corriendo = false;

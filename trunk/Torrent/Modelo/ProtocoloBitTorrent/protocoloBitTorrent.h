@@ -7,6 +7,8 @@
 #include <list>
 #include <stdlib.h>
 
+#include <arpa/inet.h>
+
 #define ID_CHOKE 0
 #define ID_UNCHOKE 1
 #define ID_INTERESTED 2 
@@ -61,7 +63,7 @@ class ProtocoloBitTorrent
 					
 			std::string request(uint32_t index, uint32_t begin, uint32_t length);
 			
-			std::string piece(uint32_t index, uint32_t begin, std::string block);
+			std::string piece(uint32_t index, uint32_t begin, uint32_t length);
 			
 			std::string cancel(uint32_t index, uint32_t begin, uint32_t length);
 			
