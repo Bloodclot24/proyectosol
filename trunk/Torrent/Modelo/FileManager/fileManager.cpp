@@ -19,6 +19,8 @@ FileManager::FileManager(const char* filename,uint32_t tamanio) {
 
 bool FileManager::agregarPieza(const char* pieza, uint32_t offset, uint32_t tamanio)
 {
+
+     std::cout << "Se escriben los datos\n";
 	bool resultado = false;
 	this->file.seekp(offset,std::ios_base::beg);
 	if(this->file.good()){

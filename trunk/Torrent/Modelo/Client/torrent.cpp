@@ -338,6 +338,33 @@ bool Torrent::isValid(){
 }
 
 /****************************************************************************/
+uint64_t Torrent::obtenerByteOffset(uint32_t index){
+     std::list<TorrentFile*>::iterator it;
+     uint32_t tamanioPiezas = 0;
+     uint32_t tamanioArchivo = 0;
+     uint32_t cantidadBloques = 0;
+     uint32_t bloquesAcum = 0;
+     bool encontrado = false;
+     for(it = archivos->begin() ; it != archivos->end() && !encontrado ; it++){
+	  tamanioPiezas = (*it)->getPieceLength();
+	  tamanioArchivo = (*it)->getSize();
+	  cantidadBloques = ceil( (double)tamanioArchivo / (double)tamanioPiezas);
+	  if(index < bloquesAcum+cantidadBloques){
+	       encontrado = true;
+	  }
+	  else{
+	       bloquesAcum+=cantidadBloques;
+	  }
+     }
+
+     if(!encontrado) return -1;
+
+     std::cout << "Se acumularon " << bloquesAcum << " bloques, para el indice " << index << std::endl;
+
+     return (index-bloquesAcum)*tamanioPiezas;
+}
+
+/****************************************************************************/
 uint32_t Torrent::rarestFirst() 
 {
      Lock lock(mutexPeers);
@@ -445,7 +472,7 @@ void Torrent::run(){
 			 emisor->enviarMensaje(mensaje);
 
 			 mensaje = new Mensaje();
-			 msg = proto.request(indice, 0, 16*1024);
+			 msg = proto.request(0, 0, 16*1024);
 			 mensaje->copiarDatos(msg.c_str(), msg.length());
 			 emisor->enviarMensaje(mensaje);
 			 std::cout << "Enviado el interested/unchoke.\n";
