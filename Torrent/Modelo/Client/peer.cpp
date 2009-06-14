@@ -67,7 +67,7 @@ void Peer::run(){
      for(int i=0;i<torrent->getBitField()->getLength()/8;i++){
 	  mensaje = new Mensaje();
 	  std::string have = proto.have(i);
-	  emisor.enviarMensaje(mensaje);
+// 	  emisor.enviarMensaje(mensaje);
      }
      
 
@@ -133,12 +133,17 @@ void Peer::run(){
 		    //verificar que el offset se corresponda con datos
 		    //que no tenemos
 		    std::string bloque;
-		    while(bloque.length() < respuesta->length)
-			 bloque += datos->popFront();
+		    while(bloque.length() < respuesta->length){
+			 char c = datos->popFront();
+			 bloque += c;
+			 //std::cout << "RECIBO EL BYTE : " << c << std::endl;
+		    }
 		    std::cout << "Recibo el piece" << respuesta->index << std::endl;
 		    TorrentFile* file = torrent->obtenerArchivo(respuesta->index);
 		    if(file != NULL){
-			 file->getManager()->agregarPieza(bloque.c_str(), respuesta->begin, respuesta->length);
+			 std::cout << "Se escribe en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
+			      ". Que corresponde al indice: " << respuesta->index << std::endl;
+			 file->getManager()->agregarPieza(bloque.c_str(), respuesta->begin+torrent->obtenerByteOffset(respuesta->index), respuesta->length);
 		    }
 		    else{
 			 std::cerr << "ERROR: <--------------------- NO EXISTE EL ARCHIVO??????\n";

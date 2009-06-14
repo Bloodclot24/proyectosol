@@ -105,6 +105,10 @@ public:
      /*Dado un indice, obtiene el FileTorrent al que corresponde*/
      TorrentFile* obtenerArchivo(uint32_t index);
 
+     /* Dado un indice devuelve el offset dentro del archivo donde cae
+      * esa pieza */
+     uint64_t obtenerByteOffset(uint32_t index);
+
      int stop(){ return 0; }
      int pause(){ return 0; }
      int remove(){ return 0; }
