@@ -69,8 +69,10 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 			 newFile->md5 = elemento->beStr;
 
 		    elemento = (*dict)[INFO_PATH];
-		    if(elemento != NULL)
+		    if(elemento != NULL){
 			 newFile->path = elemento->beStr;
+			 newFile->manager = new FileManager(newFile->path.c_str(), newFile->length);
+		    }
 	       }
 
 	       fileList->push_back(newFile);
@@ -86,6 +88,8 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 	       elemento = (*dict)[INFO_MD5];
 	       if(elemento != NULL)
 		    newFile->md5 = elemento->beStr;
+
+	       newFile->manager = new FileManager(newFile->name.c_str(), newFile->length);
 	  }
 	       
      }

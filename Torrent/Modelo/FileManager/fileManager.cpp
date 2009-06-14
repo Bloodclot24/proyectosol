@@ -2,6 +2,7 @@
 
 FileManager::FileManager(const char* filename,uint32_t tamanio) {
 
+     std::cout << "CREANDO EL ARCHIVO: " << filename << "\n";
 	this->file.open(filename,std::fstream::in);
 	if(!this->file.is_open()){
 		this->file.open(filename,std::fstream::out);

@@ -31,13 +31,14 @@ Torrent::Torrent(const char* fileName){
      /* Decodifico todo el .torrent y obtengo una lista con toda la
       * informacion */
      std::list<BeNode*> *info = parser.beDecode(fileName);
+
+     peersActivos=0;
+     estado = STOPPED;
      
      if(info != NULL){
 	  valido = true;
 
 	  BeNode* primero = info->front();
-	  
-	  estado = STOPPED;
 	  
 	  if(primero->typeNode == BE_DICT){
 	       std::map<std::string, BeNode*>* dict =	\
@@ -87,6 +88,8 @@ Torrent::Torrent(const char* fileName){
 	  /* libero los elementos antes de eliminar */
 	  ParserBencode::beFree(info);
 	  delete info;
+
+	  bitField = new BitField(ceil(getTotalSize()/(*archivos->begin())->getPieceLength()));
      }
      else{
 	  valido = false;
@@ -273,22 +276,47 @@ int Torrent::start(){
 		   << ((int)elemento->beStr[i+2] & 0xff) << "."		\
 		   << ((int)elemento->beStr[i+3] & 0xff);
 	       snumero = cvz.str();
+
+	       //creo el nuevo peer con los datos obtenidos
+	       Peer *peer = new						\
+		    Peer(snumero,					\
+			 ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)), \
+			 this);
 	       
-	       Peer *peer = new Peer(snumero,ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)), this);
 	       peer->start(idHash);
+	       listaPeers.push_back(peer); // agrego al peer la lista
 
 	  }
 
 	  estado = DOWNLOADING;
+
 	  /* Comienzo el proceso */
 	  Thread::start();	  
      }
-
-     
      
      return 0;
 }
 
+/****************************************************************************/
+void Torrent::eliminarPeer(Peer* peer){
+     if(peer == NULL)
+	  return;
+
+     Lock lock(mutexPeers);
+
+     std::list<Peer*>::iterator it;
+     bool encontrado = false;
+
+     for(it=listaPeers.begin(); it!=listaPeers.end() && !encontrado; it++){
+	  if( (*it) == peer){
+	       listaPeers.erase(it);
+	       encontrado = true;
+	       delete peer;
+	  }
+     }
+
+     std::cout << "SE BORRO UN PEER\n";
+}
 
 /****************************************************************************/
 int Torrent::getTotalSize(){
@@ -309,7 +337,9 @@ bool Torrent::isValid(){
 /****************************************************************************/
 uint32_t Torrent::rarestFirst() 
 {
-     std::list<Peer*>::iterator it;
+     Lock lock(mutexPeers);
+
+     std::list<Peer*>::iterator it=listaPeers.begin();
      const BitField* bitField = (*it)->getBitField();
      uint32_t tamanio = bitField->getLength();
      uint32_t vectorPiezas[tamanio];
@@ -382,7 +412,45 @@ void Torrent::run(){
      while(estado == DOWNLOADING){
 	  //Logica. Basicamente pido datos.
 
+	  std::list<Peer*>::iterator it;
+// 	  for(it=listaPeers.begin(); it!=listaPeers.end() ; it++){
+// 	       (*it)->start(idHash);
+// 	       sleep(5);
+// 	  }
 
+
+	  
+	  while(true){
+	       std::list<Peer*>::iterator it;
+	       for(it=listaPeers.begin(); it!=listaPeers.end(); it++){
+		    if( (*it)->conectado){
+			 ThreadEmisor* emisor= (*listaPeers.begin())->getEmisor();
+			 uint32_t indice = rarestFirst();
+			 
+			 Mensaje *mensaje = new Mensaje();
+			 
+			 ProtocoloBitTorrent proto;
+			 std::string msg = proto.interested();
+			 
+			 mensaje->copiarDatos(msg.c_str(), msg.length());
+			 emisor->enviarMensaje(mensaje);
+			 
+			 mensaje = new Mensaje();
+			 msg = proto.request(indice, 0, 32*1024);
+			 mensaje->copiarDatos(msg.c_str(), msg.length());
+
+			 msg = proto.unchoke();
+			 mensaje->copiarDatos(msg.c_str(), msg.length());
+			 emisor->enviarMensaje(mensaje);
+
+			 std::cout << "Enviado el interested/unchoke.\n";
+		    }
+	       }
+
+	       std::cout << "No hay peers conectados, reintentando en 10 segundos." << std::endl;
+	       sleep(10);
+	  }
+	  
      }
 }
 
