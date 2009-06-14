@@ -44,6 +44,16 @@ bool FileManager::obtenerPieza(char* pieza, uint32_t offset, uint32_t tamanio)
 	return resultado;
 }
 		
+int FileManager::crearDirectorio(const char* dirname) {
+	
+	int estado= mkdir(dirname, PERMISO);
+	
+	if(estado < 0)
+		return(errno);
+	else
+		return 0;
+} 
+		
 FileManager::~FileManager() {
 	
 	this->file.close();
