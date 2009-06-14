@@ -57,12 +57,19 @@ void Peer::run(){
      receptor.comenzar();
      emisor.comenzar();
 
-     Mensaje *mensaje = new Mensaje;
+     Mensaje *mensaje = new Mensaje();
      std::string aux = proto.handshake("BitTorrent protocol", hash, CLIENT_ID);
 
      mensaje->copiarDatos(aux.c_str(), aux.length());
 
      emisor.enviarMensaje(mensaje);
+
+     for(int i=0;i<torrent->getBitField()->getLength()/8;i++){
+	  mensaje = new Mensaje();
+	  std::string have = proto.have(i);
+	  emisor.enviarMensaje(mensaje);
+     }
+     
 
      Deque<char> *datos = receptor.getColaDeDatos();
      for(int i = 0; i <49+19;i++)
@@ -128,9 +135,14 @@ void Peer::run(){
 		    std::string bloque;
 		    while(bloque.length() < respuesta->length)
 			 bloque += datos->popFront();
+		    std::cout << "Recibo el piece" << respuesta->index << std::endl;
 		    TorrentFile* file = torrent->obtenerArchivo(respuesta->index);
-		    if(file != NULL)
+		    if(file != NULL){
 			 file->getManager()->agregarPieza(bloque.c_str(), respuesta->begin, respuesta->length);
+		    }
+		    else{
+			 std::cerr << "ERROR: <--------------------- NO EXISTE EL ARCHIVO??????\n";
+		    }
 		    
 	       }
 	       else{

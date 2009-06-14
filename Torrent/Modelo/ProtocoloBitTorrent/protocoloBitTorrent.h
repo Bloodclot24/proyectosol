@@ -57,7 +57,7 @@ class ProtocoloBitTorrent
 			
 			std::string not_interested();
 			
-			std::string have(std::string piece);
+			std::string have(uint32_t piece);
 			
 			std::string bitfield(std::string bitfield);
 					

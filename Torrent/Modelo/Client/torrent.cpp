@@ -90,6 +90,7 @@ Torrent::Torrent(const char* fileName){
 	  delete info;
 
 	  bitField = new BitField(ceil(getTotalSize()/(*archivos->begin())->getPieceLength()));
+	  std::cout << "Longitud del bitfield original: "<< ceil(getTotalSize()/(*archivos->begin())->getPieceLength());
      }
      else{
 	  valido = false;
@@ -323,8 +324,10 @@ int Torrent::getTotalSize(){
      std::list<TorrentFile*>::iterator it;
      int acumulador=0;
 
-     for(it=archivos->begin();it!=archivos->end(); it++)
+     for(it=archivos->begin();it!=archivos->end(); it++){
+	  std::cout << "Tamanio = " << (*it)->getSize() << "\n";
 	  acumulador += (*it)->getSize();
+     }
      return acumulador;
 }
 
@@ -397,6 +400,8 @@ TorrentFile* Torrent::obtenerArchivo(uint32_t index)
 	for(it = archivos->begin() ; it != archivos->end() && !encontrado ; it++){
 		tamanioPiezas = (*it)->getPieceLength();
 		tamanioArchivo = (*it)->getSize();
+		if(tamanioArchivo == 0)
+		     continue;
 		cantidadBloques = ceil( tamanioArchivo / tamanioPiezas);
 		bloquesAcum += cantidadBloques;
 		if(index <= bloquesAcum){
@@ -431,24 +436,24 @@ void Torrent::run(){
 			 
 			 ProtocoloBitTorrent proto;
 			 std::string msg = proto.interested();
-			 
 			 mensaje->copiarDatos(msg.c_str(), msg.length());
 			 emisor->enviarMensaje(mensaje);
 			 
 			 mensaje = new Mensaje();
-			 msg = proto.request(indice, 0, 32*1024);
-			 mensaje->copiarDatos(msg.c_str(), msg.length());
-
 			 msg = proto.unchoke();
 			 mensaje->copiarDatos(msg.c_str(), msg.length());
 			 emisor->enviarMensaje(mensaje);
 
+			 mensaje = new Mensaje();
+			 msg = proto.request(indice, 0, 16*1024);
+			 mensaje->copiarDatos(msg.c_str(), msg.length());
+			 emisor->enviarMensaje(mensaje);
 			 std::cout << "Enviado el interested/unchoke.\n";
 		    }
 	       }
 
 	       std::cout << "No hay peers conectados, reintentando en 10 segundos." << std::endl;
-	       sleep(10);
+	       sleep(20);
 	  }
 	  
      }
