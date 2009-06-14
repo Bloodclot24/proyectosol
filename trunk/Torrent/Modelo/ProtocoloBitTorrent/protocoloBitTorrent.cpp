@@ -55,13 +55,15 @@ std::string ProtocoloBitTorrent::not_interested() {
      return aux;
 }
 			
-std::string ProtocoloBitTorrent::have(std::string piece) {
+std::string ProtocoloBitTorrent::have(uint32_t piece) {
      uint32_t len= 5;
      len= this->bitStream.swap32ABigEndian(len);
      char id= ID_HAVE;
      std::string aux((char*)&len, 4);           
      aux += id;
-     aux += piece;                                 
+     len= this->bitStream.swap32ABigEndian(piece);
+     std::string aux1((char*)&len, 4);           
+     aux += aux1;                                 
      return aux;
 }
 

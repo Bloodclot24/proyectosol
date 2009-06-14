@@ -91,7 +91,9 @@ bool Socket::recibir(void *buf, int cuanto){
 //      if(retorno == -1)
 // 	  error = errno;
 //      return esValido();
-     return recv(s, buf, cuanto, MSG_WAITALL);
+     if(this != NULL)
+	  return recv(s, buf, cuanto, MSG_WAITALL);
+     return 0;
 }
      
 

@@ -12,7 +12,7 @@ int main(int argc,char**argv){
 	  std::cout << "Error, no se pudo agregar el torrent." << std::endl;
      }
 
-     cliente.start();
+     cliente.start(argv[1]);
 
      char auxiliar[2];
      do

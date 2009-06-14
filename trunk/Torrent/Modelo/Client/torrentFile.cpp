@@ -51,6 +51,13 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 	       /* Si existe, hay mas de un archivo*/
 	       std::list<BeNode*> &lista = elemento->beList->elements;
 
+	       FileManager::crearDirectorio(newFile->name.c_str());
+	       std::string rutaInicial(newFile->name);
+	       newFile->length=0;
+	       rutaInicial += "/";
+
+	       uint32_t pieceLength=newFile->pieceLength;
+
 	       std::list<BeNode*>::iterator it;
 	       for(it = lista.begin(); it!=lista.end(); it++){
 		    /* Creo un nuevo archivo del torrent */
@@ -70,12 +77,21 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 
 		    elemento = (*dict)[INFO_PATH];
 		    if(elemento != NULL){
-			 newFile->path = elemento->beStr;
-			 newFile->manager = new FileManager(newFile->path.c_str(), newFile->length);
+			 std::list<BeNode*> lista = elemento->beList->elements;
+
+			 std::string ruta(rutaInicial);
+
+			 std::list<BeNode*>::iterator it;
+			 for(it=lista.begin(); it!= --(lista.end()); it++){
+			      FileManager::crearDirectorio( (*it)->beStr.c_str() );
+			      ruta += (*it)->beStr + "/";
+			 }
+			 newFile->path = (*it)->beStr;
+			 newFile->manager = new FileManager((ruta+newFile->path).c_str(), newFile->length);
+			 newFile->pieceLength = pieceLength;
+			 fileList->push_back(newFile);
 		    }
 	       }
-
-	       fileList->push_back(newFile);
 
 	  }
 	  else{
