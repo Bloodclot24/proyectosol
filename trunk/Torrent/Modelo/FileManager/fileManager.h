@@ -3,6 +3,11 @@
 
 #include <iostream>
 #include <fstream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+
+#define PERMISO 0700
 
 class FileManager {
 	
@@ -13,10 +18,8 @@ class FileManager {
 		FileManager(const char* filename,uint32_t tamanio);
 		bool agregarPieza(const char* pieza, uint32_t offset, uint32_t tamanio);
 		bool obtenerPieza(char* pieza, uint32_t offset, uint32_t tamanio);
+		static int crearDirectorio(const char* dirname); 
 		~FileManager();
-		
-		
-		
 };
 
 #endif /*FILEMANAGER_H_*/
