@@ -13,6 +13,7 @@ class ControladorShell: public Controlador {
 		Shell* shell;
 		
 		bool validarNumFile(std::string numFile);
+		int contador;
 		
 	public:
 		ControladorShell(); 

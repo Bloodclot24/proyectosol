@@ -4,6 +4,7 @@
 ControladorShell::ControladorShell() {
 
 	this->shell= new Shell(this);	
+	this->contador= 0;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -58,8 +59,12 @@ void ControladorShell::mostrarFiles() {
 	
 	shell->mostrarArchivos();
 	//PEDIR TODOS LOS ARCHIVOS
-	shell->mostrarArchivo("Nothing else matters - Metalica", 4, "120 mb",
+	this->contador++;
+	shell->mostrarArchivo(contador, "Nothing else matters - Metalica", 4, "120 mb",
 		                    45, "Downloading", "12.2 kb/s", "");
+	this->contador++;
+	shell->mostrarArchivo(contador, "Always - Air Supply", 13, "1 GB", 45, "Error",
+							 "12.2 kb/s", "");
 }
 
 /*--------------------------------------------------------------------------*/
