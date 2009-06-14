@@ -2,6 +2,7 @@
 #define TORRENTFILE_H_INCLUDED
 
 #include "../ParserBencode/parserBencode.h"
+#include "../FileManager/fileManager.h"
 
 #include <iostream>
 
@@ -21,7 +22,10 @@ private:
      std::string md5;
 
      std::string path;
-
+     
+     FileManager *manager;
+     
+private:
      TorrentFile(){};
 
 public:
@@ -35,6 +39,9 @@ public:
      
      /* Devuelve el tamanio de las piezas */
      int getPieceLength(){ return pieceLength;}
+
+     /* Devuelve el FileManager asociado al torrentFile */
+     FileManager* getManager(){ return manager; }
 
      ~TorrentFile();
 

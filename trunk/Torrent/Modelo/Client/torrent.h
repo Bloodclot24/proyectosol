@@ -25,6 +25,7 @@ class Torrent:public Thread{
 private:
      /* El nombre del archivo .torrent */
      std::string nombreTorrent;
+
      /* La lista de archivos del torrent */
      std::list<TorrentFile*>* archivos; 
 
@@ -57,6 +58,8 @@ private:
      
      /* Peers asociados a este torrent */
      std::list<Peer*> listaPeers;
+     
+     Mutex mutexPeers;
 
      BitField *bitField; // BitField que representa las piezas que tenemos
 
@@ -64,6 +67,9 @@ private:
       * baja por partes, esto nos indica que partes de cada pieza
       * tenemos y que partes nos faltan */
      std::map<uint32_t, BitField*> piezasEnProceso;
+
+     /* numero de peers activos */
+     int peersActivos;
 
 private:
 
@@ -81,11 +87,17 @@ public:
       * el torrent */
      int getTotalSize();
 
+     /* Devuelve el nombre del .torrent original*/
+     const std::string& getName(){ return nombreTorrent; }
+
      /* Indica si el objeto es valido o no */
      bool isValid();
 
      /* Devuelve el bitField asociado al torrent */
      BitField* getBitField();
+
+     /* Elimina un peer de la lista de peers */
+     void eliminarPeer(Peer* peer);
 
      /* Rutina principal del torrent. Aqui se maneja la logica */
      virtual void run();

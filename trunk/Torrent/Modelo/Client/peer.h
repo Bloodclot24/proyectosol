@@ -29,12 +29,15 @@ protected:
      void run();
      
 public:
+     bool conectado;
      /* Dado un peer en forma compacta (ip.ip.ip.ip:puerto), crea un
       * nuevo peer */
      Peer(const std::string& host, int puerto, Torrent* torrent);
 
      /* Devuelve un bitField con las piezas del peer */
      const BitField* getBitField();
+
+     ThreadEmisor* getEmisor();
 
      /* Comienza el procesamiento y flujo de datos. */
      void start(std::string hash);
