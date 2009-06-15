@@ -13,6 +13,8 @@ ControladorGUI::ControladorGUI() {
 /*--------------------------------------------------------------------------*/
 ControladorGUI::~ControladorGUI() {
 
+	std::cout << "ACA TOY destructorGUI\n";
+
 	delete vista;	
 }
 
@@ -34,7 +36,9 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 	bool valido= validarExtensionFile(pathTorrent);
 	
 	if(valido) {
-//		if(cliente.addTorrent(pathTorrent.c_str()))
+		std::string pathCopia= crearCopiaTorrent(pathTorrent);
+			
+		if(cliente.addTorrent(pathCopia.c_str())) {
 			vista->cerrarFileChooser();
 			this->all++;
 			actualizarCantActividades();
@@ -43,13 +47,11 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 							  "", "");
 			vista->borrarMensaje();
 			
-			//BORRARRRRRRRRRRRRRRRRRRR
-			vista->obtenerOrden(pathTorrent);
 			return true;
-//		else {
-//			vista->mostrarMensaje("Error al cargar el archivo");
-//			return false;
-//		}
+		} else {
+			vista->mostrarMensaje("Error al cargar el archivo");
+			return false;
+		}
 	} else {
 		vista->mostrarMensaje("Debe seleccionar un archivo .torrent");
 		return false;
@@ -113,7 +115,8 @@ void ControladorGUI::exit() {
 
 	//GESTIONAR CON CLIENT
 	//tenemos que ver que se va a cerrar
-	std::cout << "EXIT" << std::endl;	
+	std::cout << "EXIT" << std::endl;
+		
 }
 
 /*--------------------------------------------------------------------------*/

@@ -47,6 +47,7 @@ class ControladorGUI: public Controlador {
 		virtual void actualizarPestanias(std::string filename);
 		
 		virtual uint32_t obtenerOrden(std::string filename);
+		virtual void insertarOrdenado(std::string filename, uint32_t orden) {};
 		
 		virtual void exit();		
 };

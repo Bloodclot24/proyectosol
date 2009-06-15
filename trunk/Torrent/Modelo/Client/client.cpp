@@ -1,16 +1,17 @@
 #include "client.h"
 
 /****************************************************************************/
-bool Client::addTorrent(const char* file){
-     Torrent *torrent = new Torrent(file);
-     if(torrent->isValid()){
-	  torrents.push_back(torrent);
-	  return true;
+bool Client::addTorrent(const char* path){
+	
+	Torrent *torrent = new Torrent(path);
+    if(torrent->isValid()){
+		torrents.push_back(torrent);
+		return true;
      }
-     else {
-	  delete torrent;
-	  return false;
-     }
+    else {
+		delete torrent;
+		return false;
+    }
 }
 
 /*--------------------------------------------------------------------------*/
@@ -80,6 +81,14 @@ Torrent* Client::buscarTorrent(const char* filename) {
   	else   
     	return *(--it);
 }
+
+/*--------------------------------------------------------------------------*/
+void Client::setBitFieldTorrent(const char* filename, char* data) {
+	
+	Torrent* torrent= buscarTorrent(filename);
+	torrent->getBitField()->setData(data);
+}
+
 /*--------------------------------------------------------------------------*/
 std::list<Torrent*>* Client::getListaTorrents(){
 	return &torrents;

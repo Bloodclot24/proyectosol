@@ -56,6 +56,18 @@ int FileManager::crearDirectorio(const char* dirname) {
 	else
 		return 0;
 } 
+
+std::string FileManager::obtenerFilename(std::string path) {
+	
+	size_t pos= path.find_last_of(COMIENZO_FILENAME, path.length());
+
+	std::string filename;
+	if(pos != std::string::npos) {
+		filename.assign(path, pos+1, path.length()-TAM_EXTENSION-pos-1);	
+		return filename;
+	} else
+		return path;
+}
 		
 FileManager::~FileManager() {
 	
