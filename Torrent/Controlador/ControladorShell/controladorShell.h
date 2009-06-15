@@ -14,6 +14,7 @@ class ControladorShell: public Controlador {
 		
 		bool validarNumFile(std::string numFile);
 		int contador;
+		uint32_t contadorOrden;
 		
 	public:
 		ControladorShell(); 
@@ -32,6 +33,7 @@ class ControladorShell: public Controlador {
 		virtual void startFile(std::string numFile);
 		virtual void pauseFile(std::string numFile);
 		virtual void stopFile(std::string numFile);
+		virtual uint32_t obtenerOrden(std::string filename);
 		
 		virtual void exit();
 };

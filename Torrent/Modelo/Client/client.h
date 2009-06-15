@@ -20,23 +20,26 @@ private:
      Torrent* buscarTorrent(const char* filename);
 
 public:
-     /* Agrega un torrent */
-     bool addTorrent(const char* file);
+     /* agrega un torrent */
+    bool addTorrent(const char* file);
 
      /* comienza a descargar un torrent */
-     bool start(const char* filename);
+    bool start(const char* filename);
 
-	/* detiene la descarga un torrent */
-     bool stop(const char* filename);
+	/* detiene la descarga de un torrent */
+    bool stop(const char* filename);
      
-	/* suspende la descarga un torrent */
-     bool pause(const char* filename);
+	/* suspende la descarga de un torrent */
+    bool pause(const char* filename);
 
-	/* borrar la descarga un torrent */
-     bool remove(const char* filename);
+	/* borra la descarga de un torrent */
+    bool remove(const char* filename);
 
-     /* Destruye el cliente y libera todos los torrents */
-     ~Client();
+	/* obtiene la lista de torrents */
+	std::list<Torrent*>* getListaTorrents();
+	
+    /* destruye el cliente y libera todos los torrents */
+    ~Client();
 };
 
 #endif /* CLIENT_H_INCLUDED */

@@ -42,6 +42,9 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 			vista->agregarArchivo(pathTorrent, 1, "200 MB", 0, "Downloading", 
 							  "", "");
 			vista->borrarMensaje();
+			
+			//BORRARRRRRRRRRRRRRRRRRRR
+			vista->obtenerOrden(pathTorrent);
 			return true;
 //		else {
 //			vista->mostrarMensaje("Error al cargar el archivo");
@@ -198,6 +201,12 @@ void ControladorGUI::actualizarPestanias(std::string filename) {
 	vista->limpiarListaPieces();
 	//pedir lista clientes y usar
 	vista->agregarPiece(13, "12 MB", 15, 4, 4);	
+}
+
+/*--------------------------------------------------------------------------*/
+uint32_t ControladorGUI::obtenerOrden(std::string filename) {
+	
+	return(vista->obtenerOrden(filename));
 }
 
 /****************************************************************************/

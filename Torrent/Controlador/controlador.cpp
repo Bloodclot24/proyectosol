@@ -3,12 +3,12 @@
 /****************************************************************************/
 Controlador::Controlador(): cliente() {
 
-	this->config.open(PATH_CONFIG, std::fstream::in);
-	if(config.is_open()) {
-		//levantar los datos
-		//pasarselo al modelo y a la vista
-		this->config.close();
-	}
+//	this->config.open(PATH_CONFIG, std::fstream::in);
+//	if(config.is_open()) {
+//		//levantar los datos
+//		//pasarselo al modelo y a la vista
+//		this->config.close();
+//	}
 }
 
 /*--------------------------------------------------------------------------*/
@@ -26,15 +26,50 @@ bool Controlador::validarExtensionFile(std::string path) {
 bool Controlador::guardarConfig() {
 	
 	bool resultado= false;
-	this->config.open(PATH_CONFIG, std::fstream::out);
-	
-	if(config.is_open()) {
-		//pedir al modelo datos sobre los archivos
-		std::string datos;
-		this->config.write(datos.c_str(), datos.length());
-		this->config.close();
-		resultado= true;
+	std::fstream bitfieldFile;
+	std::fstream config;
+	uint32_t contador = 0;
+	std::string snumero;
+	uint32_t auxiliar;	
+    std::stringstream cvz;
+	FileManager::crearDirectorio(PATH_DOWNLOADS);
+	FileManager::crearDirectorio(PATH_CONFIG);
+	std::list<Torrent*>* listaTorrents  = this->cliente.getListaTorrents();
+	std::list<Torrent*>::iterator it;
+	config.open(NAME_FILE_CONFIG , std::fstream::out);
+	if(!bitfieldFile.is_open()) resultado = false;
+	if(resultado){ 
+		for(it = listaTorrents->begin(); it != listaTorrents->end(); it++,contador++){
+			BitField* bitfield = (*it)->getBitField();
+			char* data = bitfield->getData();
+	   		cvz <<  contador;
+     		snumero = cvz.str();
+     		std::string ruta;
+			ruta += PATH_CONFIG; 
+			ruta += NAME_FILE_BF;
+			ruta += snumero;
+			ruta += EXTENSION_BITFIELD;
+			bitfieldFile.open(ruta.c_str(), std::fstream::out);
+			if(bitfieldFile.is_open()) {
+				auxiliar = bitfield->getBytesLength();
+				bitfieldFile.write((const char*)&auxiliar,sizeof(uint32_t));
+				bitfieldFile.write(data, strlen(data));		
+				bitfieldFile.close();
+				resultado= true;
+			}
+			auxiliar= (*it)->getName().length();
+			config.write((const char*)&auxiliar,sizeof(uint32_t));
+			config.write((*it)->getName().c_str(), auxiliar);
+			auxiliar= ruta.length();
+			config.write((const char*)&auxiliar,sizeof(uint32_t));
+			config.write(ruta.c_str(), auxiliar);
+			auxiliar= obtenerOrden((*it)->getName());
+			config.write((const char*)&auxiliar, sizeof(uint32_t));
+		}
+		
 	}
+	
+	
 	
 	return resultado;
 }

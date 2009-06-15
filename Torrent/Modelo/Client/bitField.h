@@ -27,7 +27,13 @@ public:
 
      /* Obtiene la longitud del bitField en bits */
      uint32_t getLength() const;
+     
+     /* Obtiene la longitud del bitField en bytes */
+     uint32_t getBytesLength() const;
 
+	 /* Obtiene los datos del bitField */
+	 char* getData();
+	 
      /* libera el area dedatos del bitfield */
      ~BitField();
 };

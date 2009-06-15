@@ -46,6 +46,8 @@ class ControladorGUI: public Controlador {
 		/*Todas las Pestanias*/
 		virtual void actualizarPestanias(std::string filename);
 		
+		virtual uint32_t obtenerOrden(std::string filename);
+		
 		virtual void exit();		
 };
 

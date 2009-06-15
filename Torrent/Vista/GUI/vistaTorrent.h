@@ -186,6 +186,7 @@ class VistaTorrent {
 		                         std::string downSpeed);
 		void actualizarUpSpeed(std::string file, int piece, 
 		                       std::string upSpeed);
+		uint32_t obtenerOrden(std::string filename);
 
 		/*Panel Actividades*/
 		void modificarCantAll(std::string cantAll);
