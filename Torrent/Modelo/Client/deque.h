@@ -41,6 +41,13 @@ public:
 	  mutex.unlock();
 	  return estado;
      }
+
+     size_t size(){
+	  mutex.lock();
+	  size_t tamanio = queue.empty();
+	  mutex.unlock();
+	  return tamanio;
+     }
      
 };
 

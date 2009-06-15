@@ -3,6 +3,8 @@
 
 class Torrent;
 
+#define REQUEST_SIZE_DEFAULT 16*1024
+
 #include "socket.h"
 #include "../ProtocoloBitTorrent/protocoloBitTorrent.h"
 #include "threads.h"
@@ -38,6 +40,15 @@ public:
      const BitField* getBitField();
 
      ThreadEmisor* getEmisor();
+
+     void setInterested(bool);
+     bool getInterested();
+     void setChoke(bool);
+     bool getChoke();
+
+     void sendRequest(uint32_t index, uint32_t offset, uint32_t size);
+
+     bool havePiece(uint32_t index);
 
      /* Comienza el procesamiento y flujo de datos. */
      void start(std::string hash);

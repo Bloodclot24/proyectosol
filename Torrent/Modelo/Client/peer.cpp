@@ -37,12 +37,64 @@ ThreadEmisor* Peer::getEmisor(){
 }
 
 /****************************************************************************/
+void Peer::setInterested(bool state){
+     Mensaje *mensaje = new Mensaje();
+     ProtocoloBitTorrent proto;
+     std::string msg;
+     if(state)
+	  msg = proto.interested();
+     else msg = proto.not_interested();
+     mensaje->copiarDatos(msg.c_str(), msg.length());
+     emisor.enviarMensaje(mensaje);
+     am_interested = state;
+}
+
+/****************************************************************************/
+bool Peer::getInterested(){
+     return am_interested;
+}
+
+/****************************************************************************/
+void Peer::setChoke(bool state){
+     Mensaje *mensaje = new Mensaje();
+     ProtocoloBitTorrent proto;
+     std::string msg;
+     if(state)
+	  msg = proto.choke();
+     else msg = proto.unchoke();
+     mensaje->copiarDatos(msg.c_str(), msg.length());
+     emisor.enviarMensaje(mensaje);
+     am_choking = state;
+}
+
+/****************************************************************************/
+bool Peer::getChoke(){
+     return am_choking;
+}
+
+/****************************************************************************/
+void Peer::sendRequest(uint32_t index, uint32_t offset,		\
+		       uint32_t size=REQUEST_SIZE_DEFAULT){
+     
+     Mensaje *mensaje = new Mensaje();
+     ProtocoloBitTorrent proto;
+     std::string msg = proto.request(index, offset, size);
+     mensaje->copiarDatos(msg.c_str(), msg.length());
+     emisor.enviarMensaje(mensaje);
+}
+
+/****************************************************************************/
+bool Peer::havePiece(uint32_t index){
+     return bitField->getField(index);
+}
+
+/****************************************************************************/
 void Peer::run(){
 
      ProtocoloBitTorrent proto;
 
      //pongo un timeout de 30 seg. para la conexion al peer.
-//     socket.setTimeout(10,0);
+     socket.setTimeout(20,0);
      socket.conectar();
      if(!socket.esValido()){
 	  corriendo = false;
@@ -65,8 +117,8 @@ void Peer::run(){
      emisor.enviarMensaje(mensaje);
 
      for(int i=0;i<torrent->getBitField()->getLength()/8;i++){
-	  mensaje = new Mensaje();
-	  std::string have = proto.have(i);
+// 	  mensaje = new Mensaje();
+// 	  std::string have = proto.have(i);
 // 	  emisor.enviarMensaje(mensaje);
      }
      
@@ -77,6 +129,9 @@ void Peer::run(){
 
      conectado = true;
 
+     /* Aviso al torrent que me pude conectar */
+     torrent->peerConected(this);
+
      while(corriendo){
 
 	  Message *respuesta = proto.decode(*datos);
@@ -85,9 +140,11 @@ void Peer::run(){
 	       
 	  case CHOKE:
 	       peer_choking = 1;
+	       torrent->peerChoked(this);
 	       break;
 	  case UNCHOKE:
 	       peer_choking = 0;
+	       torrent->peerUnchoked(this);
 	       break;
 	  case INTERESTED:
 	       peer_interested = 1;
@@ -134,16 +191,35 @@ void Peer::run(){
 		    //que no tenemos
 		    std::string bloque;
 		    while(bloque.length() < respuesta->length){
-			 char c = datos->popFront();
-			 bloque += c;
-			 //std::cout << "RECIBO EL BYTE : " << c << std::endl;
+			 bloque += datos->popFront();
 		    }
-		    std::cout << "Recibo el piece" << respuesta->index << std::endl;
+		    std::cout << "Recibo el piece" << respuesta->index << " de tamanio " << respuesta->length << std::endl;
 		    TorrentFile* file = torrent->obtenerArchivo(respuesta->index);
 		    if(file != NULL){
 			 std::cout << "Se escribe en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
 			      ". Que corresponde al indice: " << respuesta->index << std::endl;
-			 file->getManager()->agregarPieza(bloque.c_str(), respuesta->begin+torrent->obtenerByteOffset(respuesta->index), respuesta->length);
+
+			 uint64_t restante = respuesta->length;
+
+			 const char *datos = bloque.c_str();
+			 uint64_t comienzo = respuesta->begin+torrent->obtenerByteOffset(respuesta->index);
+
+			 while(restante > 0){
+			      if(comienzo+restante <= file->getSize()){
+				   // Cae toda la parte dentro del archivo
+				   file->getManager()->agregarPieza(datos, comienzo, restante);
+				   restante = 0;
+			      }
+			      else{
+				   // Cae una parte adentro y otra parte en el siguiente archivo
+				   file->getManager()->agregarPieza(datos, comienzo, file->getSize()-comienzo);
+				   datos += file->getSize()-comienzo;
+				   restante -= file->getSize()-comienzo;
+				   // obtengo el proximo archivo
+				   file = torrent->obtenerArchivo(++respuesta->index);
+				   comienzo = 0;
+			      }
+			 }
 		    }
 		    else{
 			 std::cerr << "ERROR: <--------------------- NO EXISTE EL ARCHIVO??????\n";
