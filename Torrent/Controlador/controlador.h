@@ -25,7 +25,8 @@ class Controlador {
 		
 		/*Persistencia*/
 		bool guardarConfig();
-		
+		bool cargarConfig();
+				
 	public:
 		Controlador();
 		virtual ~Controlador() {};

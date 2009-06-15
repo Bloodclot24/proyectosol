@@ -65,6 +65,7 @@ bool Controlador::guardarConfig() {
 			config.write(ruta.c_str(), auxiliar);
 			auxiliar= obtenerOrden((*it)->getName());
 			config.write((const char*)&auxiliar, sizeof(uint32_t));
+			config.close();
 		}
 		
 	}
@@ -74,5 +75,35 @@ bool Controlador::guardarConfig() {
 	return resultado;
 }
 
+/*--------------------------------------------------------------------------*/
+bool Controlador::cargarConfig() {
+	bool resultado = false;
+	std::fstream config;
+	std::fstream bitFieldFile;
+	std::string pathTorrent;
+	config.open(NAME_FILE_CONFIG , std::fstream::in);
+	if(config.is_open()){
+		resultado=true;
+		char* longNombreTorrent = new char[sizeof(uint32_t)];
+		config.read(longNombreTorrent,sizeof(uint32_t));
+		uint32_t longitudNombre = atoi(longNombreTorrent);
+		char* nombreTorrent = new char[longitudNombre];
+		config.read(nombreTorrent,longitudNombre);
+		char* longRuta = new char[sizeof(uint32_t)];
+		config.read(longRuta,sizeof(uint32_t));
+		uint32_t longitudRuta = atoi(longRuta);
+		char* ruta = new char[longitudRuta];
+		config.read(ruta,longitudRuta);
+		bitFieldFile.open(ruta,std::fstream::in);
+		if(!bitFieldFile.is_open()){
+			pathTorrent += PATH_CONFIG;
+			pathTorrent += nombreTorrent;
+			addTorrent(pathTorrent);
+				
+		}
+		
+	}
+	return resultado;
+}
 
 /****************************************************************************/
