@@ -44,7 +44,7 @@ public:
 
      size_t size(){
 	  mutex.lock();
-	  size_t tamanio = queue.empty();
+	  size_t tamanio = queue.size();
 	  mutex.unlock();
 	  return tamanio;
      }
