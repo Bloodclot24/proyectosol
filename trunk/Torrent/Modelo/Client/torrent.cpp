@@ -25,7 +25,7 @@
 #define DICT_PEERS      "peers"
 
 /****************************************************************************/
-Torrent::Torrent(const char* fileName){
+Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
      
      ParserBencode parser;
      /* Decodifico todo el .torrent y obtengo una lista con toda la
@@ -342,26 +342,25 @@ uint64_t Torrent::obtenerByteOffset(uint32_t index){
      std::list<TorrentFile*>::iterator it;
      uint32_t tamanioPiezas = 0;
      uint32_t tamanioArchivo = 0;
-     uint32_t cantidadBloques = 0;
-     uint32_t bloquesAcum = 0;
+     uint32_t bytesAcum = 0;
      bool encontrado = false;
      for(it = archivos->begin() ; it != archivos->end() && !encontrado ; it++){
 	  tamanioPiezas = (*it)->getPieceLength();
 	  tamanioArchivo = (*it)->getSize();
-	  cantidadBloques = ceil( (double)tamanioArchivo / (double)tamanioPiezas);
-	  if(index < bloquesAcum+cantidadBloques){
+
+	  if(index*tamanioPiezas < (bytesAcum+tamanioArchivo)){
 	       encontrado = true;
 	  }
 	  else{
-	       bloquesAcum+=cantidadBloques;
+	       bytesAcum+=tamanioArchivo;
 	  }
      }
 
      if(!encontrado) return -1;
 
-     std::cout << "Se acumularon " << bloquesAcum << " bloques, para el indice " << index << std::endl;
+     std::cout << "Se acumularon " << bytesAcum << " bloques, para el indice " << index << std::endl;
 
-     return (index-bloquesAcum)*tamanioPiezas;
+     return (index*tamanioPiezas-bytesAcum);
 }
 
 /****************************************************************************/
@@ -421,18 +420,18 @@ TorrentFile* Torrent::obtenerArchivo(uint32_t index)
 	std::list<TorrentFile*>::iterator it;
 	uint32_t tamanioPiezas = 0;
 	uint32_t tamanioArchivo = 0;
-	uint32_t cantidadBloques = 0;
-	uint32_t bloquesAcum = 0;
+	uint32_t bytesAcum = 0;
 	bool encontrado = false;
 	for(it = archivos->begin() ; it != archivos->end() && !encontrado ; it++){
 		tamanioPiezas = (*it)->getPieceLength();
 		tamanioArchivo = (*it)->getSize();
 		if(tamanioArchivo == 0)
 		     continue;
-		cantidadBloques = ceil( tamanioArchivo / tamanioPiezas);
-		bloquesAcum += cantidadBloques;
-		if(index <= bloquesAcum){
-			encontrado = true;
+		if(index*tamanioPiezas < (bytesAcum+tamanioArchivo)){
+		     encontrado = true;
+		}
+		else{
+		     bytesAcum+=tamanioArchivo;
 		}
 	}
 	if(!encontrado) return NULL;
@@ -441,49 +440,107 @@ TorrentFile* Torrent::obtenerArchivo(uint32_t index)
 
 /****************************************************************************/
 void Torrent::run(){
+     //Logica. Basicamente pido datos.
+     ProtocoloBitTorrent proto;
+
      while(estado == DOWNLOADING){
-	  //Logica. Basicamente pido datos.
+	  if(peersEnEspera.empty()){
+	       requestMutex.lock();
+	       requestCondition.wait();
+	       std::cout << "Puedo realizar un request.\n";
+	       requestMutex.unlock();  
+	  }
+	  else{
+	       Lock lock(downloadMutex);
+	       std::cout << "Realizo un request.\n";
+	       uint32_t index = rarestFirst();
+	       
+	       BitField *fields = piezasEnProceso[index];
+	       if(fields != NULL){
+		    //La pieza esta siendo procesada en algun lado
+		    const char* data = fields->getData();
+		    uint32_t tamanio = fields->getBytesLength();
+		    uint32_t inicio=-1,fin=-1;
+		    uint32_t size;
+		    for(uint32_t i=0; i<tamanio;i++){
+			 if(data[i] != 0xff){
+			      uint32_t j;
+			      for(j=i*8;fields->getField(j) != 0 && j < fields->getLength();j++);
+			      inicio = i*8+j;
+			      for(j=inicio+1;fields->getField(j) != 1 && j < fields->getLength();j++);
+			      fin = j;
 
-	  std::list<Peer*>::iterator it;
-// 	  for(it=listaPeers.begin(); it!=listaPeers.end() ; it++){
-// 	       (*it)->start(idHash);
-// 	       sleep(5);
-// 	  }
-
-
-	  
-	  while(true){
-	       std::list<Peer*>::iterator it;
-	       for(it=listaPeers.begin(); it!=listaPeers.end(); it++){
-		    if( (*it)->conectado){
-			 ThreadEmisor* emisor= (*listaPeers.begin())->getEmisor();
-			 uint32_t indice = rarestFirst();
-			 
-			 Mensaje *mensaje = new Mensaje();
-			 
-			 ProtocoloBitTorrent proto;
-			 std::string msg = proto.interested();
-			 mensaje->copiarDatos(msg.c_str(), msg.length());
-			 emisor->enviarMensaje(mensaje);
-			 
-			 mensaje = new Mensaje();
-			 msg = proto.unchoke();
-			 mensaje->copiarDatos(msg.c_str(), msg.length());
-			 emisor->enviarMensaje(mensaje);
-
-			 mensaje = new Mensaje();
-			 msg = proto.request(0, 0, 16*1024);
-			 mensaje->copiarDatos(msg.c_str(), msg.length());
-			 emisor->enviarMensaje(mensaje);
-			 std::cout << "Enviado el interested/unchoke.\n";
+			      size = fin-inicio;
+			      
+			      size_t i = peersEnEspera.size();
+			      Peer *peer;
+			      while(i>0){
+				   peer = peersEnEspera.popFront();
+				   if(peer->havePiece(index))
+					i=0;
+				   else{
+					peersEnEspera.push(peer);
+					peer = NULL;
+					i--;
+				   }
+			      }
+			      if(peers != NULL){
+				   if(size>REQUEST_SIZE_DEFAULT)
+					size = REQUEST_SIZE_DEFAULT;
+				   for(uint32_t i=0;i<size;i++)
+					fields->setField(inicio+i,1);
+				   peer->sendRequest(index,inicio,size);
+			      }
+			 }
 		    }
 	       }
-
-	       std::cout << "No hay peers conectados, reintentando en 10 segundos." << std::endl;
-	       sleep(10);
+	       else{
+		    //No estamos procesando la pieza.
+		    size_t i = peersEnEspera.size();
+		    Peer *peer;
+		    while(i>0){
+			 peer = peersEnEspera.popFront();
+			 if(peer->havePiece(index))
+			      i=0;
+			 else{
+			      peersEnEspera.push(peer);
+			      peer = NULL;
+			      i--;
+			 }
+		    }
+		    if(peer != NULL){
+			 //Si encontramos al peer que tiene la pieza
+			 //Creo un bitfield con la cantidad de bits
+			 //necesarias para representar una pieza
+			 fields = new BitField((*archivos->begin())->getPieceLength()*8);
+			 piezasEnProceso[index] = fields;
+			 std::cout << "Se envia el request de la pieza " << index << std::endl;
+			 for(uint32_t i=0;i<REQUEST_SIZE_DEFAULT;i++)
+			      fields->setField(i,1);
+			 peer->sendRequest(index,0,REQUEST_SIZE_DEFAULT);
+		    }
+		    
+	       }
 	  }
-	  
      }
+}
+
+/****************************************************************************/
+void Torrent::peerConected(Peer* peer){
+     peer->setInterested(true);
+     peer->setChoke(false);
+}
+
+/****************************************************************************/
+void Torrent::peerChoked(Peer* peer){
+     Lock lock(requestMutex);
+     peersEnEspera.push(peer);
+     requestCondition.signal();
+}
+
+/****************************************************************************/
+void Torrent::peerUnchoked(Peer* peer){
+     
 }
 
 /****************************************************************************/

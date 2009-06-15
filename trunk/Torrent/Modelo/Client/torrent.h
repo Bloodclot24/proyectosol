@@ -12,6 +12,7 @@ class Peer;
 #include "../ParserBencode/parserBencode.h"
 #include "peer.h"
 #include "bitField.h"
+#include "threads.h"
 
 #include <iostream>
 #include <limits.h>
@@ -71,6 +72,14 @@ private:
      /* numero de peers activos */
      int peersActivos;
 
+     Mutex requestMutex;
+     CVariable requestCondition;
+
+     /* Cola con los peers que nos enviaron un Unchoke */
+     Deque<Peer*> peersEnEspera;
+
+     Mutex downloadMutex;
+
 private:
 
      /* Devuelve el numero de pieza que esmas dificil de conseguir (de
@@ -108,6 +117,15 @@ public:
      /* Dado un indice devuelve el offset dentro del archivo donde cae
       * esa pieza */
      uint64_t obtenerByteOffset(uint32_t index);
+
+     /* Metodo que llaman los peers cuando se conectan exitosamente */
+     void peerConected(Peer *peer);
+
+     /* Metodo que llaman los peers envian 'choke' */
+     void peerChoked(Peer* peer);
+
+     /* Metodo que llaman los peers envian 'unchoke' */
+     void peerUnchoked(Peer* peer);
 
      int stop(){ return 0; }
      int pause(){ return 0; }
