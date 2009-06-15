@@ -7,7 +7,7 @@
 #include <string.h>
 #include "../ParserBencode/parserBencode.h"
 
-#define CLIENT_ID "-SN0100-abcdefghijkl"
+#define CLIENT_ID "-SN010-abcdefghijkl"
 
 /* Modelo del cliente torrent */
 class Controlador;
@@ -21,7 +21,7 @@ private:
 
 public:
      /* agrega un torrent */
-    bool addTorrent(const char* file);
+    bool addTorrent(const char* path);
 
      /* comienza a descargar un torrent */
     bool start(const char* filename);
@@ -34,6 +34,9 @@ public:
 
 	/* borra la descarga de un torrent */
     bool remove(const char* filename);
+
+	/* modifica el bitfield del torrent */
+	void setBitFieldTorrent(const char* filename, char* data);
 
 	/* obtiene la lista de torrents */
 	std::list<Torrent*>* getListaTorrents();

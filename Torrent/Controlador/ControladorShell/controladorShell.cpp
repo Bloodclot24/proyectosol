@@ -29,12 +29,14 @@ bool ControladorShell::addTorrent(std::string pathTorrent) {
 	
 	if(valido) {
 		std::cout << "Path Valido: " << pathTorrent << std::endl;
-//		if(cliente.addTorrent(pathTorrent.c_str()))
-		return true;
-//		else {
-//			shell->mostrarMensaje("Error al cargar el archivo");
-//			return false;
-//		}
+		std::string filename=  crearCopiaTorrent(pathTorrent);
+
+		if(cliente.addTorrent(filename.c_str()))
+			return true;
+		else {
+			shell->mostrarMensaje("Error al cargar el archivo");
+			return false;
+		}
 	} else {
 		shell->mostrarMensaje("Debe seleccionar un archivo .torrent");
 		return false;
@@ -166,7 +168,8 @@ bool ControladorShell::validarNumFile(std::string numFile) {
 /*--------------------------------------------------------------------------*/
 void ControladorShell::exit() {
 
-	std::cout << "EXIT" << std::endl;		
+	std::cout << "EXIT" << std::endl;
+			
 }
 
 /*--------------------------------------------------------------------------*/

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+
 #include "../Modelo/Client/client.h"
 #include "../Modelo/Client/bitField.h"
 #include "../Modelo/FileManager/fileManager.h"
@@ -20,16 +21,16 @@ class Controlador {
 	protected:
 		bool validarExtensionFile(std::string path);
 		Client cliente;
-//		std::fstream config;	
-		
 		
 		/*Persistencia*/
 		bool guardarConfig();
 		bool cargarConfig();
-				
+	
+		std::string crearCopiaTorrent(std::string pathTorrent);
+						
 	public:
 		Controlador();
-		virtual ~Controlador() {};
+		virtual ~Controlador();
 
 		virtual void correr()= 0;
 		
@@ -73,9 +74,9 @@ class Controlador {
 
 		/*Orden*/
 		virtual uint32_t obtenerOrden(std::string filename)= 0;
-
-		virtual void exit()= 0;
+		virtual void insertarOrdenado(std::string filename, uint32_t orden)= 0;
 		
+		virtual void exit()= 0;
 };
 
 /****************************************************************************/

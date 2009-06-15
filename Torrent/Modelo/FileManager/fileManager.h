@@ -8,6 +8,8 @@
 #include <errno.h>
 
 #define PERMISO 0700
+#define COMIENZO_FILENAME "/"
+#define TAM_EXTENSION 8
 
 class FileManager {
 	
@@ -18,7 +20,8 @@ class FileManager {
 		FileManager(const char* filename,uint32_t tamanio);
 		bool agregarPieza(const char* pieza, uint32_t offset, uint32_t tamanio);
 		bool obtenerPieza(char* pieza, uint32_t offset, uint32_t tamanio);
-		static int crearDirectorio(const char* dirname); 
+		static int crearDirectorio(const char* dirname);
+		static std::string obtenerFilename(std::string path); 
 		~FileManager();
 };
 

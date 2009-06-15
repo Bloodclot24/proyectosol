@@ -33,8 +33,10 @@ class ControladorShell: public Controlador {
 		virtual void startFile(std::string numFile);
 		virtual void pauseFile(std::string numFile);
 		virtual void stopFile(std::string numFile);
-		virtual uint32_t obtenerOrden(std::string filename);
 		
+		virtual uint32_t obtenerOrden(std::string filename);
+		virtual void insertarOrdenado(std::string filename, uint32_t orden) {};
+				
 		virtual void exit();
 };
 

@@ -22,6 +22,9 @@ public:
      /* copia los datos de un bloque (8 bits) */
      void setBlock(char c, uint32_t blockIndex);
 
+	/* cambia la data del bitfield */
+     void setData(char* data);
+
      /* obtiene el estado de un bit del bitfield */
      bool getField(uint32_t index) const;
 
