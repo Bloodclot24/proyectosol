@@ -80,6 +80,10 @@ Torrent* Client::buscarTorrent(const char* filename) {
   	else   
     	return *(--it);
 }
+/*--------------------------------------------------------------------------*/
+std::list<Torrent*>* Client::getListaTorrents(){
+	return &torrents;
+}
 
 /*--------------------------------------------------------------------------*/
 Client::~Client(){

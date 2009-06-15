@@ -4,18 +4,27 @@
 #include <iostream>
 #include <fstream>
 #include "../Modelo/Client/client.h"
+#include "../Modelo/Client/bitField.h"
+#include "../Modelo/FileManager/fileManager.h"
 
 #define EXTENSION ".torrent"
 #define TAM_EXTENSION 8
-#define PATH_CONFIG  "Downloads/config"
-
+#define PATH_DOWNLOADS  "Downloads"
+#define PATH_CONFIG  "Downloads/Config/"
+#define NAME_FILE_BF "Torrent"
+#define EXTENSION_BITFIELD ".bf"
+#define NAME_FILE_CONFIG "Downloads/Config/config.sun"
 /****************************************************************************/
 class Controlador {
 	
 	protected:
 		bool validarExtensionFile(std::string path);
 		Client cliente;
-		std::fstream config;	
+//		std::fstream config;	
+		
+		
+		/*Persistencia*/
+		bool guardarConfig();
 		
 	public:
 		Controlador();
@@ -61,10 +70,11 @@ class Controlador {
 		/*Todas las Pestanias*/
 		virtual void actualizarPestanias(std::string filename) {};
 
+		/*Orden*/
+		virtual uint32_t obtenerOrden(std::string filename)= 0;
+
 		virtual void exit()= 0;
 		
-		/*Persistencia*/
-		bool guardarConfig();
 };
 
 /****************************************************************************/

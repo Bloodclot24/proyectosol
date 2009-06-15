@@ -5,6 +5,7 @@ ControladorShell::ControladorShell() {
 
 	this->shell= new Shell(this);	
 	this->contador= 0;
+	this->contadorOrden= 0;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -166,6 +167,12 @@ bool ControladorShell::validarNumFile(std::string numFile) {
 void ControladorShell::exit() {
 
 	std::cout << "EXIT" << std::endl;		
+}
+
+/*--------------------------------------------------------------------------*/
+uint32_t ControladorShell::obtenerOrden(std::string filename) {
+	
+	return(++contadorOrden);		
 }
 
 /****************************************************************************/

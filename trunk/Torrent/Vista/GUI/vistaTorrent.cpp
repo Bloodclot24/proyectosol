@@ -529,6 +529,35 @@ void VistaTorrent::actualizarUpSpeed(std::string file, int piece,
 }
 
 /*--------------------------------------------------------------------------*/
+uint32_t VistaTorrent::obtenerOrden(std::string filename) {
+	
+	typedef Gtk::TreeModel::Children type_children;
+	type_children children = treeModel_transf->children();
+	Gtk::TreeModel::Row row;
+	bool found= false;
+	for(type_children::iterator iter= children.begin(); !found&&  
+	    iter != children.end(); ++iter) {
+  	
+  		row= *iter;
+  		
+  		
+  		std::cout << "Nombre: " << row[columns_transf.col_file] << std::endl;
+  		std::cout << "Busco: " << filename << std::endl;
+
+		std::cout << "FILAAAA: " << iter->getValue() << std::endl;
+  		
+  		
+  		if(row[columns_transf.col_file] == filename)
+  		   found= true;
+	}
+	
+	std::cout << "-------------" << std::endl;
+	
+	
+	return(row);
+}
+
+/*--------------------------------------------------------------------------*/
 Gtk::TreeModel::Row VistaTorrent::buscarRow_transf(std::string file, 
                                                    int piece) {
 	
