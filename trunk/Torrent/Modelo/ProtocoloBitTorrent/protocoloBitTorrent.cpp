@@ -198,7 +198,7 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 	       message->id= NOT_INTERESTED;
 
 	  } else if(id == ID_HAVE) {
-	       std::cout << "have" << std::endl;
+	       //std::cout << "have" << std::endl;
 	       message->id= HAVE;
 	       bytes = 0;
 	       while(bytes < (4)){
@@ -208,9 +208,7 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 	       message->piece.assign(aux,0,4);
 
 	  } else if(id == ID_BITFIELD) {
-	       std::cout << "bitfield" << std::endl;
 	       message->id= BITFIELD;
-	       std::cout << "Longitud Bitfield : " << longMsj-1 << std::endl;
 	       message->length = longMsj-1;
 
 	  } else if(id == ID_REQUEST) {

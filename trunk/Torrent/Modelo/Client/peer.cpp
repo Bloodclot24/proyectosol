@@ -81,6 +81,7 @@ void Peer::sendRequest(uint32_t index, uint32_t offset,		\
      std::string msg = proto.request(index, offset, size);
      mensaje->copiarDatos(msg.c_str(), msg.length());
      emisor.enviarMensaje(mensaje);
+     std::cout << "Request de: " << index << " tamaño: " << size << " offset: " << offset << std::endl;
 }
 
 /****************************************************************************/
@@ -94,7 +95,7 @@ void Peer::run(){
      ProtocoloBitTorrent proto;
 
      //pongo un timeout de 30 seg. para la conexion al peer.
-     socket.setTimeout(20,0);
+//     socket.setTimeout(20,0);
      socket.conectar();
      if(!socket.esValido()){
 	  corriendo = false;
@@ -157,12 +158,10 @@ void Peer::run(){
 	       break;
 	  case BITFIELD:
 	       if(respuesta->length == ceil(torrent->getBitField()->getLength()/8)+1){
-		    std::cout << "Longitud del bitfield OK\n";
 		    for(int i=0;i < respuesta->length; i++)
 			 bitField->setBlock(datos->popFront(),i);
 	       }
 	       else{
-		    std::cout << "Se esperaba una longitud de : " << ceil(torrent->getBitField()->getLength()/8) << "\n";
 		    //Cerrar conexion y salir
 		    corriendo = false;
 	       }
@@ -224,6 +223,8 @@ void Peer::run(){
 		    else{
 			 std::cerr << "ERROR: <--------------------- NO EXISTE EL ARCHIVO??????\n";
 		    }
+		    if(peer_choking == 0)
+			 torrent->peerUnchoked(this);
 		    
 	       }
 	       else{
