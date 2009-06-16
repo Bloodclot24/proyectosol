@@ -130,6 +130,12 @@ public:
      /* Avisa a todos los peers conectados que tenemos una pieza */
      void anunciarPieza(uint32_t index);
 
+     /* Realiza un announce al tracker */
+     int announce();
+
+     /* Realiza un scrape */
+     int scrape();
+
      int stop(){ return 0; }
      int pause(){ return 0; }
      int remove(){ return 0; }

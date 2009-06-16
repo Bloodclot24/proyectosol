@@ -14,7 +14,7 @@ BitField::BitField(uint32_t length){
 /* Copia los datos de *bitField */
 /****************************************************************************/
 void BitField::setFields(char* bitField){
-     for(int i=0;i<length/8;i++)
+     for(uint32_t i=0;i<length/8;i++)
 	  data[i] = bitField[i];
 }
 

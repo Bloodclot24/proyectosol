@@ -27,11 +27,11 @@ typedef struct {
 	MsgId id;
 	std::string piece;
 	std::string bitfield;
-	int index;
-	int begin;
-	int length;
+	uint32_t index;
+	uint32_t begin;
+	uint32_t length;
 	std::string block;
-	int listenPort;
+	uint32_t listenPort;
 } Message;
 
 class ProtocoloBitTorrent
