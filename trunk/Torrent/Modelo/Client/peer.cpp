@@ -68,6 +68,16 @@ void Peer::setChoke(bool state){
 }
 
 /****************************************************************************/
+void Peer::have(uint32_t index){
+     Mensaje *mensaje = new Mensaje();
+     ProtocoloBitTorrent proto;
+     std::string msg;
+     msg = proto.have(index);
+     mensaje->copiarDatos(msg.c_str(), msg.length());
+     emisor.enviarMensaje(mensaje);
+}
+
+/****************************************************************************/
 bool Peer::getChoke(){
      return am_choking;
 }
@@ -95,7 +105,7 @@ void Peer::run(){
      ProtocoloBitTorrent proto;
 
      //pongo un timeout de 30 seg. para la conexion al peer.
-//     socket.setTimeout(20,0);
+     //socket.setTimeout(20,0);
      socket.conectar();
      if(!socket.esValido()){
 	  corriendo = false;
@@ -103,7 +113,6 @@ void Peer::run(){
 	  torrent->eliminarPeer(this);
 	  return;
      }
-     
 
      std::cout << "CONECTADO EXITOSAMENTE ------------<<<<" << std::endl;
 
@@ -117,11 +126,13 @@ void Peer::run(){
 
      emisor.enviarMensaje(mensaje);
 
-     for(int i=0;i<torrent->getBitField()->getLength()/8;i++){
-// 	  mensaje = new Mensaje();
-// 	  std::string have = proto.have(i);
-// 	  emisor.enviarMensaje(mensaje);
-     }
+     mensaje = new Mensaje();
+     aux = proto.bitfield(torrent->getBitField()->getBytesLength());
+     mensaje->copiarDatos(aux.c_str(), aux.length());
+     emisor.enviarMensaje(mensaje);
+
+     mensaje->copiarDatos(torrent->getBitField()->getData(), torrent->getBitField()->getBytesLength());
+     emisor.enviarMensaje(mensaje);
      
 
      Deque<char> *datos = receptor.getColaDeDatos();

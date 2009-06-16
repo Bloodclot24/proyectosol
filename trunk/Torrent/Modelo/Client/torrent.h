@@ -127,6 +127,9 @@ public:
      /* Metodo que llaman los peers envian 'unchoke' */
      void peerUnchoked(Peer* peer);
 
+     /* Avisa a todos los peers conectados que tenemos una pieza */
+     void anunciarPieza(uint32_t index);
+
      int stop(){ return 0; }
      int pause(){ return 0; }
      int remove(){ return 0; }

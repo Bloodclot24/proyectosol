@@ -59,7 +59,7 @@ class ProtocoloBitTorrent
 			
 			std::string have(uint32_t piece);
 			
-			std::string bitfield(std::string bitfield);
+			std::string bitfield(uint32_t length);
 					
 			std::string request(uint32_t index, uint32_t begin, uint32_t length);
 			

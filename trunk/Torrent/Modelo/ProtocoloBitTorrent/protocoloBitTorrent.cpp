@@ -4,8 +4,6 @@ std::string ProtocoloBitTorrent::handshake(std::string str, std::string info_has
                                            std::string peer_id) {
      char pstrlen= str.length();
 
-     std::cout << "pstrlen: " << (int)pstrlen << std::endl;
-	
      std::string mensajeHandshake;
      uint64_t reserved= 0;//Revisar, xq deberia mostrar los 8bytes de 0's
 	
@@ -15,13 +13,13 @@ std::string ProtocoloBitTorrent::handshake(std::string str, std::string info_has
 			
 std::string ProtocoloBitTorrent::keepAlive() {
      uint32_t len= 0;
-     len= this->bitStream.swap32ABigEndian(len);
+     len= htonl(len);
      return int32Astring(len);
 }
 			
 std::string ProtocoloBitTorrent::choke() {
      uint32_t len= 1;
-     len= this->bitStream.swap32ABigEndian(len);
+     len= htonl(len);
      char id = ID_CHOKE;
      std::string aux((char*)&len, 4);           
      aux += id;                                 
@@ -30,7 +28,7 @@ std::string ProtocoloBitTorrent::choke() {
 			
 std::string ProtocoloBitTorrent::unchoke() {
      uint32_t len= 1;
-     len= this->bitStream.swap32ABigEndian(len);
+     len= htonl(len);
      char id= ID_UNCHOKE;
      std::string aux((char*)&len, 4);           
      aux += id;                                 
@@ -39,7 +37,7 @@ std::string ProtocoloBitTorrent::unchoke() {
 			
 std::string ProtocoloBitTorrent::interested() {
      uint32_t len= 1;
-     len= this->bitStream.swap32ABigEndian(len);
+     len= htonl(len);
      char id= ID_INTERESTED;
      std::string aux((char*)&len, 4);           
      aux += id;                                 
@@ -48,7 +46,7 @@ std::string ProtocoloBitTorrent::interested() {
 			
 std::string ProtocoloBitTorrent::not_interested() {
      uint32_t len= 1;
-     len= this->bitStream.swap32ABigEndian(len);
+     len= htonl(len);
      char id = ID_NOT_INTERESTED;
      std::string aux((char*)&len, 4);           
      aux += id;                                 
@@ -57,33 +55,32 @@ std::string ProtocoloBitTorrent::not_interested() {
 			
 std::string ProtocoloBitTorrent::have(uint32_t piece) {
      uint32_t len= 5;
-     len= this->bitStream.swap32ABigEndian(len);
+     len= htonl(len);
      char id= ID_HAVE;
      std::string aux((char*)&len, 4);           
      aux += id;
-     len= this->bitStream.swap32ABigEndian(piece);
+     len= htonl(piece);
      std::string aux1((char*)&len, 4);           
      aux += aux1;                                 
      return aux;
 }
 
-std::string ProtocoloBitTorrent::bitfield(std::string bitfield) {
-     uint32_t len= 1 + bitfield.length();
-     len= this->bitStream.swap32ABigEndian(len);
+std::string ProtocoloBitTorrent::bitfield(uint32_t length) {
+     uint32_t len= 1 + length;
+     len= htonl(len);
      char id = ID_BITFIELD;
      std::string aux((char*)&len, 4);           
      aux += id;
-     aux += bitfield;                                 
      return aux;
 }
 					
 std::string ProtocoloBitTorrent::request(uint32_t index, uint32_t begin, uint32_t length) {
      uint32_t len= 13;
-     len= this->bitStream.swap32ABigEndian(len);
+     len= htonl(len);
      char id = ID_REQUEST;
-     index= this->bitStream.swap32ABigEndian(index);
-     begin= this->bitStream.swap32ABigEndian(begin);
-     length= this->bitStream.swap32ABigEndian(length);
+     index= htonl(index);
+     begin= htonl(begin);
+     length= htonl(length);
      std::string aux((char*)&len, 4);           
      aux += id;
      std::string aux1((char*)&index,4);
@@ -110,11 +107,11 @@ std::string ProtocoloBitTorrent::piece(uint32_t index, uint32_t begin, uint32_t 
 			
 std::string ProtocoloBitTorrent::cancel(uint32_t index, uint32_t begin, uint32_t length) {
      uint32_t len= 13; 
-     len= this->bitStream.swap32ABigEndian(len);
+     len= htonl(len);
      char id= ID_CANCEL;
-     index= this->bitStream.swap32ABigEndian(index);
-     begin= this->bitStream.swap32ABigEndian(begin);
-     length= this->bitStream.swap32ABigEndian(length);
+     index= htonl(index);
+     begin= htonl(begin);
+     length= htonl(length);
      std::string aux((char*)&len, 4);           
      aux += id;
      std::string aux1((char*)&index,4);
@@ -128,9 +125,9 @@ std::string ProtocoloBitTorrent::cancel(uint32_t index, uint32_t begin, uint32_t
 			
 std::string ProtocoloBitTorrent::port(uint32_t listenPort) {
      uint32_t len= 3;
-     len= this->bitStream.swap32ABigEndian(len);
+     len= htonl(len);
      char id= ID_PORT;
-     listenPort= this->bitStream.swap32ABigEndian(listenPort);
+     listenPort= htonl(listenPort);
      std::string aux((char*)&len, 4);           
      aux += id;
      std::string aux1((char*)&listenPort,4);
@@ -173,7 +170,7 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
      Message* message= new Message();
 	
      uint32_t* longitudMsj = (uint32_t*)aux;
-     uint32_t longMsj = this->bitStream.swap32ABigEndian(*longitudMsj);
+     uint32_t longMsj = htonl(*longitudMsj);
 
      if(longMsj != 0) {
 	  //Obtengo el id, para lo cual, leo el proximo byte
@@ -198,7 +195,6 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 	       message->id= NOT_INTERESTED;
 
 	  } else if(id == ID_HAVE) {
-	       //std::cout << "have" << std::endl;
 	       message->id= HAVE;
 	       bytes = 0;
 	       while(bytes < (4)){
@@ -219,20 +215,20 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->index = this->bitStream.swap32ABigEndian(*(uint32_t*)aux);
+	       message->index = htonl(*(uint32_t*)aux);
 	       bytes = 0;
 	       while(bytes < 4){
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->begin = this->bitStream.swap32ABigEndian(*(uint32_t*)aux);
+	       message->begin = htonl(*(uint32_t*)aux);
 
 	       bytes = 0;
 	       while(bytes < 4){
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->length = this->bitStream.swap32ABigEndian(*(uint32_t*)aux);
+	       message->length = htonl(*(uint32_t*)aux);
 
 	  } else if(id == ID_PIECE) {
 	       std::cout << "piece" << std::endl;
@@ -242,14 +238,14 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->index = this->bitStream.swap32ABigEndian(*(uint32_t*)aux);
+	       message->index = htonl(*(uint32_t*)aux);
 
 	       bytes = 0;
 	       while(bytes < 4){
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->begin = this->bitStream.swap32ABigEndian(*(uint32_t*)aux);
+	       message->begin = htonl(*(uint32_t*)aux);
 	       message->length = longMsj-9;
 	
 	  } else if(id == ID_CANCEL) {
@@ -260,7 +256,7 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->index = this->bitStream.swap32ABigEndian(*(uint32_t*)aux);
+	       message->index = htonl(*(uint32_t*)aux);
 			
 	       bytes = 0;
 	       while(bytes < 4){
@@ -268,7 +264,7 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    bytes++;
 	       }
 
-	       message->begin = this->bitStream.swap32ABigEndian(*(uint32_t*)aux);
+	       message->begin = htonl(*(uint32_t*)aux);
 
 	       bytes = 0;
 	       while(bytes < 4){
@@ -276,7 +272,7 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    bytes++;
 	       }
 
-	       message->length = this->bitStream.swap32ABigEndian(*(uint32_t*)aux);
+	       message->length = htonl(*(uint32_t*)aux);
 
 	  } else if(id == ID_PORT) {
 	       std::cout << "port" << std::endl;
@@ -286,7 +282,7 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->listenPort = this->bitStream.swap32ABigEndian(*(uint32_t*)aux);
+	       message->listenPort = htonl(*(uint32_t*)aux);
 	  }
      } else 
 	  message->id= KEEP_ALIVE;
