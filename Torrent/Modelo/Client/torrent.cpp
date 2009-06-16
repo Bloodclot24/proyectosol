@@ -32,6 +32,8 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
       * informacion */
      std::list<BeNode*> *info = parser.beDecode(fileName);
 
+     this->nombreTorrent = FileManager::obtenerFilename(fileName);
+
      peersActivos=0;
      estado = STOPPED;
      
@@ -282,8 +284,10 @@ int Torrent::start(){
 		    Peer(snumero,					\
 			 ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)), \
 			 this);
+
+	       std::cout << "\nPeer: " << peer;
 	       
-	       peer->start(idHash);
+	       //peer->start(idHash);
 	       listaPeers.push_back(peer); // agrego al peer la lista
 
 	  }
@@ -356,8 +360,6 @@ uint64_t Torrent::obtenerByteOffset(uint32_t index){
      }
 
      if(!encontrado) return -1;
-
-     std::cout << "Se acumularon " << bytesAcum << " bloques, para el indice " << index << std::endl;
 
      return (index*tamanioPiezas-bytesAcum);
 }
@@ -442,6 +444,15 @@ void Torrent::run(){
      //Logica. Basicamente pido datos.
      ProtocoloBitTorrent proto;
 
+
+     std::cout << "sleep\n";
+     
+     std::list<Peer*>::iterator it;
+     for(it=listaPeers.begin(); it!=listaPeers.end(); it++){
+	  std::cout << "START: " <<  (*it) <<"\n";
+	  (*it)->start(idHash);
+     }
+     
      while(estado == DOWNLOADING){
 	  if(peersEnEspera.size()<1){
 	       requestMutex.lock();
@@ -453,13 +464,11 @@ void Torrent::run(){
 	       Lock lock(downloadMutex);
 	       std::cout << "Realizo un request.\n";
 	       std::cout << "Peers en la cola de espera: " << peersEnEspera.size() << "\n";
-	       static uint32_t index = 0; //rarestFirst();
+	       static uint32_t index = 129; //rarestFirst();
 	       
 	       BitField *fields = piezasEnProceso[index];
 	       if(fields != NULL){
 		    std::cout << "La pieza esta siendo procesada en algun lado\n";
-		    const char* data = fields->getData();
-		    uint32_t tamanio = fields->getBytesLength();
 		    uint32_t inicio=-1,fin=-1;
 		    uint32_t size;
 		    uint32_t j;
@@ -538,7 +547,6 @@ void Torrent::run(){
 /****************************************************************************/
 void Torrent::anunciarPieza(uint32_t index){
      std::list<Peer*>::iterator it;
-     bool encontrado = false;
 
      for(it=listaPeers.begin(); it != listaPeers.end(); it++){
 	  if((*it)->conectado)

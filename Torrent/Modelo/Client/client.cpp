@@ -3,16 +3,16 @@
 /****************************************************************************/
 bool Client::addTorrent(const char* path){
 	
-	Torrent *torrent = new Torrent(path);
+     Torrent *torrent = new Torrent(path);
 	
-    if(torrent->isValid()){
-		torrents.push_back(torrent);
-		return true;
+     if(torrent->isValid()){
+	  torrents.push_back(torrent);
+	  return true;
      }
-    else {
-		delete torrent;
-		return false;
-    }
+     else {
+	  delete torrent;
+	  return false;
+     }
 }
 
 /*--------------------------------------------------------------------------*/
@@ -22,7 +22,7 @@ bool Client::start(const char* filename){
     Torrent* torrent = torrents.front(); 
     //Torrent* torrent= buscarTorrent(filename);
 
-//    return torrent->start();
+  return torrent->start();
 //    if(torrent) {
 //		torrent->start();
 //		return true;

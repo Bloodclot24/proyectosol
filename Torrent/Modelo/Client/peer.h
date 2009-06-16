@@ -27,6 +27,9 @@ private:
      
      BitField *bitField;
 
+     std::string name;
+     uint32_t port;
+
 protected:
      void run();
      
@@ -39,22 +42,35 @@ public:
      /* Devuelve un bitField con las piezas del peer */
      const BitField* getBitField();
 
+     /* Devuelve el nombre del peer */
+     const std::string& getName();
+
+     /* Devuelve el thread emisor del peer */
      ThreadEmisor* getEmisor();
 
+     /* Cambia el estado de am_interested */
      void setInterested(bool);
+     
+     /* Obtiene el estado de am_interested */
      bool getInterested();
+
+     /* Cambia el estado de am_choking */
      void setChoke(bool);
+
+     /* Obtiene el estado de am_choking */
      bool getChoke();
 
+     /* Envia un request de una parte */
      void sendRequest(uint32_t index, uint32_t offset, uint32_t size);
 
+     /* Le pregunta a este peer si tiene una cierta pieza completa */
      bool havePiece(uint32_t index);
 
+     /* Le avisa a este peer que tengo una pieza completa */
      void have(uint32_t index);
 
      /* Comienza el procesamiento y flujo de datos. */
      void start(std::string hash);
-
 
 };
 
