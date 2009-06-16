@@ -143,7 +143,7 @@ int Torrent::announce(){
      req.addParam("peer_id", CLIENT_ID); 
 
      /* Anuncio el puerto que uso para escuchar conexiones */
-     req.addParam("port", PORT_IN);
+     req.addParam("port", "1234");
      
      req.addParam("uploaded", "0");
      
@@ -157,7 +157,7 @@ int Torrent::announce(){
      req.addParam("compact", "1");
 
      /* Cantidad de Peers a pedir */
-     req.addParam("numwant", PEERS_NUM_WANT);
+     req.addParam("numwant", "50");
 
      /* TODO: pedirselo al cliente */
      req.addParam("key", "79m8xvwlyg");
