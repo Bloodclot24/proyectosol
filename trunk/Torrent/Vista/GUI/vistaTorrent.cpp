@@ -22,7 +22,7 @@ void VistaTorrent::correr() {
 	/*MAIN WINDOW*/
   	Gtk::Window* main_window;
   	refXml->get_widget("main_window", main_window);
-    main_window->signal_delete_event().connect(sigc::mem_fun(*this, &VistaTorrent::exit));
+    //main_window->signal_delete_event().connect(sigc::mem_fun(*this, &VistaTorrent::exit));
 
 	main_window->maximize();   
 	
@@ -97,6 +97,8 @@ void VistaTorrent::correr() {
                                           refXml->get_object("liststore_pieces");   	
 	treeModel_pieces= Glib::RefPtr<Gtk::ListStore>::cast_static(obj_treeModel_pieces); 
 	
+	controlador->refrescar();
+	
     Gtk::Main::run(*main_window);    
 }
 
@@ -155,7 +157,7 @@ void VistaTorrent::load_menuBar(Gtk::Window* main_window) {
   	m_refActionGroup->add(Gtk::Action::create("FileMenu", "File"));
   	
   	m_refActionGroup->add(Gtk::Action::create("FileQuit", Gtk::Stock::QUIT),
-                          sigc::mem_fun(*this, &VistaTorrent::on_exit));
+                          sigc::ptr_fun(Gtk::Main::quit));
 	
   	//Help menu:
   	m_refActionGroup->add(Gtk::Action::create("HelpMenu", "Help"));
@@ -326,8 +328,8 @@ void VistaTorrent::on_tool_start_clicked() {
 	Gtk::TreeModel::iterator iter= refTreeSelection->get_selected();
 	if(iter) {
   		Gtk::TreeModel::Row row= *iter;
-  		
-  		if(row[columns_transf.col_status] == "Paused" && row[columns_transf.col_status] == "Stopped") {
+   		
+  		if(row[columns_transf.col_status] == "Paused" || row[columns_transf.col_status] == "Stopped") {
   			
   			Glib::ustring file= row[columns_transf.col_file];
   			controlador->startFile(file); 
@@ -535,26 +537,17 @@ uint32_t VistaTorrent::obtenerOrden(std::string filename) {
 	type_children children = treeModel_transf->children();
 	Gtk::TreeModel::Row row;
 	bool found= false;
+	uint32_t contador= 0;
 	for(type_children::iterator iter= children.begin(); !found&&  
-	    iter != children.end(); ++iter) {
+	    iter != children.end(); ++iter, ++contador) {
   	
   		row= *iter;
-  		
-  		
-  		std::cout << "Nombre: " << row[columns_transf.col_file] << std::endl;
-  		std::cout << "Busco: " << filename << std::endl;
-
-		std::cout << "FILAAAA: " << iter->getValue() << std::endl;
-  		
   		
   		if(row[columns_transf.col_file] == filename)
   		   found= true;
 	}
 	
-	std::cout << "-------------" << std::endl;
-	
-	
-	return(row);
+	return(--contador);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -792,19 +785,19 @@ void VistaTorrent::cerrarFileChooser() {
     fileChooserDialog->hide();
 }
 
-/*--------------------------------------------------------------------------*/
-bool VistaTorrent::exit(GdkEventAny *event) {
-	
-	controlador->exit();
-	Gtk::Main::quit();
-	return true;	
-}
-
-/*--------------------------------------------------------------------------*/
-void VistaTorrent::on_exit() {
-
-	controlador->exit();
-	Gtk::Main::quit();	
-}
+///*--------------------------------------------------------------------------*/
+//bool VistaTorrent::exit(GdkEventAny *event) {
+//	
+//	controlador->exit();
+//	Gtk::Main::quit();
+//	return true;	
+//}
+//
+///*--------------------------------------------------------------------------*/
+//void VistaTorrent::on_exit() {
+//
+//	controlador->exit();
+//	Gtk::Main::quit();	
+//}
 
 /****************************************************************************/

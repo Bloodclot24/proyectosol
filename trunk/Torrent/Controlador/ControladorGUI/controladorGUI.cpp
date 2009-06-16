@@ -8,13 +8,13 @@ ControladorGUI::ControladorGUI() {
 	this->downloading= 0;
 	this->completed= 0;
 	this->active= 0;
+	cargarConfig();
 }
 
 /*--------------------------------------------------------------------------*/
 ControladorGUI::~ControladorGUI() {
 
-	std::cout << "ACA TOY destructorGUI\n";
-
+	guardarConfig();
 	delete vista;	
 }
 
@@ -29,9 +29,23 @@ void ControladorGUI::correr() {
 }
 
 /*--------------------------------------------------------------------------*/
+void ControladorGUI::mostrarFiles() {
+	
+	std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
+	std::list<Torrent*>::iterator it;
+
+	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++) {
+		this->all++;
+		Torrent* torrent= *it;
+		vista->agregarArchivo(torrent->getName(), 1, "200 MB", 0, "Stopped", "", "");		
+	}				  
+	
+	actualizarCantActividades();					  
+}
+
+/*--------------------------------------------------------------------------*/
 bool ControladorGUI::addTorrent(std::string pathTorrent) {
 
-	//GESTIONAR CON CLIENTE
 	//checkeo que sea un .torrent
 	bool valido= validarExtensionFile(pathTorrent);
 	
@@ -43,7 +57,7 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 			this->all++;
 			actualizarCantActividades();
 			vista->agregarTracker("SUN", "working", 10);
-			vista->agregarArchivo(pathTorrent, 1, "200 MB", 0, "Downloading", 
+			vista->agregarArchivo(FileManager::obtenerFilename(pathTorrent), 1, "200 MB", 0, "Stopped", 
 							  "", "");
 			vista->borrarMensaje();
 			
@@ -67,26 +81,15 @@ void ControladorGUI::addUrlTorrent() {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::removeFile(std::string file) {
 	
-	//GESTIONAR CON CLIENTE
-	
-	//ver si hay q restar downloading completed active
+	cliente.remove(file.c_str()); 
 	this->all--;
-	
-	std::cout << "all: " << all << std::endl;
-	std::cout << "downloading: " << downloading << std::endl;
-	std::cout << "completed: " << completed << std::endl;
-	std::cout << "active: " << active << std::endl;
-	
 	actualizarCantActividades();
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::startFile(std::string file) {
 	
-	//GESTIONAR CON CLIENTE
-	//checkear si se trata de una bajada o subida y actualizar la velocidad!!
-	
-	//hay q restar en algun lado
+	cliente.start(file.c_str());
 	this->active++;	
 	this->downloading++;
 	actualizarCantActividades();
@@ -95,7 +98,7 @@ void ControladorGUI::startFile(std::string file) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::pauseFile(std::string file) {
 	
-	//GESTIONAR CON CLIENT
+	cliente.pause(file.c_str());
 	this->active--;		
 	this->downloading--;
 	actualizarCantActividades();	
@@ -104,19 +107,10 @@ void ControladorGUI::pauseFile(std::string file) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::stopFile(std::string file) {
 
-	//GESTIONAR CON CLIENT
+	cliente.stop(file.c_str());
 	this->active--;		
 	this->downloading--;		
 	actualizarCantActividades();
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::exit() {
-
-	//GESTIONAR CON CLIENT
-	//tenemos que ver que se va a cerrar
-	std::cout << "EXIT" << std::endl;
-		
 }
 
 /*--------------------------------------------------------------------------*/

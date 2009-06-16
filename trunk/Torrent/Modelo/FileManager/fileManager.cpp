@@ -63,7 +63,7 @@ std::string FileManager::obtenerFilename(std::string path) {
 
 	std::string filename;
 	if(pos != std::string::npos) {
-		filename.assign(path, pos+1, path.length()-TAM_EXTENSION-pos-1);	
+		filename.assign(path, pos+1, path.length()-pos-1);	
 		return filename;
 	} else
 		return path;

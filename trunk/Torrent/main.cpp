@@ -4,15 +4,17 @@
 
 int main(int argc, char *argv[]) {
 	
+	Controlador* controlador;
+	
    	if(argc > 1 && strcmp(argv[1], "console") == 0) {
-   		ControladorShell* controlador = new ControladorShell();   
-   		controlador->correr();	
+   		controlador= new ControladorShell();   
+   		controlador->correr();
    	} else {
 		Gtk::Main kit(argc, argv);
-   		ControladorGUI* controlador = new ControladorGUI();   
+   		controlador= new ControladorGUI();   
    		controlador->correr();
 	}
-	std::cout << "SALGO\n";
-	
+
+	delete controlador;
 	return 0;
 }

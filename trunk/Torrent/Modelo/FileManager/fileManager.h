@@ -9,7 +9,6 @@
 
 #define PERMISO 0700
 #define COMIENZO_FILENAME "/"
-#define TAM_EXTENSION 8
 
 class FileManager {
 	

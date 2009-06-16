@@ -7,6 +7,8 @@
 #include "../Modelo/Client/client.h"
 #include "../Modelo/Client/bitField.h"
 #include "../Modelo/FileManager/fileManager.h"
+#include "../Vista/refreshVista.h"
+
 
 #define EXTENSION ".torrent"
 #define TAM_EXTENSION 8
@@ -15,17 +17,19 @@
 #define NAME_FILE_BF "Torrent"
 #define EXTENSION_BITFIELD ".bf"
 #define NAME_FILE_CONFIG "Downloads/Config/config.sun"
+
 /****************************************************************************/
 class Controlador {
 	
 	protected:
-		bool validarExtensionFile(std::string path);
 		Client cliente;
+		RefreshVista* refrescador;
 		
+		bool validarExtensionFile(std::string path);
+				
 		/*Persistencia*/
 		bool guardarConfig();
 		bool cargarConfig();
-	
 		std::string crearCopiaTorrent(std::string pathTorrent);
 						
 	public:
@@ -33,9 +37,10 @@ class Controlador {
 		virtual ~Controlador();
 
 		virtual void correr()= 0;
+		void refrescar();
 		
 		/*Files*/
-		virtual void mostrarFiles() {};
+		virtual void mostrarFiles()= 0;
 
 		virtual bool addTorrent(std::string pathTorrent)= 0;
 		virtual void addUrlTorrent()= 0;
@@ -73,10 +78,11 @@ class Controlador {
 		virtual void actualizarPestanias(std::string filename) {};
 
 		/*Orden*/
-		virtual uint32_t obtenerOrden(std::string filename)= 0;
+		virtual uint32_t obtenerOrden(std::string filename) {
+		std::cout << "Anda con el hijo, q me venia a preg a mi" << std::endl; 
+		return 0;
+		};
 		virtual void insertarOrdenado(std::string filename, uint32_t orden)= 0;
-		
-		virtual void exit()= 0;
 };
 
 /****************************************************************************/
