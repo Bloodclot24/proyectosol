@@ -7,7 +7,9 @@
 #include <string.h>
 #include "../ParserBencode/parserBencode.h"
 
-#define CLIENT_ID "-SN010-abcdefghijkl"
+#define CLIENT_ID      "-SN010-abcdefghijkl"
+#define PORT_IN        "12345"
+#define PEERS_NUM_WANT "50"
 
 /* Modelo del cliente torrent */
 class Controlador;

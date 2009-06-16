@@ -31,7 +31,7 @@ private:
      std::list<TorrentFile*>* archivos; 
 
      /* URL del announce del tracker. TODO: considerar lista de URL's */
-     std::string announce;
+     std::string announceUrl;
 
      /* Fecha de creacion */
      int creationDate;

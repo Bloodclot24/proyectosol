@@ -13,9 +13,9 @@ class Torrent;
 
 class Peer:public Thread{
 private:
-     Socket socket;
-     ThreadEmisor emisor;
-     ThreadReceptor receptor;
+     Socket *socket;
+     ThreadEmisor *emisor;
+     ThreadReceptor *receptor;
      
      Torrent* torrent;
 

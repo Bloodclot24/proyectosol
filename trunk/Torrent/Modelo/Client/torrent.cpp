@@ -51,7 +51,7 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
 	       /* Extraigo todos los elementos que necesito */
 	       elemento = (*dict)[DICT_TRACKER];
 	       if(elemento != NULL)
-		    this->announce = elemento->beStr;
+		    this->announceUrl = elemento->beStr;
 
 	       elemento = (*dict)[DICT_DATE];
 	       if(elemento != NULL)
@@ -104,24 +104,13 @@ BitField* Torrent::getBitField(){
 }
 
 /****************************************************************************/
-int Torrent::start(){
+int Torrent::announce(){
      /* Creo un request con la direccion del tracker */
-
-     HttpRequest req(announce);
-
-//      std::string scrape("announce");
-//      size_t pos = announce.find_last_of('/');
-//      if(pos != std::string::npos){
-//  	  pos = announce.find(scrape, pos);
-//  	  if(pos != std::string::npos){
-//  	       announce.replace(pos, scrape.length(),"scrape");
-//  	  }
-//      }
-
+     HttpRequest req(announceUrl);
 
      /* Configuro por defecto el puerto 80, pero si en la direccion
       * del tracker viene incluido el puerto, lo tomo de ahi */
-     socket = new Socket(announce, 80);
+     socket = new Socket(announceUrl, 80);
 
      /* conecto el socket */
      socket->conectar();
@@ -150,11 +139,11 @@ int Torrent::start(){
      /* Hash que identifica al torrent */
      req.addParam("info_hash", HttpRequest::UrlEncode(idHash));
      
-     /* 20 bytes TODO: pedirselos al cliente */
+     /* 20 bytes que nos identifican */
      req.addParam("peer_id", CLIENT_ID); 
 
-     /* Tambien pedirselo al cliente */
-     req.addParam("port", "12345");
+     /* Anuncio el puerto que uso para escuchar conexiones */
+     req.addParam("port", PORT_IN);
      
      req.addParam("uploaded", "0");
      
@@ -162,24 +151,18 @@ int Torrent::start(){
      
      req.addParam("corrupt", "0");
 
-     /* TODO: convertir getTotalSize() a string */
 //      req.addParam("left", getTotalSize);
      req.addParam("left", "1000");
 
      req.addParam("compact", "1");
 
-     /* TODO: pedirselo al cliente */
-     req.addParam("numwant", "50");
+     /* Cantidad de Peers a pedir */
+     req.addParam("numwant", PEERS_NUM_WANT);
 
      /* TODO: pedirselo al cliente */
      req.addParam("key", "79m8xvwlyg");
 
      req.addParam("event", "started");
-
-     /* Obtengo el request completo y lo muestro, solo para debugging */
-     std::string *request = req.getRequest();
-     std::cout << *request << "\nLongitud Total = "	\
-	       << request->length() << "\n";
 
      /* Creo un mensaje con el request */
      Mensaje *mensaje = new Mensaje;
@@ -195,22 +178,18 @@ int Torrent::start(){
      receptor->esperarRecepcion();
      HttpResponse *resp = receptor->getResponse();
 
-	  emisor->finalizar();
-	  receptor->finalizar();
-	  socket->cerrar();
-	  delete emisor;
-	  delete receptor;
-	  delete socket;
-     
-
-     /* Obtengo la respuesta y la muestro, solo para debugging */
-	  //std::cout << "Mensaje obtenido del servidor:\n" << r << std::endl;
+     emisor->finalizar();
+     receptor->finalizar();
+     socket->cerrar();
+     delete emisor;
+     delete receptor;
+     delete socket;
 
      ParserBencode parser;
+     BeNode* primero;
+     BeNode* elemento;
 
      std::list<BeNode*>* list = parser.beDecode(resp->getContent());
-
-     BeNode* primero;
 
      if(list == NULL ||	(primero = list->front()) == NULL	\
 	|| primero->typeNode != BE_DICT){
@@ -222,8 +201,6 @@ int Torrent::start(){
      }
 
      std::map<std::string, BeNode*>* dict = &(primero->beDict->elements);
-     
-     BeNode* elemento;
 	       
      /* Extraigo todos los elementos que necesito */
      elemento = (*dict)[DICT_FAIL];
@@ -285,20 +262,23 @@ int Torrent::start(){
 			 ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)), \
 			 this);
 
-	       std::cout << "\nPeer: " << peer;
-	       
-	       //peer->start(idHash);
 	       listaPeers.push_back(peer); // agrego al peer la lista
-
+	       //peer->start(idHash);
 	  }
+     }
+     return 0;
+}
 
+/****************************************************************************/
+int Torrent::start(){
+     if(announce() == 0){
 	  estado = DOWNLOADING;
-
+     
 	  /* Comienzo el proceso */
 	  Thread::start();	  
+	  return 0;
      }
-     
-     return 0;
+     return -1;
 }
 
 /****************************************************************************/
@@ -444,14 +424,11 @@ void Torrent::run(){
      //Logica. Basicamente pido datos.
      ProtocoloBitTorrent proto;
 
-
-     std::cout << "sleep\n";
-     
-     std::list<Peer*>::iterator it;
-     for(it=listaPeers.begin(); it!=listaPeers.end(); it++){
-	  std::cout << "START: " <<  (*it) <<"\n";
-	  (*it)->start(idHash);
-     }
+       std::list<Peer*>::iterator it;
+       int i;
+       for(i=0,it=listaPeers.begin(); it!=listaPeers.end() && i<10; it++, i++){
+  	  (*it)->start(idHash);
+       }
      
      while(estado == DOWNLOADING){
 	  if(peersEnEspera.size()<1){

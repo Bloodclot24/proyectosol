@@ -5,8 +5,8 @@
 #include "mensaje.h"
 
 /****************************************************************************/
-Peer::Peer(const std::string& host, int puerto , Torrent* torrent):	\
-     socket(host, puerto),emisor(&socket),receptor(&socket, false){
+Peer::Peer(const std::string& host, int puerto , Torrent* torrent){// 	\
+//      socket(host, puerto),emisor(&socket),receptor(&socket, false){
 
      port = puerto;
      name = host;
@@ -39,7 +39,7 @@ const BitField* Peer::getBitField(){
 
 /****************************************************************************/
 ThreadEmisor* Peer::getEmisor(){
-     return &emisor;
+     return emisor;
 }
 
 /****************************************************************************/
@@ -51,7 +51,7 @@ void Peer::setInterested(bool state){
 	  msg = proto.interested();
      else msg = proto.not_interested();
      mensaje->copiarDatos(msg.c_str(), msg.length());
-     emisor.enviarMensaje(mensaje);
+     emisor->enviarMensaje(mensaje);
      am_interested = state;
 }
 
@@ -69,7 +69,7 @@ void Peer::setChoke(bool state){
 	  msg = proto.choke();
      else msg = proto.unchoke();
      mensaje->copiarDatos(msg.c_str(), msg.length());
-     emisor.enviarMensaje(mensaje);
+     emisor->enviarMensaje(mensaje);
      am_choking = state;
 }
 
@@ -80,7 +80,7 @@ void Peer::have(uint32_t index){
      std::string msg;
      msg = proto.have(index);
      mensaje->copiarDatos(msg.c_str(), msg.length());
-     emisor.enviarMensaje(mensaje);
+     emisor->enviarMensaje(mensaje);
 }
 
 /****************************************************************************/
@@ -96,7 +96,7 @@ void Peer::sendRequest(uint32_t index, uint32_t offset,		\
      ProtocoloBitTorrent proto;
      std::string msg = proto.request(index, offset, size);
      mensaje->copiarDatos(msg.c_str(), msg.length());
-     emisor.enviarMensaje(mensaje);
+     emisor->enviarMensaje(mensaje);
      std::cout << "Request de: " << index << " tamaño: " << size << " offset: " << offset << std::endl;
 }
 
@@ -107,13 +107,18 @@ bool Peer::havePiece(uint32_t index){
 
 /****************************************************************************/
 void Peer::run(){
-
-
-     std::cout << "LLEGUE AL PEER\n";
      ProtocoloBitTorrent proto;
 
      //pongo un timeout de 30 seg. para la conexion al peer.
-     socket.setTimeout(20,0);
+     this->socket = new Socket(name,port);
+     this->emisor = new ThreadEmisor(this->socket);
+     this->receptor = new ThreadReceptor(this->socket,false);
+
+     Socket &socket = *this->socket;
+     ThreadEmisor &emisor = *this->emisor;
+     ThreadReceptor &receptor = *this->receptor;
+     
+     socket.setTimeout(30,0);
      socket.conectar();
      if(!socket.esValido()){
 	  corriendo = false;
