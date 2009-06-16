@@ -34,6 +34,8 @@ public:
 
      void comenzar();
 
+     bool isRunning();
+
      void finalizar(void);
      
      Deque<char>* getColaDeDatos();
