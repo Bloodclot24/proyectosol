@@ -262,8 +262,7 @@ int Torrent::announce(){
 			 ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)), \
 			 this);
 
-	       listaPeers.push_back(peer); // agrego al peer la lista
-	       //peer->start(idHash);
+	       agregarPeer(peer);
 	  }
      }
      return 0;
@@ -282,12 +281,30 @@ int Torrent::start(){
 }
 
 /****************************************************************************/
+void Torrent::agregarPeer(Peer* peer){
+     if(peer == NULL)
+	  return;
+
+     Lock lock(mutexPeers);
+     std::list<Peer*>::iterator it;
+     bool encontrado = false;
+
+     for(it=listaPeers.begin(); it!=listaPeers.end() && !encontrado; it++){
+	  if( (*it)->getName() == peer->getName()){
+	       encontrado = true;
+	  }
+     }
+
+     if(!encontrado)
+	  listaPeers.push_back(peer); // agrego al peer la lista	  
+}
+
+/****************************************************************************/
 void Torrent::eliminarPeer(Peer* peer){
      if(peer == NULL)
 	  return;
 
      Lock lock(mutexPeers);
-
      std::list<Peer*>::iterator it;
      bool encontrado = false;
 
@@ -299,7 +316,16 @@ void Torrent::eliminarPeer(Peer* peer){
 	  }
      }
 
-     std::cout << "SE BORRO UN PEER\n";
+     encontrado = false;
+     for(it=listaPeers.begin(); it!=listaPeers.end() && !encontrado; it++){
+	  if( !(*it)->conectado){
+	       (*it)->start(idHash);
+	       encontrado = true;
+	  }
+     }
+
+     if(!encontrado)
+	  announce();
 }
 
 /****************************************************************************/
@@ -426,7 +452,7 @@ void Torrent::run(){
 
        std::list<Peer*>::iterator it;
        int i;
-       for(i=0,it=listaPeers.begin(); it!=listaPeers.end() && i<10; it++, i++){
+       for(i=0,it=listaPeers.begin(); it!=listaPeers.end() && i<30; it++, i++){
   	  (*it)->start(idHash);
        }
      
@@ -434,14 +460,14 @@ void Torrent::run(){
 	  if(peersEnEspera.size()<1){
 	       requestMutex.lock();
 	       requestCondition.wait();
-	       std::cout << "Puedo realizar un request. (" << peersEnEspera.size()<<")\n";
 	       requestMutex.unlock();
 	  }
 	  else{
+	       std::cout << "Puedo realizar un request. (" << peersEnEspera.size()<<")\n";
 	       Lock lock(downloadMutex);
 	       std::cout << "Realizo un request.\n";
 	       std::cout << "Peers en la cola de espera: " << peersEnEspera.size() << "\n";
-	       static uint32_t index = 129; //rarestFirst();
+	       static uint32_t index = 0; //rarestFirst();
 	       
 	       BitField *fields = piezasEnProceso[index];
 	       if(fields != NULL){

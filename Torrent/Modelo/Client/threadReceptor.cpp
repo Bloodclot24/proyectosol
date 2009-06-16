@@ -46,6 +46,11 @@ void ThreadReceptor::comenzar(){
 }
 
 /****************************************************************************/
+bool ThreadReceptor::isRunning(){
+     return corriendo;
+}
+
+/****************************************************************************/
 HttpResponse* ThreadReceptor::getResponse(){
      return response;
 }

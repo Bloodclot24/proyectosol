@@ -24,6 +24,8 @@ Socket::Socket(std::string direccion, int puerto){
 	  }
 	  else hostName = direccion;
 
+	  std::cout << "DIRECCION->>>>>>>>>>>>>>>>>>> " << hostName << "\n";
+
 	  host=gethostbyname(hostName.c_str());
 	       
 	  if(host == NULL){

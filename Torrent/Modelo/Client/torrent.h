@@ -105,6 +105,9 @@ public:
      /* Devuelve el bitField asociado al torrent */
      BitField* getBitField();
 
+     /* Añade un peer a la lista de peers cuidando que no este repetido */
+     void agregarPeer(Peer* peer);
+     
      /* Elimina un peer de la lista de peers */
      void eliminarPeer(Peer* peer);
 
