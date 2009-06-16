@@ -24,14 +24,14 @@ bool Client::addTorrent(const char* path){
 /*--------------------------------------------------------------------------*/
 bool Client::start(const char* filename){
 
-	Torrent* torrent= buscarTorrent(filename);
-	EstadoTorrent estado= torrent->getEstadoTorrent(); 
-	if(torrent && (estado ==  PAUSED || estado ==  STOPPED)) {
-	/* por ahora, nada mas para probar comienza solo el primer torrent */
-    	Torrent* torrent = torrents.front(); 
-    //Torrent* torrent= buscarTorrent(filename);
-
-  return torrent->start();
+     Torrent* torrent= buscarTorrent(filename);
+     EstadoTorrent estado= torrent->getEstadoTorrent(); 
+     if(torrent && (estado ==  PAUSED || estado ==  STOPPED)) {
+	  /* por ahora, nada mas para probar comienza solo el primer torrent */
+	  Torrent* torrent = torrents.front(); 
+	  //Torrent* torrent= buscarTorrent(filename);
+	  
+	     return torrent->start();
 //    if(torrent) {
 //		torrent->start();
 //		return true;
