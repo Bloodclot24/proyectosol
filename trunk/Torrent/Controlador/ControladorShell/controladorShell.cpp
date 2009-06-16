@@ -54,7 +54,7 @@ void ControladorShell::mostrarTrackers() {
 	
 	shell->mostrarTrackers();
 	//PEDIR TRACKERS
-	shell->mostrarTracker("Vero", "Disponible", 5);
+	//shell->mostrarTracker("Vero", "Disponible", 5);
 } 
 
 /*--------------------------------------------------------------------------*/
@@ -64,22 +64,23 @@ void ControladorShell::mostrarFiles() {
 	std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
 	std::list<Torrent*>::iterator it;
 	int contador= 1;
-	
+	std::string estado;
 	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++, contador++) {
 		Torrent* torrent= *it;
-		shell->mostrarArchivo(contador, torrent->getName(), 1, "200 MB", 0, "Stopped", "", "");		
+		estado= getEstadoTorrent(torrent->getEstadoTorrent());
+		shell->mostrarArchivo(contador, torrent->getName(), 0, "", 0, estado, "", "");		
 	}	
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorShell::mostrarGeneral(std::string numFile) {
 
-	//PEDIR DATOS
 	bool valido= validarNumFile(numFile);
 	
 	if(valido) {
-		std::cout << "Valido" << std::endl;	
-		shell->mostrarGeneral( numFile, "80 kb/s", "Waiting...");
+		Torrent* torrent= obtenerTorrent(obtenerFilename(numFile));
+		std::string estado= getEstadoTorrent(torrent->getEstadoTorrent());
+		shell->mostrarGeneral(obtenerFilename(numFile), "", estado);
 	}
 }
 
@@ -114,10 +115,10 @@ void ControladorShell::removeFile(std::string numFile) {
 	
 	bool valido= validarNumFile(numFile);
 	
-	if(valido)
+	if(valido) {
 		if(!cliente.remove(obtenerFilename(numFile)))
 			shell->mostrarMensaje("No se pudo BORRAR el archivo.");
-	else  	
+	} else  	
 		shell->mostrarMensaje("No es un numero de archivo valido.");
 }
 
@@ -126,10 +127,10 @@ void ControladorShell::startFile(std::string numFile) {
 
 	bool valido= validarNumFile(numFile);
 	
-	if(valido)
+	if(valido) {
 		if(!cliente.start(obtenerFilename(numFile)))
 			shell->mostrarMensaje("No se pudo INICIAR la descarga.");
-	else
+	} else
 		shell->mostrarMensaje("No es un numero de archivo valido.");		
 }
 
@@ -138,10 +139,10 @@ void ControladorShell::pauseFile(std::string numFile) {
 	
 	bool valido= validarNumFile(numFile);
 	
-	if(valido)
+	if(valido) {
 		if(!cliente.pause(obtenerFilename(numFile)))
 			shell->mostrarMensaje("No se pudo PAUSAR la descarga.");
-	else  	
+	} else  	
 		shell->mostrarMensaje("No es un numero de archivo valido.");
 }
 
@@ -150,10 +151,10 @@ void ControladorShell::stopFile(std::string numFile) {
 	
 	bool valido= validarNumFile(numFile);
 	
-	if(valido)
+	if(valido) {
 		if(!cliente.stop(obtenerFilename(numFile)))
 			shell->mostrarMensaje("No se pudo DETENER la descarga.");
-	else  	
+	} else  	
 		shell->mostrarMensaje("No es un numero de archivo valido.");	
 }
 
@@ -179,7 +180,7 @@ const char* ControladorShell::obtenerFilename(std::string numFile) {
 	
 	std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
 	std::list<Torrent*>::iterator it;
-	int contador= 0;
+	int contador= 1;
 	int buscado= atoi(numFile.c_str());
 	bool encontrado= false;
 	std::string filename;

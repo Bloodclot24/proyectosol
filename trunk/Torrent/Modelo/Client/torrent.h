@@ -139,6 +139,9 @@ public:
      int stop(){ return 0; }
      int pause(){ return 0; }
      int remove(){ return 0; }
+     
+     /* Devuelve el estado del torrent */
+     EstadoTorrent getEstadoTorrent() { return estado; };
 
      ~Torrent();
 };

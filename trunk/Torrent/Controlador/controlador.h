@@ -26,6 +26,8 @@ class Controlador {
 		RefreshVista* refrescador;
 		
 		bool validarExtensionFile(std::string path);
+		std::string getEstadoTorrent(EstadoTorrent estado);
+		Torrent* obtenerTorrent(std::string filename);
 				
 		/*Persistencia*/
 		bool guardarConfig();

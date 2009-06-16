@@ -208,4 +208,45 @@ void Controlador::refrescar() {
 	refrescador->refrescar();
 }
 
+/*--------------------------------------------------------------------------*/
+std::string Controlador::getEstadoTorrent(EstadoTorrent estado) {
+	
+	std::string sEstado;
+	
+	switch(estado) {
+		case STOPPED: 
+			sEstado= "Stopped";
+		break;
+		case PAUSED:
+			sEstado= "Paused";
+		break;	
+		case DOWNLOADING:
+			sEstado= "Downloading";
+		break;
+		case SEEDING:
+			sEstado= "Seeding";
+		break;
+		case ERROR:
+		break;	
+	}
+	
+	return sEstado;			
+}
+
+/*--------------------------------------------------------------------------*/
+Torrent* Controlador::obtenerTorrent(std::string filename) {
+	
+	std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
+	std::list<Torrent*>::iterator it;
+	bool encontrado= false;
+	
+	for(it= listaTorrents->begin(); it != listaTorrents->end() && !encontrado; it++) {
+
+		if(filename ==  (*it)->getName())
+			encontrado= true;
+	}	
+	
+	return *(--it);
+}
+
 /****************************************************************************/
