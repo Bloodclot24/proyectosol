@@ -37,7 +37,8 @@ void ControladorGUI::mostrarFiles() {
 	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++) {
 		this->all++;
 		Torrent* torrent= *it;
-		vista->agregarArchivo(torrent->getName(), 1, "200 MB", 0, "Stopped", "", "");		
+		std::string estado= getEstadoTorrent(torrent->getEstadoTorrent());
+		vista->agregarArchivo(torrent->getName(), 0, "", 0, estado, "", "");		
 	}				  
 	
 	actualizarCantActividades();					  
@@ -56,8 +57,11 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 			vista->cerrarFileChooser();
 			this->all++;
 			actualizarCantActividades();
-			vista->agregarTracker("SUN", "working", 10);
-			vista->agregarArchivo(FileManager::obtenerFilename(pathTorrent), 1, "200 MB", 0, "Stopped", 
+			//vista->agregarTracker("SUN", "working", 10);
+			std::string filename= FileManager::obtenerFilename(pathTorrent);
+			Torrent* torrent= obtenerTorrent(filename);
+			std::string estado= getEstadoTorrent(torrent->getEstadoTorrent());
+			vista->agregarArchivo(filename, 0, "", 0, estado, 
 							  "", "");
 			vista->borrarMensaje();
 			
@@ -187,17 +191,17 @@ void ControladorGUI::actualizarPestanias(std::string filename) {
 	//pedir completado
 	vista->modificarDownloaded("4%");
 	//pedir estado del archivo 
-	vista->modificarInformacion("Waiting...");
+	//vista->modificarInformacion("Waiting...");
 	
 	//Peers
 	vista->limpiarListaClientes();
 	//pedir lista clientes y usar
-	vista->agregarCliente("127.0.0.4", "ReverPass");
+	//vista->agregarCliente("127.0.0.4", "ReverPass");
 	
 	//Pieces
 	vista->limpiarListaPieces();
 	//pedir lista clientes y usar
-	vista->agregarPiece(13, "12 MB", 15, 4, 4);	
+	//vista->agregarPiece(13, "12 MB", 15, 4, 4);	
 }
 
 /*--------------------------------------------------------------------------*/

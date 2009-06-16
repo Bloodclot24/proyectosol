@@ -18,8 +18,11 @@ bool Client::addTorrent(const char* path){
 /*--------------------------------------------------------------------------*/
 bool Client::start(const char* filename){
 
+	Torrent* torrent= buscarTorrent(filename);
+	EstadoTorrent estado= torrent->getEstadoTorrent(); 
+	if(torrent && (estado ==  PAUSED || estado ==  STOPPED)) {
 	/* por ahora, nada mas para probar comienza solo el primer torrent */
-    Torrent* torrent = torrents.front(); 
+    	Torrent* torrent = torrents.front(); 
     //Torrent* torrent= buscarTorrent(filename);
 
   return torrent->start();
@@ -28,13 +31,14 @@ bool Client::start(const char* filename){
 //		return true;
 //	} else
 //		return false;	
+	}
 }
 
 /*--------------------------------------------------------------------------*/
 bool Client::stop(const char* filename) {
 	
 	Torrent* torrent= buscarTorrent(filename);
-	if(torrent) {
+	if(torrent && torrent->getEstadoTorrent() ==  DOWNLOADING) {
 		torrent->stop();
 		return true;
 	} else
@@ -45,7 +49,7 @@ bool Client::stop(const char* filename) {
 bool Client::pause(const char* filename) {
 	
 	Torrent* torrent= buscarTorrent(filename);
-	if(torrent) {
+	if(torrent && torrent->getEstadoTorrent() ==  DOWNLOADING) {
 		torrent->pause();
 		return true;
 	} else

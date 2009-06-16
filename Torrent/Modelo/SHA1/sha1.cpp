@@ -15,7 +15,7 @@ std::string Sha1::intAstring(uint32_t valor)
 /****************************************************************************/
 static uint32_t leftRotate(uint32_t numero, int cuanto){
      
-     return  (numero << cuanto) | (numero >> 32-cuanto);
+     return  (numero << cuanto) | (numero >> (32-cuanto));
 }
 
 /****************************************************************************/
