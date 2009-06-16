@@ -23,8 +23,10 @@ class ControladorGUI: public Controlador {
 		virtual void correr();
 		
 		/*Files*/
+		virtual void mostrarFiles();
 		virtual bool addTorrent(std::string pathTorrent);
 		virtual void addUrlTorrent();
+
 		virtual void removeFile(std::string file);
 		virtual void startFile(std::string file);
 		virtual void pauseFile(std::string file);
@@ -48,8 +50,6 @@ class ControladorGUI: public Controlador {
 		
 		virtual uint32_t obtenerOrden(std::string filename);
 		virtual void insertarOrdenado(std::string filename, uint32_t orden) {};
-		
-		virtual void exit();		
 };
 
 /****************************************************************************/

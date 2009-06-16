@@ -2,7 +2,6 @@
 #define CONTROLADORSHELL_H_
 
 #include <stdlib.h>
-#include <limits.h>
 #include "../../Controlador/controlador.h"
 #include "../../Vista/Shell/shell.h"
 
@@ -13,8 +12,9 @@ class ControladorShell: public Controlador {
 		Shell* shell;
 		
 		bool validarNumFile(std::string numFile);
-		int contador;
 		uint32_t contadorOrden;
+		int cantFiles;
+		const char* obtenerFilename(std::string numFile);
 		
 	public:
 		ControladorShell(); 
@@ -36,8 +36,6 @@ class ControladorShell: public Controlador {
 		
 		virtual uint32_t obtenerOrden(std::string filename);
 		virtual void insertarOrdenado(std::string filename, uint32_t orden) {};
-				
-		virtual void exit();
 };
 
 /****************************************************************************/
