@@ -50,6 +50,8 @@ public:
 
      bool havePiece(uint32_t index);
 
+     void have(uint32_t index);
+
      /* Comienza el procesamiento y flujo de datos. */
      void start(std::string hash);
 
