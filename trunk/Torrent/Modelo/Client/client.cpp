@@ -1,6 +1,12 @@
 #include "client.h"
 
 /****************************************************************************/
+Client::Client(){
+	this->puertoPorDefecto = PORT_IN;
+	this->cantidadDePeers = PEERS_NUM_WANT;
+}
+
+/*--------------------------------------------------------------------------*/
 bool Client::addTorrent(const char* path){
 	
      Torrent *torrent = new Torrent(path);
@@ -97,6 +103,26 @@ void Client::setBitFieldTorrent(const char* filename, char* data) {
 /*--------------------------------------------------------------------------*/
 std::list<Torrent*>* Client::getListaTorrents(){
 	return &torrents;
+}
+
+/*--------------------------------------------------------------------------*/
+uint32_t Client::getPortDefault(){
+	return puertoPorDefecto;
+}
+
+/*--------------------------------------------------------------------------*/
+void Client::setPortDefault(uint32_t puerto){
+	this->puertoPorDefecto =  puerto;
+}
+
+/*--------------------------------------------------------------------------*/
+uint32_t Client::getNumPeersForTorrent(){
+	return cantidadDePeers;
+}
+
+/*--------------------------------------------------------------------------*/
+void Client::setNumPeersForTorrent(uint32_t numeroDePeers){
+	this->cantidadDePeers =  numeroDePeers;
 }
 
 /*--------------------------------------------------------------------------*/
