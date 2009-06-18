@@ -5,9 +5,9 @@ std::string ProtocoloBitTorrent::handshake(std::string str, std::string info_has
      char pstrlen= str.length();
 
      std::string mensajeHandshake;
-     uint64_t reserved= 0;//Revisar, xq deberia mostrar los 8bytes de 0's
-	
-     mensajeHandshake= pstrlen + str + int64Astring(reserved) + info_hash + peer_id;
+//     uint64_t reserved= 0;//Revisar, xq deberia mostrar los 8bytes de 0's
+     std::string reserved("\0\0\0\0\0\0\0\0",8);
+     mensajeHandshake= pstrlen + str + reserved + info_hash + peer_id;
      return mensajeHandshake;
 }  
 			
@@ -170,14 +170,16 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
      Message* message= new Message();
 	
      uint32_t* longitudMsj = (uint32_t*)aux;
-     uint32_t longMsj = htonl(*longitudMsj);
+     uint32_t longMsj = ntohl(*longitudMsj);
+
+//     std::cout << "LONGITUD===============" << longMsj << "\n"; 
 
      if(longMsj != 0) {
 	  //Obtengo el id, para lo cual, leo el proximo byte
 	  bytes = 0;
 	  aux[bytes] = deque.popFront();
 	  int id= aux[0];
-		
+	  //  std::cout << "ID=================" << id << "\n";
 	  if(id == ID_CHOKE) {
 	       std::cout << "choke" << std::endl;
 	       message->id= CHOKE;
@@ -215,20 +217,20 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->index = htonl(*(uint32_t*)aux);
+	       message->index = ntohl(*(uint32_t*)aux);
 	       bytes = 0;
 	       while(bytes < 4){
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->begin = htonl(*(uint32_t*)aux);
+	       message->begin = ntohl(*(uint32_t*)aux);
 
 	       bytes = 0;
 	       while(bytes < 4){
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->length = htonl(*(uint32_t*)aux);
+	       message->length = ntohl(*(uint32_t*)aux);
 
 	  } else if(id == ID_PIECE) {
 	       std::cout << "piece" << std::endl;
@@ -238,14 +240,14 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->index = htonl(*(uint32_t*)aux);
+	       message->index = ntohl(*(uint32_t*)aux);
 
 	       bytes = 0;
 	       while(bytes < 4){
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->begin = htonl(*(uint32_t*)aux);
+	       message->begin = ntohl(*(uint32_t*)aux);
 	       message->length = longMsj-9;
 	
 	  } else if(id == ID_CANCEL) {
@@ -256,7 +258,7 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->index = htonl(*(uint32_t*)aux);
+	       message->index = ntohl(*(uint32_t*)aux);
 			
 	       bytes = 0;
 	       while(bytes < 4){
@@ -264,7 +266,7 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    bytes++;
 	       }
 
-	       message->begin = htonl(*(uint32_t*)aux);
+	       message->begin = ntohl(*(uint32_t*)aux);
 
 	       bytes = 0;
 	       while(bytes < 4){
@@ -272,7 +274,7 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    bytes++;
 	       }
 
-	       message->length = htonl(*(uint32_t*)aux);
+	       message->length = ntohl(*(uint32_t*)aux);
 
 	  } else if(id == ID_PORT) {
 	       std::cout << "port" << std::endl;
@@ -282,10 +284,13 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->listenPort = htonl(*(uint32_t*)aux);
+	       message->listenPort = ntohl(*(uint32_t*)aux);
 	  }
-     } else 
+     } else {
 	  message->id= KEEP_ALIVE;
+	  std::cout << "keepAlive\n";
+     }
+     
 	
      return message;
 }

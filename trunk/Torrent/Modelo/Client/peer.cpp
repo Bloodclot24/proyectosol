@@ -199,6 +199,9 @@ void Peer::run(){
      	//asigno el hash obtenido al peer
      	this->hash.clear();
 	  	this->hash = hashRecibido;		
+     
+     /* Aviso al torrent que me pude conectar */
+     torrent->peerConected(this);
 
 		/* Envio un handshake */
      	mensaje = new Mensaje();
@@ -216,9 +219,6 @@ void Peer::run(){
      	emisor->enviarMensaje(mensaje);
 	}
      conectado = true;
-
-     /* Aviso al torrent que me pude conectar */
-     torrent->peerConected(this);
 
      while(corriendo && receptor->isRunning()){
 	  Message *respuesta = proto.decode(*datos);
@@ -243,12 +243,13 @@ void Peer::run(){
 	       bitField->setField(respuesta->index, 1);
 	       break;
 	  case BITFIELD:
-	       if(respuesta->length == ceil(torrent->getBitField()->getLength()/8)+1){
+	       if(respuesta->length == torrent->getBitField()->getBytesLength()){
 		    for(int i=0;i < respuesta->length && receptor->isRunning(); i++)
-			 bitField->setBlock(datos->popFront(),i);
+			 bitField->setBlock(datos->popFront(),i);     
 	       }
 	       else{
 		    //Cerrar conexion y salir
+		    std::cout << "Bitfield de longitud erronea recibido \n";
 		    corriendo = false;
 	       }
 	       break;
@@ -284,7 +285,7 @@ void Peer::run(){
 		    if(file != NULL){
 			 std::cout << "Se escribe en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
 			      ". Que corresponde al indice: " << respuesta->index << std::endl;
-			 torrent->writeData(respuesta->block.c_str(), respuesta->index, respuesta->begin, respuesta->length);
+			 torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, respuesta->length);
 
 		    }
 		    else{
@@ -309,6 +310,8 @@ void Peer::run(){
 	       break;
 
 	  default:
+	       std::cout << "Lucia, deja de mandar mensajes sin sentido!!! @ " << socket << "\n";
+	       corriendo = false;
 	       break;
 	  }
      }
