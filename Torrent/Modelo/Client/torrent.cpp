@@ -31,6 +31,7 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
      /* Decodifico todo el .torrent y obtengo una lista con toda la
       * informacion */
      std::list<BeNode*> *info = parser.beDecode(fileName);
+     bool check=false;
 
      this->nombreTorrent = FileManager::obtenerFilename(fileName);
 
@@ -82,6 +83,16 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
 			 );
 		    /* parseo la estructura con los archivos */
 		    archivos = TorrentFile::Parse(elemento);
+		    int status=0;
+
+		    for(std::list<TorrentFile*>::iterator it=archivos->begin();it!=archivos->end();it++){
+			 status=(*it)->getManager()->getStatus();
+			 if(status == -1)
+			      valido = false;
+			 else if(status == 1)
+			      check=1;
+		    }
+
 	       }
 	       else valido=false;
 
@@ -91,7 +102,18 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
 	  ParserBencode::beFree(info);
 	  delete info;
 
-	  bitField = new BitField(ceil(getTotalSize()/(*archivos->begin())->getPieceLength()));
+	  pieceSize = (*archivos->begin())->getPieceLength();
+	  sizeInPieces = ceil(getTotalSize()/pieceSize);
+	  
+	  bitField = new BitField(sizeInPieces);
+	  //Si arbi alguno de los archivos y ya existia, verifico si hay datos validos
+	  if(check){
+	       for(int i=0;i<sizeInPieces;i++){
+		    if(validarPieza(i)==1)
+			 bitField->setField(i,1);
+	       }
+	  }
+
      }
      else{
 	  valido = false;
@@ -168,10 +190,10 @@ Torrent::Torrent(const char* fileName, char* bitfield):requestCondition(&request
 
 	  this->bitField= bitField; 
 	  
-	 else{
-	  valido = false;
-     } 
-}
+	  //else{
+	  //   valido = false;
+} 
+
 
 /****************************************************************************/
 BitField* Torrent::getBitField(){
@@ -521,6 +543,15 @@ TorrentFile* Torrent::obtenerArchivo(uint32_t index)
 }
 
 /****************************************************************************/
+int Torrent::validarPieza(uint32_t index){
+     if(index > bitField->getLength())
+	  return -1;
+     char *buffer = new char[pieceSize];
+     
+     
+}
+
+/****************************************************************************/
 void Torrent::run(){
      //Logica. Basicamente pido datos.
      ProtocoloBitTorrent proto;
@@ -560,8 +591,11 @@ void Torrent::run(){
 			 piezasEnProceso[index]=NULL;
 			 //delete fields;
 			 bitField->setField(index,1);
-			 //Anunciar el have
-			 anunciarPieza(index);
+			 //Me fijo que la pieza sea valida antes de continuar
+			 if(validarPieza(index))
+			    //Anunciar el have
+			    anunciarPieza(index);
+
 			 index++;
 			 inicio=0;
 			 fin=REQUEST_SIZE_DEFAULT;

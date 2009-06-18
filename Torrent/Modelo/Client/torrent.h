@@ -80,6 +80,9 @@ private:
 
      Mutex downloadMutex;
 
+     uint32_t sizeInPieces;
+     uint32_t pieceSize;
+
 private:
 
      /* Devuelve el numero de pieza que esmas dificil de conseguir (de
@@ -139,6 +142,9 @@ public:
 
      /* Realiza un scrape */
      int scrape();
+
+     /* Indica si una pieza es o no valida */
+     int validarPieza(uint32_t index);
 
      int stop(){ return 0; }
      int pause(){ return 0; }
