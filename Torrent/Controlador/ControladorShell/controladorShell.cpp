@@ -129,9 +129,9 @@ void ControladorShell::startFile(std::string numFile) {
 	
 	if(valido) {
 		if(!cliente.start(obtenerFilename(numFile)))
-			shell->mostrarMensaje("No se pudo INICIAR la descarga.");
+			shell->mostrarMensaje("ERROR: No se pudo INICIAR la descarga.");
 	} else
-		shell->mostrarMensaje("No es un numero de archivo valido.");		
+		shell->mostrarMensaje("ERROR: No es un numero de archivo valido.");		
 }
 
 /*--------------------------------------------------------------------------*/
@@ -141,9 +141,9 @@ void ControladorShell::pauseFile(std::string numFile) {
 	
 	if(valido) {
 		if(!cliente.pause(obtenerFilename(numFile)))
-			shell->mostrarMensaje("No se pudo PAUSAR la descarga.");
+			shell->mostrarMensaje("ERROR: No se pudo PAUSAR la descarga.");
 	} else  	
-		shell->mostrarMensaje("No es un numero de archivo valido.");
+		shell->mostrarMensaje("ERROR: No es un numero de archivo valido.");
 }
 
 /*--------------------------------------------------------------------------*/
@@ -153,9 +153,9 @@ void ControladorShell::stopFile(std::string numFile) {
 	
 	if(valido) {
 		if(!cliente.stop(obtenerFilename(numFile)))
-			shell->mostrarMensaje("No se pudo DETENER la descarga.");
+			shell->mostrarMensaje("ERROR: No se pudo DETENER la descarga.");
 	} else  	
-		shell->mostrarMensaje("No es un numero de archivo valido.");	
+		shell->mostrarMensaje("ERROR: No es un numero de archivo valido.");	
 }
 
 /*--------------------------------------------------------------------------*/

@@ -85,36 +85,50 @@ void ControladorGUI::addUrlTorrent() {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::removeFile(std::string file) {
 	
-	cliente.remove(file.c_str()); 
-	this->all--;
-	actualizarCantActividades();
+	if(cliente.remove(file.c_str())) { 
+		this->all--;
+		actualizarCantActividades();	
+	} else 
+		vista->agregarMessage("ERROR: No se pudo borrar el archivo" + file);
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::startFile(std::string file) {
 	
-	cliente.start(file.c_str());
-	this->active++;	
-	this->downloading++;
-	actualizarCantActividades();
+	if(cliente.start(file.c_str())) {
+		vista->start(file);
+		this->active++;	
+		this->downloading++;
+		actualizarCantActividades();
+	} else 
+		vista->agregarMessage("ERROR: No se pudo INICIAR la descarga de " 
+		                      + file);
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::pauseFile(std::string file) {
 	
-	cliente.pause(file.c_str());
-	this->active--;		
-	this->downloading--;
-	actualizarCantActividades();	
+	if(cliente.pause(file.c_str())) {
+		vista->pause(file);
+		this->active--;		
+		this->downloading--;
+		actualizarCantActividades();
+	} else 
+		vista->agregarMessage("ERROR: No se pudo PAUSAR la descarga de "
+			                  + file);
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::stopFile(std::string file) {
 
-	cliente.stop(file.c_str());
-	this->active--;		
-	this->downloading--;		
-	actualizarCantActividades();
+	if(cliente.stop(file.c_str())) {
+		vista->stop(file);
+		this->active--;		
+		this->downloading--;		
+		actualizarCantActividades();
+	} else 
+		vista->agregarMessage("ERROR: No se pudo DETENER la descarga de "
+			                  + file);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -125,7 +139,7 @@ void ControladorGUI::actualizarDone(std::string file, int piece, int done) {
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarStatus(std::string file, int piece, 
-		                                std::string status) {
+		                                               std::string status) {
 	
 	vista->actualizarStatus(file, piece, status);
 	actualizarCantActividades();		                              	
@@ -133,7 +147,7 @@ void ControladorGUI::actualizarStatus(std::string file, int piece,
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarDownSpeed(std::string file, int piece, 
-		                                   std::string downSpeed) {
+		                                             std::string downSpeed) {
 	
 	vista->actualizarDownSpeed(file, piece, downSpeed);
 }
@@ -148,7 +162,6 @@ void ControladorGUI::actualizarUpSpeed(std::string file, int piece,
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarCantActividades() {
 	
-	//PEDIR AL CLIENTE LAS CANTIDADES
 	char sAux[15];
 	sprintf(sAux, "%d", all);
 	vista->modificarCantAll(sAux);
@@ -164,8 +177,8 @@ void ControladorGUI::actualizarCantActividades() {
 
 /*--------------------------------------------------------------------------*/
 /**Trackers**/
-void ControladorGUI::modificarStatusTracker(std::string name, 
-                                              std::string status) {
+void ControladorGUI::modificarStatusTracker(std::string name,     
+                                                        std::string status) {
 	
 	vista->modificarStatusTracker(name, status);
 }		

@@ -64,6 +64,12 @@
       <column type="gchararray"/>
     </columns>
   </object>
+  <object class="GtkListStore" id="liststore_messages">
+    <columns>
+      <!-- column-name Message -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkWindow" id="main_window">
     <property name="title" translatable="yes">&#x592A;&#x967D;-Torrent</property>
     <property name="window_position">center-always</property>
@@ -365,6 +371,7 @@
           <object class="GtkNotebook" id="notebook">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="tab_border">0</property>
             <child>
               <object class="GtkTable" id="table_general">
                 <property name="visible">True</property>
@@ -738,6 +745,63 @@
               </object>
               <packing>
                 <property name="position">3</property>
+                <property name="tab_fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolledwindow_messages">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="hscrollbar_policy">automatic</property>
+                <property name="vscrollbar_policy">automatic</property>
+                <child>
+                  <object class="GtkTreeView" id="treeview_messages">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="model">liststore_messages</property>
+                    <property name="headers_visible">False</property>
+                    <property name="headers_clickable">False</property>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="treeviewcolumn_message">
+                        <child>
+                          <object class="GtkCellRendererText" id="cellrenderertext_message"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="position">4</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkHBox" id="hbox_messages">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkImage" id="image_messages">
+                    <property name="visible">True</property>
+                    <property name="pixbuf">images/tabIcons/logger.png</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label_messages">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Messages</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">4</property>
                 <property name="tab_fill">False</property>
               </packing>
             </child>

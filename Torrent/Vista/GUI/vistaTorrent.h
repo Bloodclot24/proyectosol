@@ -78,6 +78,7 @@ class VistaTorrent {
 		ModelColumns_transf columns_transf;
 		  
 		Gtk::TreeModel::Row buscarRow_transf(std::string file, int piece);
+		Gtk::TreeModel::Row buscarRow_transf(std::string file);
 		Glib::RefPtr<Gtk::TreeSelection> refTreeSelection;
 		void on_selection_changed();
 		
@@ -168,8 +169,21 @@ class VistaTorrent {
 		Glib::RefPtr<Gtk::ListStore> treeModel_pieces;
 		ModelColumns_pieces columns_pieces;
 		
-		bool exit(GdkEventAny *event);
-		void on_exit();
+		/*TREEVIEW MESSAGES*/
+		Glib::RefPtr<Gtk::TreeView> treeView_messages;
+		
+		class ModelColumns_messages: public Gtk::TreeModel::ColumnRecord {
+		  
+			public:
+				ModelColumns_messages() {
+			  		add(col_message);
+			  	}
+		
+		    	Gtk::TreeModelColumn<Glib::ustring> col_message;
+		};
+		
+		Glib::RefPtr<Gtk::ListStore> treeModel_messages;
+		ModelColumns_messages columns_messages;
 						
 	public:
 		VistaTorrent(Controlador* controlador);
@@ -187,7 +201,10 @@ class VistaTorrent {
 		void actualizarUpSpeed(std::string file, int piece, 
 		                       std::string upSpeed);
 		uint32_t obtenerOrden(std::string filename);
-
+		void start(std::string filename);
+		void pause(std::string filename);
+		void stop(std::string filename);
+		
 		/*Panel Actividades*/
 		void modificarCantAll(std::string cantAll);
 		void modificarCantDownloading(std::string cantDownloading);
@@ -215,6 +232,9 @@ class VistaTorrent {
 		void agregarPiece(int number, std::string size, int blocks, int block,
 		                  int completed);
 		void limpiarListaPieces();
+		
+		/*Pestania Message*/
+		void agregarMessage(std::string message);
 		
 		/*ToolBar*/
 		void disableAddUrlTorrent();
