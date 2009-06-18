@@ -22,6 +22,10 @@ FileManager::FileManager(const char* filename,uint32_t tamanio) {
 
 }
 
+int FileManager::getStatus(){
+	return this->status;
+}
+
 bool FileManager::agregarPieza(const char* pieza, uint32_t offset, uint32_t tamanio)
 {
 
