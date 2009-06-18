@@ -99,6 +99,81 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
 }
 
 /****************************************************************************/
+Torrent::Torrent(const char* fileName, char* bitfield):requestCondition(&requestMutex){
+	
+	     ParserBencode parser;
+     /* Decodifico todo el .torrent y obtengo una lista con toda la
+      * informacion */
+     std::list<BeNode*> *info = parser.beDecode(fileName);
+
+     this->nombreTorrent = FileManager::obtenerFilename(fileName);
+
+     peersActivos=0;
+     estado = STOPPED;
+     
+     if(info != NULL){
+	  valido = true;
+
+	  BeNode* primero = info->front();
+	  
+	  if(primero->typeNode == BE_DICT){
+	       std::map<std::string, BeNode*>* dict =	\
+		    &(primero->beDict->elements);
+	       
+	       BeNode* elemento;
+	       
+	       /* Extraigo todos los elementos que necesito */
+	       elemento = (*dict)[DICT_TRACKER];
+	       if(elemento != NULL)
+		    this->announceUrl = elemento->beStr;
+
+	       elemento = (*dict)[DICT_DATE];
+	       if(elemento != NULL)
+		    this->creationDate = elemento->beInt;
+	       else this->creationDate = 0;
+	       
+	       elemento = (*dict)[DICT_COMMENTS];
+	       if(elemento != NULL)
+		    this->comment = elemento->beStr;
+	       
+	       elemento = (*dict)[DICT_CREATOR];
+	       if(elemento != NULL)
+		    this->createdBy = elemento->beStr;
+	       
+	       elemento = (*dict)[DICT_ENCODING];
+	       if(elemento != NULL)
+	       this->encoding = elemento->beInt;
+	       else this->encoding = 0;
+	       
+	       /* Informacion de todos los archivos */
+	       elemento = (*dict)[DICT_INFO];
+	       if(elemento != NULL){
+		    Sha1 hasher;
+		    idHash = hasher.ejecutarSha1(			\
+			 elemento->buffer->substr(			\
+			      elemento->start,				\
+			      (elemento->end+1)-elemento->start)	\
+			 );
+		    /* parseo la estructura con los archivos */
+		    archivos = TorrentFile::Parse(elemento);
+	       }
+	       else valido=false;
+
+	  }
+     }
+	  
+	  /* libero los elementos antes de eliminar */
+	  ParserBencode::beFree(info);
+	  delete info;
+
+	  this->bitField= bitField; 
+	  
+	 else{
+	  valido = false;
+     } 
+}
+
+/****************************************************************************/
 BitField* Torrent::getBitField(){
      return bitField;
 }
@@ -573,7 +648,7 @@ void Torrent::peerChoked(Peer* peer){
      }
      peer->setInterested(true);
      peer->setChoke(false);
-     std::cout << "Señal de choke ("<< peersEnEspera.size() <<") \n";
+     std::cout << "Seal de choke ("<< peersEnEspera.size() <<") \n";
      requestCondition.signal();     
 }
 
@@ -581,7 +656,7 @@ void Torrent::peerChoked(Peer* peer){
 void Torrent::peerUnchoked(Peer* peer){
      Lock lock(requestMutex);
      peersEnEspera.push(peer);
-     std::cout << "Señal de unchoke ("<< peersEnEspera.size() <<") \n";
+     std::cout << "Seal de unchoke ("<< peersEnEspera.size() <<") \n";
      requestCondition.signal();     
 }
 

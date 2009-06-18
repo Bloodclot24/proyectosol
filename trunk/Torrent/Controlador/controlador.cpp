@@ -160,7 +160,10 @@ bool Controlador::cargarConfig() {
 				std::cout << "Ruta Torrent: "<< ruta <<"\n";
 				
 				std::cout<<"Esperando addTorrent: \n";
-				cliente.addTorrent(pathTorrent.c_str());
+				
+
+				
+				
 				std::cout<<"Se realizo addTorrent: \n";
 				//char* tamanioBitField = new char[sizeof(uint32_t)];
 				//bitFieldFile.read(tamanioBitField, sizeof(uint32_t));
@@ -168,7 +171,15 @@ bool Controlador::cargarConfig() {
 				//char* datosBitField = new char[tamanioBF];
 				//bitFieldFile.read(datosBitField,tamanioBF);
 				//datosBitField[tamanioBF] = '\0';
+				
+				
+				//TODO: esto no va mas
 				//cliente.setBitFieldTorrent(nombreTorrent, datosBitField);
+				//Aca va el nuevo addTorrent
+				cliente.addTorrent(pathTorrent.c_str());
+				//cliente.addTorrent(pathTorrent.c_str(), datosBitField);
+
+				
 				resultado = true;
 				//delete[] tamanioBitField;
 				bitFieldFile.close();	

@@ -22,6 +22,21 @@ bool Client::addTorrent(const char* path){
 }
 
 /*--------------------------------------------------------------------------*/
+bool Client::addTorrent(const char* path, char* bitfield) {
+	
+	Torrent *torrent = new Torrent(path, bitfield);
+	
+	if(torrent->isValid()){
+	  torrents.push_back(torrent);
+	  return true;
+     }
+     else {
+	  delete torrent;
+	  return false;
+     }
+}
+
+/*--------------------------------------------------------------------------*/
 bool Client::start(const char* filename){
 
      Torrent* torrent= buscarTorrent(filename);
@@ -30,8 +45,12 @@ bool Client::start(const char* filename){
 	  /* por ahora, nada mas para probar comienza solo el primer torrent */
 	  Torrent* torrent = torrents.front(); 
 	  //Torrent* torrent= buscarTorrent(filename);
-	  
-	     return torrent->start();
+	return 0;  
+	
+		//COMENTE ASI NO CORRE
+		
+
+//	     return torrent->start();
 //    if(torrent) {
 //		torrent->start();
 //		return true;
@@ -94,11 +113,11 @@ Torrent* Client::buscarTorrent(const char* filename) {
 }
 
 /*--------------------------------------------------------------------------*/
-void Client::setBitFieldTorrent(const char* filename, char* data) {
-	
-	Torrent* torrent= buscarTorrent(filename);
-	torrent->getBitField()->setData(data);
-}
+//void Client::setBitFieldTorrent(const char* filename, char* data) {
+//	
+//	Torrent* torrent= buscarTorrent(filename);
+//	torrent->getBitField()->setData(data);
+//}
 
 /*--------------------------------------------------------------------------*/
 std::list<Torrent*>* Client::getListaTorrents(){
