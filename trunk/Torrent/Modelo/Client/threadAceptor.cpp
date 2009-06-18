@@ -17,13 +17,14 @@ void ThreadAceptor::finalizar(void){
 }
 
 void ThreadAceptor::run(){
-     while(corriendo){
+	while(corriendo){
 	  Socket *sck=NULL;
 	  sck = socket->aceptar();  //Acepto el peer
-	  
-	  Peer *peer = new Peer(sck); //creo el peer
-	  peer->start(""); //comienza el procesamiento
-     }
+	  if(sck){
+	  	Peer *peer = new Peer(sck); //creo el peer
+	  	peer->start(""); //comienza el procesamiento
+	  }
+    }
 }
 
 ThreadAceptor::~ThreadAceptor(){
