@@ -22,7 +22,7 @@ private:
      Controlador* controlador;
      
      Socket* socket;
-//     ThreadAceptor* threadAceptor;
+     ThreadAceptor* threadAceptor;
      
      uint32_t puertoPorDefecto;
      uint32_t cantidadDePeers;
