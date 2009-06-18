@@ -88,6 +88,7 @@ private:
 
 public:
      Torrent(const char* fileName);
+     Torrent(const char* fileName, char* bitfield);
 
      /* Comienza el torrent */
      int start();
@@ -105,7 +106,7 @@ public:
      /* Devuelve el bitField asociado al torrent */
      BitField* getBitField();
 
-     /* Añade un peer a la lista de peers cuidando que no este repetido */
+     /* Aade un peer a la lista de peers cuidando que no este repetido */
      void agregarPeer(Peer* peer);
      
      /* Elimina un peer de la lista de peers */

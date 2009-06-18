@@ -30,6 +30,9 @@ public:
 	
      /* agrega un torrent */
     bool addTorrent(const char* path);
+        
+    /* agrega un torrent con un bitfield pasado por parametro*/
+    bool addTorrent(const char* path, char* bitfield);
 
      /* comienza a descargar un torrent */
     bool start(const char* filename);
@@ -43,8 +46,9 @@ public:
 	/* borra la descarga de un torrent */
     bool remove(const char* filename);
 
-	/* modifica el bitfield del torrent */
-	void setBitFieldTorrent(const char* filename, char* data);
+	//TODO: murio esto :p
+//	/* modifica el bitfield del torrent */
+//	void setBitFieldTorrent(const char* filename, char* data);
 
 	/* obtiene la lista de torrents */
 	std::list<Torrent*>* getListaTorrents();
