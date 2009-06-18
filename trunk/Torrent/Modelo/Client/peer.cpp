@@ -108,13 +108,13 @@ bool Peer::havePiece(uint32_t index){
 /****************************************************************************/
 void Peer::run(){
      ProtocoloBitTorrent proto;
-
+     conectado = true;
      //pongo un timeout de 40 seg. para la conexion al peer.
      this->socket = new Socket(name,port);
      this->emisor = new ThreadEmisor(this->socket);
      this->receptor = new ThreadReceptor(this->socket,false);
      
-     //socket->setTimeout(40,0);
+     socket->setTimeout(30,0);
      socket->conectar();
      if(!socket->esValido()){
 	  corriendo = false;
