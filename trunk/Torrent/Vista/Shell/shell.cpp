@@ -9,6 +9,7 @@ Shell::Shell(Controlador* controlador) {
 /*--------------------------------------------------------------------------*/
 void mostrarHelp() {
 	
+	std::cout << std::endl;
 	std::cout << ADD_TORRENT << " filename: "; 
 	std::cout << "agrega un torrent a partir de un archivo." << std::endl;
 //	std::cout << ADD_URL_TORRENT; 
