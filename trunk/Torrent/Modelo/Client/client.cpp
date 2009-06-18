@@ -4,6 +4,8 @@
 Client::Client(){
 	this->puertoPorDefecto = PORT_IN;
 	this->cantidadDePeers = PEERS_NUM_WANT;
+	this->socket = new Socket("localhost",PORT_IN);
+	this->threadAceptor = new ThreadAceptor(this->socket);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -38,7 +40,10 @@ bool Client::addTorrent(const char* path, char* bitfield) {
 
 /*--------------------------------------------------------------------------*/
 bool Client::start(const char* filename){
-
+	
+	 // comienzo a recibir conexiones de peers entrantes
+	 this->threadAceptor->comenzar();
+	 
      Torrent* torrent= buscarTorrent(filename);
      EstadoTorrent estado= torrent->getEstadoTorrent(); 
      if(torrent && (estado ==  PAUSED || estado ==  STOPPED)) {
@@ -152,6 +157,10 @@ Client::~Client(){
 		(*it)->stop();
 		delete (*it);
     }
+    // dejo de recibir conexiones de peers entrantes
+    this->threadAceptor->finalizar();
+    delete this->socket;
+    delete this->threadAceptor;
 }
 
 /****************************************************************************/

@@ -29,6 +29,8 @@ private:
 
      std::string name;
      uint32_t port;
+     
+     bool entrante;
 
 protected:
      void run();
@@ -38,7 +40,10 @@ public:
      /* Dado un peer en forma compacta (ip.ip.ip.ip:puerto), crea un
       * nuevo peer */
      Peer(const std::string& host, int puerto, Torrent* torrent);
-
+	
+	/* Crea un peer con el socket dado */
+	 Peer(Socket* socket);
+	 
      /* Devuelve un bitField con las piezas del peer */
      const BitField* getBitField();
 

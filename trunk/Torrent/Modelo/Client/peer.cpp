@@ -18,6 +18,25 @@ Peer::Peer(const std::string& host, int puerto , Torrent* torrent){// 	\
      this->torrent = torrent;
      this->bitField = new BitField(ceil(torrent->getBitField()->getLength()));
      conectado = false;
+     this->entrante = false;
+}
+
+/****************************************************************************/
+Peer::Peer(Socket* socket){
+	 
+	 port = PORT_IN;
+     name = "";
+     am_choking = 1;
+     am_interested = 0;
+     peer_choking = 1;
+     peer_interested = 0;
+     corriendo = false;
+	 this->socket = socket;
+	 conectado = false;
+	 this->torrent = NULL;
+     this->bitField = NULL;
+     this->entrante = true;
+
 }
 
 /****************************************************************************/
@@ -97,7 +116,7 @@ void Peer::sendRequest(uint32_t index, uint32_t offset,		\
      std::string msg = proto.request(index, offset, size);
      mensaje->copiarDatos(msg.c_str(), msg.length());
      emisor->enviarMensaje(mensaje);
-     std::cout << "Request de: " << index << " tamaño: " << size << " offset: " << offset << std::endl;
+     std::cout << "Request de: " << index << " tamaï¿½o: " << size << " offset: " << offset << std::endl;
 }
 
 /****************************************************************************/

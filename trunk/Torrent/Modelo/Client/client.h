@@ -6,6 +6,8 @@
 #include <list>
 #include <string.h>
 #include "../ParserBencode/parserBencode.h"
+#include "threadAceptor.h"
+#include "socket.h"
 
 #define CLIENT_ID      "-SN010-abcdefghijkl"
 #define PORT_IN        12345
@@ -18,6 +20,9 @@ private:
      std::string nickUsuario;
      std::list<Torrent*> torrents;
      Controlador* controlador;
+     
+     Socket* socket;
+     ThreadAceptor* threadAceptor;
      
      uint32_t puertoPorDefecto;
      uint32_t cantidadDePeers;
