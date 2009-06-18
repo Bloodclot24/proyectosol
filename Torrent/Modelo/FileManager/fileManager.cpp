@@ -5,13 +5,18 @@ FileManager::FileManager(const char* filename,uint32_t tamanio) {
      std::cout << "CREANDO EL ARCHIVO: " << filename << "\n";
 	this->file.open(filename,std::fstream::in);
 	if(!this->file.is_open()){
+		this->file.clear();
 		this->file.open(filename,std::fstream::out);
-		
-		for(uint32_t size = 0; size < tamanio; size++){
-			this->file.put('\0');
+		if(!this->file.is_open()) this->status = -1;
+		else{
+			for(uint32_t size = 0; size < tamanio; size++){
+				this->file.put('\0');
+			}
+			this->status = 0;
 		}
 	}else{
 		this->file.close();
+		this->status = 1;
 	}
 	this->file.open(filename,std::fstream::in | std::fstream::out);
 
