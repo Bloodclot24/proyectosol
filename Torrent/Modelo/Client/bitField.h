@@ -8,6 +8,7 @@ class BitField{
 private:
      char* data; // el bitField
      uint32_t length; // la longitud en bits del bitfield
+     uint32_t bytesLength;
 
 public:
      /* Crea un bitfield */

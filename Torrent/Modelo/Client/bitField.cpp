@@ -1,27 +1,28 @@
 #include "bitField.h"
 #include <math.h>
+#include <iostream>
 
 /* Crea un bitfield */
 /****************************************************************************/
 BitField::BitField(uint32_t length){
      this->length = length;
-     uint32_t aux = ceil(length/8);
-     data = new char[aux];
-     for(int i=0;i<ceil(length/8);i++)
+     bytesLength = ceil((double)length/8);
+     data = new char[bytesLength];
+     for(int i=0;i<bytesLength;i++)
 	  data[i] = '\0';
 }
 
 /* Copia los datos de *bitField */
 /****************************************************************************/
 void BitField::setFields(char* bitField){
-     for(uint32_t i=0;i<length/8;i++)
+     for(uint32_t i=0;i<bytesLength;i++)
 	  data[i] = bitField[i];
 }
 
 /* copia los datos de un bloque (8 bits) */
 /****************************************************************************/
 void BitField::setBlock(char c, uint32_t blockIndex){
-     if(blockIndex < length/8)
+     if(blockIndex <bytesLength)
 	  data[blockIndex] = c;
 }
 
@@ -50,7 +51,7 @@ uint32_t BitField::getLength() const{
 /* Obtiene la longitud del bitField en bytes */
 /****************************************************************************/
 uint32_t BitField::getBytesLength() const{
-	return ceil(length/8);
+	return bytesLength;
 }
 
 /* obtiene el estado de un bit del bitfield */

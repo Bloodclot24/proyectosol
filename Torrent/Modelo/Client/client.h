@@ -9,7 +9,7 @@
 #include "threadAceptor.h"
 #include "socket.h"
 
-#define CLIENT_ID      "-SN010-abcdefghijkl"
+#define CLIENT_ID      "-TR010-abcdefghijklm"
 #define PORT_IN        12345
 #define PEERS_NUM_WANT 50
 
@@ -22,7 +22,7 @@ private:
      Controlador* controlador;
      
      Socket* socket;
-     ThreadAceptor* threadAceptor;
+//     ThreadAceptor* threadAceptor;
      
      uint32_t puertoPorDefecto;
      uint32_t cantidadDePeers;

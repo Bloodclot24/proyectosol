@@ -122,7 +122,7 @@ void ThreadReceptor::run(){
 		    colaDeDatos.push(c);
 	       else{
 		    std::cerr << "Se cerro el socket inesperadamente."	\
-			      << std::endl;
+			      << socket << std::endl;
 		    corriendo = false;
 	       }
 	  }
