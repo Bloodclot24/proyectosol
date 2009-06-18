@@ -12,8 +12,11 @@ private:
      bool isPrivate;
      std::string name;
 
-     /* SHA1 de las piezas totales y tamao de c/u */
+     /* SHA1 de las piezas totales y tamao de c/u. Si el torrent es
+      * multiarchivo, este atributo esta presente solamente en el
+      * primer torrentFile de la lista. */
      std::string pieces;
+
      int pieceLength;
 
      /* Longitud del archivo en bytes */
@@ -42,6 +45,9 @@ public:
 
      /* Devuelve el FileManager asociado al torrentFile */
      FileManager* getManager(){ return manager; }
+
+     /* Devuelve una referencia a la 'tira' de hashes */
+     const std::string& getHashes(){ return pieces; }
 
      ~TorrentFile();
 

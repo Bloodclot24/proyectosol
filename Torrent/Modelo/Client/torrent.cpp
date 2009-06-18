@@ -39,6 +39,7 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
      estado = STOPPED;
      
      if(info != NULL){
+	  std::cout << "Torrent Valido";
 	  valido = true;
 
 	  BeNode* primero = info->front();
@@ -85,29 +86,37 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
 		    archivos = TorrentFile::Parse(elemento);
 		    int status=0;
 
+		    std::cout << "Verificando estado de los archivos:\n";
 		    for(std::list<TorrentFile*>::iterator it=archivos->begin();it!=archivos->end();it++){
 			 status=(*it)->getManager()->getStatus();
-			 if(status == -1)
+			 if(status == -1){
 			      valido = false;
-			 else if(status == 1)
+			      std::cout << "este archivo molesta\n";
+			 }
+			 else if(status == 1){
 			      check=1;
+			      std::cout << "este archivo ya existia\n";
+			 }
+			 else{
+			      std::cout << "este archivo NO existia\n";
+			 }
 		    }
 
 	       }
 	       else valido=false;
 
 	  }
-	  
 	  /* libero los elementos antes de eliminar */
 	  ParserBencode::beFree(info);
 	  delete info;
 
-	  pieceSize = (*archivos->begin())->getPieceLength();
+	  pieceSize = (*(archivos->begin()))->getPieceLength();
 	  sizeInPieces = ceil(getTotalSize()/pieceSize);
 	  
 	  bitField = new BitField(sizeInPieces);
-	  //Si arbi alguno de los archivos y ya existia, verifico si hay datos validos
+	  //Si alguno de los archivos y ya existia, verifico si hay datos validos
 	  if(check){
+	       std::cout << "Los archivos ya existian, verificando ........\n" ;
 	       for(int i=0;i<sizeInPieces;i++){
 		    if(validarPieza(i)==1)
 			 bitField->setField(i,1);
@@ -426,6 +435,103 @@ void Torrent::eliminarPeer(Peer* peer){
 }
 
 /****************************************************************************/
+int Torrent::writeData(const char* data, uint32_t index, uint32_t offset, uint32_t size){
+
+     std::list<TorrentFile*>::iterator it;
+
+     uint64_t acumulado=0;
+     uint64_t bytes = index*pieceSize+offset;
+     bool encontrado = false;
+
+
+     // Busco en que archivo caen los datos
+     it=archivos->begin();
+     while(it != archivos->end() && !encontrado){
+	  if(acumulado+(*it)->getSize() >= bytes)
+	       encontrado = true;
+	  else{
+	       acumulado += (*it)->getSize();
+	       *it++;
+	  }
+     }
+
+     if(!encontrado)
+	  return -1;
+
+
+     uint64_t restante = size;
+     uint64_t comienzo = bytes-acumulado;
+     
+     while(restante > 0){
+	  if(comienzo+restante <= (*it)->getSize()){
+	       // Cae toda la parte dentro del archivo
+	       (*it)->getManager()->agregarPieza(data, comienzo, restante);
+	       restante = 0;
+	  }
+	  else{
+	       // Cae una parte adentro y otra parte en el siguiente archivo
+	       uint64_t aux=(*it)->getSize()-comienzo;
+	       (*it)->getManager()->agregarPieza(data, comienzo, aux);
+	       data += aux;
+	       restante -= aux;;
+	       // obtengo el proximo archivo
+	       it++;
+	       if(it == archivos->end())
+		    restante =0; // si no hay mas archivos,no escribo mas
+	       comienzo = 0;
+	  }
+     }
+     return 0;
+}
+
+/****************************************************************************/
+int Torrent::readData(char *data, uint32_t index, uint32_t offset, uint32_t size){
+     std::list<TorrentFile*>::iterator it;
+
+     uint64_t acumulado=0;
+     uint64_t bytes = index*pieceSize+offset;
+     bool encontrado = false;
+
+     // Busco en que archivo caen los datos
+     it=archivos->begin();
+     while(it != archivos->end() && !encontrado){
+	  if(acumulado+(*it)->getSize() >= bytes)
+	       encontrado = true;
+	  else{
+	       acumulado += (*it)->getSize();
+	       *it++;
+	  }
+     }
+
+     if(!encontrado)
+	  return -1;
+
+     uint64_t restante = size;
+     uint64_t comienzo = bytes-acumulado;
+     
+     while(restante > 0){
+	  if(comienzo+restante <= (*it)->getSize()){
+	       // Cae toda la parte dentro del archivo
+	       (*it)->getManager()->obtenerPieza(data, comienzo, restante);
+	       restante = 0;
+	  }
+	  else{
+	       // Cae una parte adentro y otra parte en el siguiente archivo
+	       uint64_t aux=(*it)->getSize()-comienzo;
+	       (*it)->getManager()->obtenerPieza(data, comienzo, aux);
+	       data += aux;
+	       restante -= aux;;
+	       // obtengo el proximo archivo
+	       it++;
+	       if(it == archivos->end())
+		    restante =0; // si no hay mas archivos,no leo mas
+	       comienzo = 0;
+	  }
+     }
+     return 0;
+}
+
+/****************************************************************************/
 uint64_t Torrent::getTotalSize(){
      std::list<TorrentFile*>::iterator it;
      uint64_t acumulador=0;
@@ -547,8 +653,22 @@ int Torrent::validarPieza(uint32_t index){
      if(index > bitField->getLength())
 	  return -1;
      char *buffer = new char[pieceSize];
-     
-     
+     if(readData(buffer, index,0,pieceSize)!=0){
+	  delete[] buffer;
+	  return -2;
+     }
+     Sha1 hasher;
+     std::string hash = hasher.ejecutarSha1(buffer);
+     std::string hashes = (*archivos->begin())->getHashes();
+     std::cout << "Comparando:\n" <<  hash << " con:\n" << hashes.substr(index*20,20)<< "\n";
+     if(hashes.compare(index*20,20,hash) == 0){
+	  std::cout << "La pieza es "<< index << " valida.\n";
+     }
+     else
+	  std::cout << "La pieza es "<< index << " invalida.\n";
+
+     sleep(1000);
+     return 0;     
 }
 
 /****************************************************************************/

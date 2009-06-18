@@ -235,28 +235,8 @@ void Peer::run(){
 		    if(file != NULL){
 			 std::cout << "Se escribe en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
 			      ". Que corresponde al indice: " << respuesta->index << std::endl;
+			 torrent->writeData(respuesta->block.c_str(), respuesta->index, respuesta->begin, respuesta->length);
 
-			 uint64_t restante = respuesta->length;
-
-			 const char *datos = bloque.c_str();
-			 uint64_t comienzo = respuesta->begin+torrent->obtenerByteOffset(respuesta->index);
-
-			 while(restante > 0){
-			      if(comienzo+restante <= file->getSize()){
-				   // Cae toda la parte dentro del archivo
-				   file->getManager()->agregarPieza(datos, comienzo, restante);
-				   restante = 0;
-			      }
-			      else{
-				   // Cae una parte adentro y otra parte en el siguiente archivo
-				   file->getManager()->agregarPieza(datos, comienzo, file->getSize()-comienzo);
-				   datos += file->getSize()-comienzo;
-				   restante -= file->getSize()-comienzo;
-				   // obtengo el proximo archivo
-				   file = torrent->obtenerArchivo(++respuesta->index);
-				   comienzo = 0;
-			      }
-			 }
 		    }
 		    else{
 			 std::cerr << "ERROR: <--------------------- NO EXISTE EL ARCHIVO??????\n";
