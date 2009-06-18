@@ -44,13 +44,13 @@ bool Client::start(const char* filename){
 	 // comienzo a recibir conexiones de peers entrantes
 	 this->threadAceptor->comenzar();
 	 
-     Torrent* torrent= buscarTorrent(filename);
-     EstadoTorrent estado= torrent->getEstadoTorrent(); 
-     if(torrent && (estado ==  PAUSED || estado ==  STOPPED)) {
-	  /* por ahora, nada mas para probar comienza solo el primer torrent */
-	  Torrent* torrent = torrents.front(); 
-	  //Torrent* torrent= buscarTorrent(filename);
-	return 0;  
+//     Torrent* torrent= buscarTorrent(filename);
+//     EstadoTorrent estado= torrent->getEstadoTorrent(); 
+//     if(torrent && (estado ==  PAUSED || estado ==  STOPPED)) {
+//	  /* por ahora, nada mas para probar comienza solo el primer torrent */
+//	  Torrent* torrent = torrents.front(); 
+//	  //Torrent* torrent= buscarTorrent(filename);
+//	return 0;  
 	
 		//COMENTE ASI NO CORRE
 		
@@ -61,7 +61,7 @@ bool Client::start(const char* filename){
 //		return true;
 //	} else
 //		return false;	
-	}
+//	}
 }
 
 /*--------------------------------------------------------------------------*/
@@ -159,7 +159,6 @@ Client::~Client(){
     }
     // dejo de recibir conexiones de peers entrantes
     this->threadAceptor->finalizar();
-    delete this->socket;
     delete this->threadAceptor;
 }
 

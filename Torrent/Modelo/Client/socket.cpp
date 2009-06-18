@@ -60,6 +60,7 @@ bool Socket::enlazar(void){
 /****************************************************************************/
 Socket* Socket::aceptar(void){
      int sckfd = accept(s,NULL,0); 
+     if (sckfd == -1) return NULL;
      return new Socket(sckfd);
 }
 
