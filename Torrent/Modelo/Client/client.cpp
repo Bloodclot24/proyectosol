@@ -48,14 +48,14 @@ bool Client::start(const char* filename){
 //     EstadoTorrent estado= torrent->getEstadoTorrent(); 
 //     if(torrent && (estado ==  PAUSED || estado ==  STOPPED)) {
 //	  /* por ahora, nada mas para probar comienza solo el primer torrent */
-//	  Torrent* torrent = torrents.front(); 
+	  Torrent* torrent = torrents.front(); 
 //	  //Torrent* torrent= buscarTorrent(filename);
 //	return 0;  
 	
 		//COMENTE ASI NO CORRE
 		
 
-//	     return torrent->start();
+	 return torrent->start();
 //    if(torrent) {
 //		torrent->start();
 //		return true;

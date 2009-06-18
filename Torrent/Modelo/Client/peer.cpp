@@ -131,94 +131,94 @@ void Peer::run(){
      Mensaje *mensaje = NULL;
      conectado = true;
      if(!this->entrante){
-     	//pongo un timeout de 40 seg. para la conexion al peer.
-     	this->socket = new Socket(name,port);
-     	this->emisor = new ThreadEmisor(this->socket);
-     	this->receptor = new ThreadReceptor(this->socket,false);
+	  //pongo un timeout de 40 seg. para la conexion al peer.
+	  this->socket = new Socket(name,port);
+	  this->emisor = new ThreadEmisor(this->socket);
+	  this->receptor = new ThreadReceptor(this->socket,false);
      
-     	socket->setTimeout(30,0);
-     	socket->conectar();
-     	if(!socket->esValido()){
-	  		corriendo = false;
-	  		std::cout << "ERROR DEL SOCKET: " << socket->obtenerError() << std::endl;
-	  		torrent->eliminarPeer(this);
-	  		return;
-     	}
+	  socket->setTimeout(30,0);
+	  socket->conectar();
+	  if(!socket->esValido()){
+	       corriendo = false;
+	       std::cout << "ERROR DEL SOCKET: " << socket->obtenerError() << std::endl;
+	       torrent->eliminarPeer(this);
+	       return;
+	  }
 
-     	std::cout << "CONECTADO EXITOSAMENTE ------------<<<<" << std::endl;
+	  std::cout << "CONECTADO EXITOSAMENTE ------------<<<<" << std::endl;
 
-     	receptor->comenzar();
-     	emisor->comenzar();
+	  receptor->comenzar();
+	  emisor->comenzar();
 
-     	/* Envio un handshake */
-     	mensaje = new Mensaje();
-     	std::string aux = proto.handshake("BitTorrent protocol", hash, CLIENT_ID);
-     	mensaje->copiarDatos(aux.c_str(), aux.length());
-     	emisor->enviarMensaje(mensaje);
+	  /* Envio un handshake */
+	  mensaje = new Mensaje();
+	  std::string aux = proto.handshake("BitTorrent protocol", hash, CLIENT_ID);
+	  mensaje->copiarDatos(aux.c_str(), aux.length());
+	  emisor->enviarMensaje(mensaje);
 
-     	/* Envio un bitfield con las piezas que ya tenemos */
-     	mensaje = new Mensaje();
-     	aux = proto.bitfield(torrent->getBitField()->getBytesLength());
-     	mensaje->copiarDatos(aux.c_str(), aux.length());
-     	emisor->enviarMensaje(mensaje);
-     	mensaje = new Mensaje();
-     	mensaje->copiarDatos(torrent->getBitField()->getData(), torrent->getBitField()->getBytesLength());
-     	emisor->enviarMensaje(mensaje);
+	  /* Envio un bitfield con las piezas que ya tenemos */
+	  mensaje = new Mensaje();
+	  aux = proto.bitfield(torrent->getBitField()->getBytesLength());
+	  mensaje->copiarDatos(aux.c_str(), aux.length());
+	  emisor->enviarMensaje(mensaje);
+	  mensaje = new Mensaje();
+	  mensaje->copiarDatos(torrent->getBitField()->getData(), torrent->getBitField()->getBytesLength());
+	  emisor->enviarMensaje(mensaje);
 
-     	/* Recibo el handshake del peer */
-     	datos = receptor->getColaDeDatos();
-     	for(int i = 0; i <49+19;i++)
-	  		datos->popFront();
+	  /* Recibo el handshake del peer */
+	  datos = receptor->getColaDeDatos();
+	  for(int i = 0; i <49+19;i++)
+	       datos->popFront();
      
      }else{
      	
-     	this->emisor = new ThreadEmisor(this->socket);
-     	this->receptor = new ThreadReceptor(this->socket,false);
-     	receptor->comenzar();
-     	emisor->comenzar();
-     	char data;
-     	std::string hashRecibido;
-     	char pstrlen;
-     	int contador = 0;
-     	bool primerByte = true;
-     	/* Recibo el handshake del peer */
-     	datos = receptor->getColaDeDatos();
-     	for(int i = 0; i <49+19;i++){
-	  		data = datos->popFront();
-	  		//Obtengo la longitud de pstr
-	  		if(primerByte){
-	  			primerByte = false;
-	  			pstrlen = data;
-	  		}
-	  		//obtengo el hash del handshake
-	  		if ((i > pstrlen + 8) && (contador < 20)){
-	  			hashRecibido += data;
-	  			contador++;
-	  		}
-     	}
-     	//asigno el hash obtenido al peer
-     	this->hash.clear();
-	  	this->hash = hashRecibido;		
+	  this->emisor = new ThreadEmisor(this->socket);
+	  this->receptor = new ThreadReceptor(this->socket,false);
+	  receptor->comenzar();
+	  emisor->comenzar();
+	  char data;
+	  std::string hashRecibido;
+	  char pstrlen;
+	  int contador = 0;
+	  bool primerByte = true;
+	  /* Recibo el handshake del peer */
+	  datos = receptor->getColaDeDatos();
+	  for(int i = 0; i <49+19;i++){
+	       data = datos->popFront();
+	       //Obtengo la longitud de pstr
+	       if(primerByte){
+		    primerByte = false;
+		    pstrlen = data;
+	       }
+	       //obtengo el hash del handshake
+	       if ((i > pstrlen + 8) && (contador < 20)){
+		    hashRecibido += data;
+		    contador++;
+	       }
+	  }
+	  //asigno el hash obtenido al peer
+	  this->hash.clear();
+	  this->hash = hashRecibido;		
      
+	  /* Envio un handshake */
+	  mensaje = new Mensaje();
+	  std::string aux = proto.handshake("BitTorrent protocol", hash, CLIENT_ID);
+	  mensaje->copiarDatos(aux.c_str(), aux.length());
+	  emisor->enviarMensaje(mensaje);
+
+	  /* Envio un bitfield con las piezas que ya tenemos */
+	  mensaje = new Mensaje();
+	  aux = proto.bitfield(torrent->getBitField()->getBytesLength());
+	  mensaje->copiarDatos(aux.c_str(), aux.length());
+	  emisor->enviarMensaje(mensaje);
+	  mensaje = new Mensaje();
+	  mensaje->copiarDatos(torrent->getBitField()->getData(), torrent->getBitField()->getBytesLength());
+	  emisor->enviarMensaje(mensaje);
+     }
+     conectado = true;
+
      /* Aviso al torrent que me pude conectar */
      torrent->peerConected(this);
-
-		/* Envio un handshake */
-     	mensaje = new Mensaje();
-     	std::string aux = proto.handshake("BitTorrent protocol", hash, CLIENT_ID);
-     	mensaje->copiarDatos(aux.c_str(), aux.length());
-     	emisor->enviarMensaje(mensaje);
-
-     	/* Envio un bitfield con las piezas que ya tenemos */
-     	mensaje = new Mensaje();
-     	aux = proto.bitfield(torrent->getBitField()->getBytesLength());
-     	mensaje->copiarDatos(aux.c_str(), aux.length());
-     	emisor->enviarMensaje(mensaje);
-     	mensaje = new Mensaje();
-     	mensaje->copiarDatos(torrent->getBitField()->getData(), torrent->getBitField()->getBytesLength());
-     	emisor->enviarMensaje(mensaje);
-	}
-     conectado = true;
 
      while(corriendo && receptor->isRunning()){
 	  Message *respuesta = proto.decode(*datos);
