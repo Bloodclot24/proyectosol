@@ -88,6 +88,7 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 			 }
 			 newFile->path = (*it)->beStr;
 			 newFile->manager = new FileManager((ruta+newFile->path).c_str(), newFile->length);
+			 std::cout << "Creado el archivo " << newFile->manager << "\n";
 			 newFile->pieceLength = pieceLength;
 			 fileList->push_back(newFile);
 		    }

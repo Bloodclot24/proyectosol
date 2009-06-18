@@ -125,6 +125,12 @@ public:
       * esa pieza */
      uint64_t obtenerByteOffset(uint32_t index);
 
+     /* escribe un bloque de datos en el/los archivo/archivos que corresponda/n */
+     int writeData(const char* data, uint32_t index, uint32_t offset, uint32_t size);
+
+     /* lee un bloque de datos de el/los archivo/archivos que corresponda/n */
+     int readData(char* data, uint32_t index, uint32_t offset, uint32_t size);
+
      /* Metodo que llaman los peers cuando se conectan exitosamente */
      void peerConected(Peer *peer);
 
