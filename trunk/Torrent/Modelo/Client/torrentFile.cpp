@@ -79,13 +79,13 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 		    elemento = (*dict)[INFO_PATH];
 		    if(elemento != NULL){
 			 std::list<BeNode*> lista = elemento->beList->elements;
-
+			 
 			 std::string ruta(rutaInicial);
-
 			 std::list<BeNode*>::iterator it;
 			 for(it=lista.begin(); it!= --(lista.end()); it++){
-			      FileManager::crearDirectorio( (*it)->beStr.c_str() );
-			      ruta += (*it)->beStr + "/";
+			      ruta += (*it)->beStr;
+			      FileManager::crearDirectorio( ruta.c_str());
+			      ruta +=  "/";
 			 }
 			 newFile->path = (*it)->beStr;
 			 newFile->manager = new FileManager((ruta+newFile->path).c_str(), newFile->length);
@@ -95,7 +95,6 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 			 
 		    }
 	       }
-
 	  }
 	  else{
 	       /* Si no existe hay un solo archivo */
