@@ -375,10 +375,12 @@ int Torrent::announce(){
 	       snumero = cvz.str();
 	       
 	       //creo el nuevo peer con los datos obtenidos
+	      
 	       Peer *peer = new					\
 		    Peer(snumero,					\
 			 ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)), \
 			 this);
+	      
 // 	       std::string dir("localhost");
 // 	       Peer *peer = new Peer(dir, 6881, this);
 
@@ -698,6 +700,7 @@ void Torrent::run(){
      //Logica. Basicamente pido datos.
      ProtocoloBitTorrent proto;
 
+     mutexPeers.lock();
        std::list<Peer*>::iterator it;
        int i;
        for(i=0,it=listaPeers.begin(); it!=listaPeers.end() && i<30; it++, i++){
@@ -706,13 +709,17 @@ void Torrent::run(){
      
      while(estado == DOWNLOADING){
 	  if(peersEnEspera.size()<1){
+	       mutexPeers.unlock();
 	       requestMutex.lock();
 	       requestCondition.wait();
 	       requestMutex.unlock();
+	       mutexPeers.lock();
 	  }
 	  else{
 	       std::cout << "Puedo realizar un request. (" << peersEnEspera.size()<<")\n";
+	       sleep(1);
 	       Lock lock(downloadMutex);
+	       
 	       static uint32_t index = 0; // rarestFirst();
 	       std::cout << "Realizo un request de la pieza " << index <<".\n";
 	       std::cout << "Peers en la cola de espera: " << peersEnEspera.size() << "\n";
@@ -767,6 +774,9 @@ void Torrent::run(){
 			      fields->setField(inicio+i,1);
 			 peer->sendRequest(index,inicio,size);
 		    }
+		    else{
+			 index++;
+		    }
 	       }
 	       else{
 		    std::cout << "No estamos procesando la pieza.\n";
@@ -792,6 +802,9 @@ void Torrent::run(){
 			 for(uint32_t i=0;i<REQUEST_SIZE_DEFAULT;i++)
 			      fields->setField(i,1);
 			 peer->sendRequest(index,0,REQUEST_SIZE_DEFAULT);
+		    }
+		    else{
+			 index++;
 		    }
 		    
 	       }

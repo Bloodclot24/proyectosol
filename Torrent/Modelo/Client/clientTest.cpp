@@ -10,6 +10,7 @@ int main(int argc,char**argv){
  
      if(cliente.addTorrent(argv[1]) == 0){
 	  std::cout << "Error, no se pudo agregar el torrent." << std::endl;
+	  return -2;
      }
 
      cliente.start(argv[1]);
