@@ -160,7 +160,7 @@ Client::~Client(){
 		delete (*it);
     }
     // dejo de recibir conexiones de peers entrantes
-    this->threadAceptor->finalizar();
+    this->threadAceptor->finish();
     delete this->threadAceptor;
 }
 

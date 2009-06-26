@@ -8,6 +8,7 @@
 
 /* Claves del .torrent */
 #define DICT_TRACKER    "announce"
+#define DICT_TRACKERL   "announce-list"
 #define DICT_DATE       "creation date"
 #define DICT_COMMENTS   "comments"
 #define DICT_CREATOR    "created by"
@@ -54,6 +55,11 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
 	       elemento = dict[DICT_TRACKER];
 	       if(elemento != NULL)
 		    this->announceUrl = elemento->beStr;
+
+	       elemento = dict[DICT_TRACKERL];
+	       if(elemento != NULL){
+		    armarListaDeTrackers(elemento->beList->elements);
+	       }
 
 	       elemento = dict[DICT_DATE];
 	       if(elemento != NULL)
@@ -145,6 +151,23 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
      }
 }
 
+void  Torrent::armarListaDeTrackers(const std::list<BeNode*> &listaLista){
+     std::list<BeNode*>::const_iterator it;
+     for(it = listaLista.begin();it != listaLista.end(); it++){
+	  BeNode* elemento = *it;
+	  if(elemento->typeNode == BE_LIST){
+	       const std::list<BeNode*> listaInterna = elemento->beList->elements;
+	       std::list<BeNode*>::const_iterator itInterno;
+	       for(itInterno = listaInterna.begin();itInterno != listaInterna.end(); itInterno++){
+		    BeNode* elementoInterno = *itInterno;
+		    if(elementoInterno->typeNode == BE_STR){
+			 announceUrlList.push_back(elementoInterno->beStr);
+		    }
+	       }
+	  }
+     }
+}
+
 /****************************************************************************/
 Torrent::Torrent(const char* fileName, char* bitfield):requestCondition(&requestMutex){
 	
@@ -225,8 +248,23 @@ BitField* Torrent::getBitField(){
      return bitField;
 }
 
+void Torrent::rotarTrackers(){
+     if(announceUrlList.size() > 0){
+	  std::string tracker = announceUrlList.front();
+	  announceUrlList.pop_front();
+	  announceUrlList.push_back(tracker);
+     }
+}
+
 /****************************************************************************/
 int Torrent::announce(){
+
+     std::string announceUrl;
+     if(announceUrlList.size() > 0){
+	  announceUrl=announceUrlList.front();
+     }
+     else announceUrl = this->announceUrl;
+
      /* Creo un request con la direccion del tracker */
      HttpRequest req(announceUrl);
 
@@ -241,6 +279,7 @@ int Torrent::announce(){
 	  std::cout << "Error al conectar: " <<		\
 	       socket->obtenerError() << std::endl;
 	  delete socket;
+	  rotarTrackers();
 	  return -1;
      }
 
@@ -298,8 +337,8 @@ int Torrent::announce(){
      /* recibo la respuesta */
      HttpResponse *resp = receptor->getResponse();
 
-     emisor->finalizar();
-     receptor->finalizar();
+     emisor->finish();
+     receptor->finish();
      socket->cerrar();
      delete emisor;
      delete receptor;
@@ -309,6 +348,10 @@ int Torrent::announce(){
      BeNode* primero;
      BeNode* elemento;
 
+     if(resp == NULL){
+	  rotarTrackers();
+	  return -1;
+     }
      std::list<BeNode*>* list = parser.beDecode(resp->getContent());
 
      if(list == NULL ||	(primero = list->front()) == NULL	\
@@ -317,6 +360,7 @@ int Torrent::announce(){
 	  std::cout <<							\
 	       "ERROR: No se pudo decodificar la respuesta del tracker." \
 		    << std::endl;
+	  rotarTrackers();
 	  return -1;
      }
 
@@ -394,14 +438,14 @@ int Torrent::announce(){
 
 /****************************************************************************/
 int Torrent::start(){
-     if(announce() == 0){
-	  estado = DOWNLOADING;
+     while(announce() != 0);
      
-	  /* Comienzo el proceso */
-	  Thread::start();	  
-	  return 0;
-     }
-     return -1;
+     estado = DOWNLOADING;
+     
+     /* Comienzo el proceso */
+     Thread::start();	  
+
+     return 0;
 }
 
 /****************************************************************************/
@@ -872,20 +916,20 @@ Torrent::~Torrent(){
 /****************************************************************************/
 int Torrent::stop(){
 
-	//TODO: ver tema mutex	
-	this->estado= STOPPED;
-	this->emisor->finish();
-	this->receptor->finish();
-	
-	std::list<Peer*>::iterator it;
-
-    for(it=listaPeers.begin(); it != listaPeers.end(); it++){
-	  	(*it)->finish();
-	  	listaPeers.remove(*it);
-	  	delete (*it);
-    }
-			
-	return 1;
+     //TODO: ver tema mutex	
+     this->estado= STOPPED;
+     this->emisor->finish();
+     this->receptor->finish();
+     
+     std::list<Peer*>::iterator it;
+     
+     for(it=listaPeers.begin(); it != listaPeers.end(); it++){
+	  (*it)->finish();
+	  listaPeers.remove(*it);
+	  delete (*it);
+     }
+     
+     return 1;
 }
 
 /****************************************************************************/

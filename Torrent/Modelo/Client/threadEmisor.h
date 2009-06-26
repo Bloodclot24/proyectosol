@@ -37,9 +37,9 @@ public:
      
      /* Finaliza el thread, cierra el socket y borra cualquier mensaje
       * que pudiera quedar en la cola */
-     void finalizar(void){
+     void finish(void){
 	  if(isRunning()){
-	       finish();
+	       Thread::finish();
 	       socket->setTimeout(0,1);
 	       socket->cerrar();
 	       while(!colaDeEspera.empty()){

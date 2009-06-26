@@ -23,11 +23,12 @@ Deque<char>* ThreadReceptor::getColaDeDatos(){
 /****************************************************************************/
 void ThreadReceptor::comenzar(){
      start();
+     finish();
 }
 
 /****************************************************************************/
 HttpResponse* ThreadReceptor::getResponse(){
-     if(response==NULL && http){
+     if(response==NULL && http && isRunning()){
 	  Lock lock(mutexHttp);
 	  condHttp.wait();
      }
@@ -36,9 +37,14 @@ HttpResponse* ThreadReceptor::getResponse(){
      
 /* finaliza el thread y cierra el socket */
 /****************************************************************************/
-void ThreadReceptor::finalizar(void){
+void ThreadReceptor::finish(void){
      if(isRunning()){
-	  finish();
+	  stop();
+	  mutexHttp.lock();
+	  condHttp.signal(); //Por si alguien se quedo esperando una respuesta
+	  mutexHttp.unlock();
+
+	  Thread::finish();
 	  socket->setTimeout(0,1);
 	  socket->cerrar();
      }
@@ -55,15 +61,22 @@ void ThreadReceptor::run(){
 
 	       bool finalizado = false;
 
-	       socket->recibir(&c, 1);
+	       if(socket->recibir(&c, 1) <= 0)
+		    return;
 	       auxiliar.append(1,c);
-	       socket->recibir(&c, 1);
+
+	       if(socket->recibir(&c, 1) <= 0)
+		    return;
 	       auxiliar.append(1,c);
-	       socket->recibir(&c, 1);
+
+	       if(socket->recibir(&c, 1) <= 0)
+		    return;
 	       auxiliar.append(1,c);
 
 	       while(!finalizado){
-		    socket->recibir(&c, 1);
+		    if(socket->recibir(&c, 1) <= 0)
+			 return;
+
 		    auxiliar.append(1,c);
 		    if(auxiliar.compare("\r\n\r\n") == 0)
 			 finalizado = true;

@@ -30,8 +30,11 @@ private:
      /* La lista de archivos del torrent */
      std::list<TorrentFile*>* archivos; 
 
-     /* URL del announce del tracker. TODO: considerar lista de URL's */
+     /* URL del announce del tracker. */
      std::string announceUrl;
+
+     /* Lista de listas de URL's */
+     std::list<std::string> announceUrlList;
 
      /* Fecha de creacion */
      int creationDate;
@@ -89,6 +92,10 @@ private:
      /* Devuelve el numero de pieza que esmas dificil de conseguir (de
       * las que no tenemos) */
      uint32_t rarestFirst();
+
+     void armarListaDeTrackers(const std::list<BeNode*> &listaLista);
+
+     void rotarTrackers();
 
 public:
      Torrent(const char* fileName);
