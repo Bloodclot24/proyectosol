@@ -22,7 +22,7 @@ class Peer;
 enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING, ERROR};
 
 /* El modelo de cada Torrent que maneja el cliente */
-class Torrent:public Thread{
+class Torrent: public Thread{
 private:
      /* El nombre del archivo .torrent */
      std::string nombreTorrent;

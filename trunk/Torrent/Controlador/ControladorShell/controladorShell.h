@@ -36,6 +36,11 @@ class ControladorShell: public Controlador {
 		
 		virtual uint32_t obtenerOrden(std::string filename);
 		virtual void insertarOrdenado(std::string filename, uint32_t orden) {};
+	
+	/* MODELO -> VISTA 
+	 * =============== */		 
+	/*Message*/
+	virtual void agregarMessage(std::string message);
 };
 
 /****************************************************************************/

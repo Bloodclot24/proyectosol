@@ -160,24 +160,18 @@ bool Controlador::cargarConfig() {
 				std::cout << "Ruta Torrent: "<< ruta <<"\n";
 				
 				std::cout<<"Esperando addTorrent: \n";
-				
-
-				
-				
 				std::cout<<"Se realizo addTorrent: \n";
-				//char* tamanioBitField = new char[sizeof(uint32_t)];
-				//bitFieldFile.read(tamanioBitField, sizeof(uint32_t));
-				//uint32_t tamanioBF = *tamanioBitField;
-				//char* datosBitField = new char[tamanioBF];
-				//bitFieldFile.read(datosBitField,tamanioBF);
-				//datosBitField[tamanioBF] = '\0';
 				
+				char* tamanioBitField = new char[sizeof(uint32_t)];
+				bitFieldFile.read(tamanioBitField, sizeof(uint32_t));
+				uint32_t tamanioBF = *tamanioBitField;
+				char* datosBitField = new char[tamanioBF];
+				bitFieldFile.read(datosBitField,tamanioBF);
+				datosBitField[tamanioBF] = '\0';
 				
-				//TODO: esto no va mas
-				//cliente.setBitFieldTorrent(nombreTorrent, datosBitField);
+				//cliente.addTorrent(pathTorrent.c_str());
 				//Aca va el nuevo addTorrent
-				cliente.addTorrent(pathTorrent.c_str());
-				//cliente.addTorrent(pathTorrent.c_str(), datosBitField);
+				cliente.addTorrent(pathTorrent.c_str(), datosBitField);
 
 				
 				resultado = true;

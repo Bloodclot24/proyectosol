@@ -223,4 +223,86 @@ uint32_t ControladorGUI::obtenerOrden(std::string filename) {
 	return(vista->obtenerOrden(filename));
 }
 
+/*--------------------------------------------------------------------------*/
+/* MODELO -> VISTA 
+ * =============== */		 
+/*--------------------------------------------------------------------------*/
+/*Files*/ 		 
+void ControladorGUI::actualizarDone(std::string file, int piece, int done) {
+	
+	vista->actualizarDone(file, piece, done);
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::actualizarStatus(std::string file, int piece, std::string status) {
+
+	vista->actualizarStatus(file, piece, status);	
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::actualizarDownSpeed(std::string file, int piece, 
+		                                 std::string downSpeed) {
+
+	vista->actualizarDownSpeed(file, piece, downSpeed);		                                 	
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::actualizarUpSpeed(std::string file, int piece, std::string upSpeed) {
+	
+	vista->actualizarUpSpeed(file, piece, upSpeed);	
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::start(std::string filename) {
+	
+	vista->start(filename);
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::pause(std::string filename) {
+	
+	vista->pause(std::string filename);
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::stop(std::string filename) {
+	
+	vista->stop(filename);
+}
+
+/*--------------------------------------------------------------------------*/
+/*Trackers*/
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::agregarTracker(std::string name, std::string status,
+		                            int seed) {
+		  
+	vista->agregarTracker(name, status, seed);                          	
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::modificarStatusTracker(std::string name, 
+		                                    std::string status) {
+
+	vista->modificarStatusTracker(name, status);		                                    	
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::agregarSeedTracker(std::string name, int seed) {
+
+	vista->agregarSeedTracker(name, seed);
+}
+		
+/*--------------------------------------------------------------------------*/
+void eliminarTracker(std::string name) {
+
+	vista->eliminarTracker(name);
+}
+
+/*--------------------------------------------------------------------------*/
+/*Message*/
+void agregarMessage(std::string message) {
+	
+	vista->agregarMessage(message);
+]
+
 /****************************************************************************/
