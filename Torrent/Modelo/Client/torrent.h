@@ -153,10 +153,12 @@ public:
      /* Indica si una pieza es o no valida */
      int validarPieza(uint32_t index);
 
-     int stop(){ return 0; }
-     int pause(){ return 0; }
-     int remove(){ return 0; }
+	 /* Detiene la descarga del archivo */
+     int stop();
 
+     /* Pausa la descarga del archivo */
+     int pause();
+	
      /* Devuelve el estado del torrent */
      EstadoTorrent getEstado() { 
 	  Lock lock(mutexEstado);
