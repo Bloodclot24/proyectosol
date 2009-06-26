@@ -7,28 +7,6 @@ Mensaje::Mensaje(void){
      datos = NULL;
 }
 
-/* Copia un mensaje */
-/****************************************************************************/
-Mensaje::Mensaje(const Mensaje* mensaje){
-     tamanio = mensaje->tamanio;
-     if(tamanio > 0 && mensaje->datos != NULL){
-	  datos = new char[tamanio];
-	  for(unsigned int i=0;i<tamanio;i++)
-	       datos[i]=mensaje->datos[i];
-     }
-}
-
-/* Copia un mensaje */
-/****************************************************************************/
-Mensaje::Mensaje(const Mensaje& mensaje){
-     tamanio = mensaje.tamanio;
-     if(tamanio > 0 && mensaje.datos != NULL){
-	  datos = new char[tamanio];
-	  for(unsigned int i=0;i<tamanio;i++)
-	       datos[i]=mensaje.datos[i];
-     }
-}
-
 /* devuelve el tamamio de la seccion de datos */
 /****************************************************************************/
 unsigned int Mensaje::getTamanio(void){
@@ -48,8 +26,7 @@ void Mensaje::copiarDatos(const char* datos, unsigned int tamanio){
 	  delete[] this->datos;
      this->tamanio = tamanio;
      this->datos = new char[tamanio];
-     for(unsigned int i=0;i<tamanio;i++)
-	  this->datos[i] = datos[i];
+     memcpy(this->datos, datos, tamanio);
 }
 
 /* Asigna el buffer de datos. Este buffer es liberado cuando se

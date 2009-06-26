@@ -45,36 +45,36 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
 	  BeNode* primero = info->front();
 	  
 	  if(primero->typeNode == BE_DICT){
-	       std::map<std::string, BeNode*>* dict =	\
-		    &(primero->beDict->elements);
+	       std::map<std::string, BeNode*> &dict =	\
+		    primero->beDict->elements;
 	       
 	       BeNode* elemento;
 	       
 	       /* Extraigo todos los elementos que necesito */
-	       elemento = (*dict)[DICT_TRACKER];
+	       elemento = dict[DICT_TRACKER];
 	       if(elemento != NULL)
 		    this->announceUrl = elemento->beStr;
 
-	       elemento = (*dict)[DICT_DATE];
+	       elemento = dict[DICT_DATE];
 	       if(elemento != NULL)
 		    this->creationDate = elemento->beInt;
 	       else this->creationDate = 0;
 	       
-	       elemento = (*dict)[DICT_COMMENTS];
+	       elemento = dict[DICT_COMMENTS];
 	       if(elemento != NULL)
 		    this->comment = elemento->beStr;
 	       
-	       elemento = (*dict)[DICT_CREATOR];
+	       elemento = dict[DICT_CREATOR];
 	       if(elemento != NULL)
 		    this->createdBy = elemento->beStr;
 	       
-	       elemento = (*dict)[DICT_ENCODING];
+	       elemento = dict[DICT_ENCODING];
 	       if(elemento != NULL)
 	       this->encoding = elemento->beInt;
 	       else this->encoding = 0;
 	       
 	       /* Informacion de todos los archivos */
-	       elemento = (*dict)[DICT_INFO];
+	       elemento = dict[DICT_INFO];
 	       if(elemento != NULL){
 		    Sha1 hasher;
 		    idHash = hasher.ejecutarSha1(			\
@@ -115,26 +115,30 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
 	       else valido=false;
 
 	  }
+	  else valido=false;
 	  /* libero los elementos antes de eliminar */
 	  ParserBencode::beFree(info);
 	  delete info;
 
-	  pieceSize = (*(archivos->begin()))->getPieceLength();
-	  sizeInPieces = ceil(getTotalSize()/pieceSize);
-	  
-	  std::cout << "PieceSize" << pieceSize << " SizeInPieces "<< sizeInPieces << "\n";
+	  if(valido){
 
-	  bitField = new BitField(sizeInPieces);
+	       pieceSize = (*(archivos->begin()))->getPieceLength();
+	       sizeInPieces = ceil(getTotalSize()/pieceSize);
+	       
+	       std::cout << "PieceSize" << pieceSize << " SizeInPieces "<< sizeInPieces << "\n";
 
-	  //Si alguno de los archivos y ya existia, verifico si hay datos validos
-	  if(check){
-	       std::cout << "Los archivos ya existian, verificando ........\n" ;
-	       for(int i=0;i<sizeInPieces;i++){
-		    if(validarPieza(i)==1)
-			 bitField->setField(i,1);
+	       bitField = new BitField(sizeInPieces);
+	       
+	       //Si alguno de los archivos y ya existia, verifico si hay datos validos
+	       if(check){
+		    std::cout << "Los archivos ya existian, verificando ........\n" ;
+		    for(int i=0;i<sizeInPieces;i++){
+			 if(validarPieza(i)==1)
+			      bitField->setField(i,1);
+		    }
 	       }
+	       
 	  }
-
      }
      else{
 	  valido = false;
@@ -290,10 +294,8 @@ int Torrent::announce(){
 
      /* envio el request HTTP */
      emisor->enviarMensaje(mensaje);
-     emisor->esperarEnvio();
      
-     /* espero la respuesta */
-     receptor->esperarRecepcion();
+     /* recibo la respuesta */
      HttpResponse *resp = receptor->getResponse();
 
      emisor->finalizar();
@@ -662,6 +664,7 @@ TorrentFile* Torrent::obtenerArchivo(uint32_t index)
 		     continue;
 		if(index*tamanioPiezas < (bytesAcum+tamanioArchivo)){
 		     encontrado = true;
+		     break;
 		}
 		else{
 		     bytesAcum+=tamanioArchivo;
@@ -707,109 +710,109 @@ void Torrent::run(){
   	  (*it)->start(idHash);
        }
      
-     while(estado == DOWNLOADING){
-	  if(peersEnEspera.size()<1){
-	       mutexPeers.unlock();
-	       requestMutex.lock();
-	       requestCondition.wait();
-	       requestMutex.unlock();
-	       mutexPeers.lock();
-	  }
-	  else{
-	       std::cout << "Puedo realizar un request. (" << peersEnEspera.size()<<")\n";
-	       sleep(1);
-	       Lock lock(downloadMutex);
-	       
-	       static uint32_t index = 0; // rarestFirst();
-	       std::cout << "Realizo un request de la pieza " << index <<".\n";
-	       std::cout << "Peers en la cola de espera: " << peersEnEspera.size() << "\n";
-
-	       
-	       BitField *fields = piezasEnProceso[index];
-	       if(fields != NULL){
-		    std::cout << "La pieza esta siendo procesada en algun lado\n";
-		    uint32_t inicio=-1,fin=-1;
-		    uint32_t size;
-		    uint32_t j;
-		    for(j=0;fields->getField(j) != 0 && j < fields->getLength();j++);
-		    inicio = j;
-		    for(j=inicio+1;fields->getField(j) != 1 && j < fields->getLength();j++);
-		    fin = j;
-
-		    if(inicio >= fields->getLength()){
-			 std::cout << "UPAAAAA, nos pasamos de pieza, vamos por la que sigue!!\n";
-			 piezasEnProceso[index]=NULL;
-			 //delete fields;
-			 bitField->setField(index,1);
-			 //Me fijo que la pieza sea valida antes de continuar
-			 if(validarPieza(index))
-			    //Anunciar el have
-			    anunciarPieza(index);
-
-			 index++;
-			 inicio=0;
-			 fin=REQUEST_SIZE_DEFAULT;
-			 
-		    }
-
-		    std::cout << "INICIO: " << inicio << " FIN: " << fin << std::endl;
-		    size = fin-inicio;
+       while(getEstado() == DOWNLOADING){
+	    if(peersEnEspera.size()<1){
+		 mutexPeers.unlock();
+		 requestMutex.lock();
+		 requestCondition.wait();
+		 requestMutex.unlock();
+		 mutexPeers.lock();
+	    }
+	    else{
+		 std::cout << "Puedo realizar un request. (" << peersEnEspera.size()<<")\n";
+		 sleep(1);
+		 Lock lock(downloadMutex);
+		 
+		 static uint32_t index = 0; // rarestFirst();
+		 std::cout << "Realizo un request de la pieza " << index <<".\n";
+		 std::cout << "Peers en la cola de espera: " << peersEnEspera.size() << "\n";
+		 
+		 
+		 BitField *fields = piezasEnProceso[index];
+		 if(fields != NULL){
+		      std::cout << "La pieza esta siendo procesada en algun lado\n";
+		      uint32_t inicio=-1,fin=-1;
+		      uint32_t size;
+		      uint32_t j;
+		      for(j=0;fields->getField(j) != 0 && j < fields->getLength();j++);
+		      inicio = j;
+		      for(j=inicio+1;fields->getField(j) != 1 && j < fields->getLength();j++);
+		      fin = j;
+		      
+		      if(inicio >= fields->getLength()){
+			   std::cout << "UPAAAAA, nos pasamos de pieza, vamos por la que sigue!!\n";
+			   piezasEnProceso[index]=NULL;
+			   //delete fields;
+			   bitField->setField(index,1);
+			   //Me fijo que la pieza sea valida antes de continuar
+			   if(validarPieza(index))
+				//Anunciar el have
+				anunciarPieza(index);
+			   
+			   index++;
+			   inicio=0;
+			   fin=REQUEST_SIZE_DEFAULT;
+			   
+		      }
+		      
+		      std::cout << "INICIO: " << inicio << " FIN: " << fin << std::endl;
+		      size = fin-inicio;
+		      
+		      size_t i = peersEnEspera.size();
+		      Peer *peer;
+		      while(i>0){
+			   peer = peersEnEspera.popFront();
+			   if(peer->havePiece(index))
+				i=0;
+			   else{
+				peersEnEspera.push(peer);
+				peer = NULL;
+				i--;
+			   }
+		      }
+		      if(peer != NULL){
+			   if(size>REQUEST_SIZE_DEFAULT)
+				size = REQUEST_SIZE_DEFAULT;
+			   for(uint32_t i=0;i<size;i++)
+				fields->setField(inicio+i,1);
+			   peer->sendRequest(index,inicio,size);
+		      }
+		      else{
+			   index++;
+		      }
+		 }
+		 else{
+		      std::cout << "No estamos procesando la pieza.\n";
+		      size_t i = peersEnEspera.size();
+		      Peer *peer;
+		      while(i>0){
+			   peer = peersEnEspera.popFront();
+			   if(peer->havePiece(index))
+				i=0;
+			   else{
+				peersEnEspera.push(peer);
+				peer = NULL;
+				i--;
+			   }
+		      }
+		      if(peer != NULL){
+			   //Si encontramos al peer que tiene la pieza
+			   //Creo un bitfield con la cantidad de bits
+			   //necesarias para representar una pieza
+			   fields = new BitField((*archivos->begin())->getPieceLength());
+			   piezasEnProceso[index] = fields;
+			   std::cout << "Se envia el request de la pieza " << index << std::endl;
+			   for(uint32_t i=0;i<REQUEST_SIZE_DEFAULT;i++)
+				fields->setField(i,1);
+			   peer->sendRequest(index,0,REQUEST_SIZE_DEFAULT);
+		      }
+		      else{
+			   index++;
+		      }
 		    
-		    size_t i = peersEnEspera.size();
-		    Peer *peer;
-		    while(i>0){
-			 peer = peersEnEspera.popFront();
-			 if(peer->havePiece(index))
-			      i=0;
-			 else{
-			      peersEnEspera.push(peer);
-			      peer = NULL;
-			      i--;
-			 }
-		    }
-		    if(peer != NULL){
-			 if(size>REQUEST_SIZE_DEFAULT)
-			      size = REQUEST_SIZE_DEFAULT;
-			 for(uint32_t i=0;i<size;i++)
-			      fields->setField(inicio+i,1);
-			 peer->sendRequest(index,inicio,size);
-		    }
-		    else{
-			 index++;
-		    }
-	       }
-	       else{
-		    std::cout << "No estamos procesando la pieza.\n";
-		    size_t i = peersEnEspera.size();
-		    Peer *peer;
-		    while(i>0){
-			 peer = peersEnEspera.popFront();
-			 if(peer->havePiece(index))
-			      i=0;
-			 else{
-			      peersEnEspera.push(peer);
-			      peer = NULL;
-			      i--;
-			 }
-		    }
-		    if(peer != NULL){
-			 //Si encontramos al peer que tiene la pieza
-			 //Creo un bitfield con la cantidad de bits
-			 //necesarias para representar una pieza
-			 fields = new BitField((*archivos->begin())->getPieceLength());
-			 piezasEnProceso[index] = fields;
-			 std::cout << "Se envia el request de la pieza " << index << std::endl;
-			 for(uint32_t i=0;i<REQUEST_SIZE_DEFAULT;i++)
-			      fields->setField(i,1);
-			 peer->sendRequest(index,0,REQUEST_SIZE_DEFAULT);
-		    }
-		    else{
-			 index++;
-		    }
-		    
-	       }
-	  }
-     }
+		 }
+	    }
+       }
 }
 
 /****************************************************************************/

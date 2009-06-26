@@ -84,7 +84,7 @@ bool Socket::enviar(const void *buf, int longitud){
      
 /* Recibe la cantidad de bytes pedidos en el buffer */
 /****************************************************************************/
-bool Socket::recibir(void *buf, int cuanto){
+int Socket::recibir(void *buf, int cuanto){
 //      int retorno, acumulado = 0;
 //      do{ //recv puede leer menos datos que los pedidos
 // 	  retorno = recv(s, (void*)((int)buf+acumulado), cuanto-acumulado, MSG_WAITALL);
@@ -96,7 +96,10 @@ bool Socket::recibir(void *buf, int cuanto){
 //      return esValido();
      if(this != NULL)
 	  return recv(s, buf, cuanto, MSG_WAITALL);
-     return 0;
+     else{
+	  fprintf(stderr, "OOOOOOOOOOOOOLE this es NULL <><><><><><><><>\n");
+     }
+     return -1;
 }
      
 

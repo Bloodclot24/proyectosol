@@ -53,26 +53,37 @@ class Lock {
 
 
 class Thread {
-    
-    private:
-    pthread_t thread;
-    Thread(const Thread& otherInstance);
-    Thread& operator=(const Thread& otherInstance);
-    static void* start_routine(void* thisPointer){
-	Thread* threadPointer = (Thread*) thisPointer;
+private:
+     bool corriendo;  /* indica si el thread esta activo */
+     pthread_t thread;
+     Thread(const Thread& otherInstance);
+     Thread& operator=(const Thread& otherInstance);
+     static void* start_routine(void* thisPointer){
+	  Thread* threadPointer = (Thread*) thisPointer;
+	  
+	  threadPointer->run();
+	  return NULL;
+     }
+     
+protected:
+     void stop(){ corriendo = false; }
+     Thread(){ corriendo = false; }
+     virtual void run() = 0;
+     
+public:
+     int start(){ 
+	  corriendo=true;
+	  return pthread_create(&(this->thread), NULL, Thread::start_routine, this); 
+     }
 
-	threadPointer->run();
-	return NULL;
-    }
-    
-    protected:
-    Thread(){ }
-    virtual void run() = 0;
-    
-    public:
-    int start(){ return pthread_create(&(this->thread), NULL, Thread::start_routine, this); }
-    void join(){ pthread_join(this->thread, NULL); }
-    virtual ~Thread(){ }
+     bool isRunning(){ return corriendo; }
+
+     void join(){ 
+	  corriendo = false;
+	  pthread_join(this->thread, NULL); 
+     }
+
+     virtual ~Thread(){ }
 };
 
 #endif //COMMON_THREADS_INCLUDED

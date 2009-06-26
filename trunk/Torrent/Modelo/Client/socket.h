@@ -24,6 +24,9 @@ private:
 	  error = 0;
      }
 
+     Socket(const Socket &socket){}
+     
+     Socket operator=(const Socket& socket){ return socket; }
 public:
 
      /* crea un nuevo socket con la direccion de destino y puerto dados */
@@ -42,7 +45,7 @@ public:
      bool enviar(const void *buf, int longitud);
      
      /* Recibe la cantidad de bytes pedidos en el buffer */
-     bool recibir(void *buf, int cuanto);
+     int recibir(void *buf, int cuanto);
      
 
      /* Conecta al socket a la direccion y puerto dados en el constructor */

@@ -5,11 +5,8 @@
  * socket.
  */
 /****************************************************************************/
-ThreadReceptor::ThreadReceptor(Socket *socket, bool http):	\
-     pedido(&mutexPedido),estado(&mutexEstado){
-     
+ThreadReceptor::ThreadReceptor(Socket *socket, bool http):condHttp(&mutexHttp){
      this->socket = socket;
-     corriendo = false;
      ocupado = false;
      buffer = NULL;
      tamanioBuffer = 0;
@@ -22,52 +19,34 @@ Deque<char>* ThreadReceptor::getColaDeDatos(){
      return &colaDeDatos;
 }
 
-/* Si no hay datos en la cola, espera a que haya algo. En el caso de
- * un receptor del tipo http, espera a recibir la respuesta http. */
-/****************************************************************************/
-void ThreadReceptor::esperarRecepcion(){
-     mutexPedido.lock();
-     if(http){
-	  if(response == NULL)
-	       pedido.wait();
-     }
-     else{
-	  while(colaDeDatos.empty())
-	       pedido.wait();
-     }
-     mutexPedido.unlock();
-}
-
 /* Activa el thread */
 /****************************************************************************/
 void ThreadReceptor::comenzar(){
-     corriendo = true;
      start();
 }
 
 /****************************************************************************/
-bool ThreadReceptor::isRunning(){
-     return corriendo;
-}
-
-/****************************************************************************/
 HttpResponse* ThreadReceptor::getResponse(){
+     if(response==NULL && http){
+	  Lock lock(mutexHttp);
+	  condHttp.wait();
+     }
      return response;
 }
-
      
 /* finaliza el thread y cierra el socket */
 /****************************************************************************/
 void ThreadReceptor::finalizar(void){
-     if(corriendo)
-	  corriendo = false;
-     socket->setTimeout(0,1);
-     socket->cerrar();
+     if(isRunning()){
+	  join();
+	  socket->setTimeout(0,1);
+	  socket->cerrar();
+     }
 }
      
 /* Rutina principal del thread */
 void ThreadReceptor::run(){
-     while(corriendo){
+     while(isRunning()){
 	  if(http){
 	       // es un response http
 	       std::string datos;
@@ -111,8 +90,10 @@ void ThreadReceptor::run(){
 		    socket->recibir(contenido, longitud);
 		    datos.append(contenido, longitud);
 	       }
+	       Lock lock(mutexHttp);
 	       response = new HttpResponse(datos);
-	       corriendo = false;
+	       condHttp.signal();
+	       stop(); //para que salga del hilo
 	  }
 	  else{
 
@@ -123,12 +104,9 @@ void ThreadReceptor::run(){
 	       else{
 		    std::cerr << "Se cerro el socket inesperadamente."	\
 			      << socket << std::endl;
-		    corriendo = false;
+		    stop(); //para que salga del hilo
 	       }
 	  }
-	  mutexPedido.lock();
-	  pedido.signal();
-	  mutexPedido.unlock();
      }
 }
 

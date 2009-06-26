@@ -14,7 +14,6 @@ Peer::Peer(const std::string& host, int puerto , Torrent* torrent){// 	\
      am_interested = 0;
      peer_choking = 1;
      peer_interested = 0;
-     corriendo = false;
      this->torrent = torrent;
      this->bitField = new BitField(ceil(torrent->getBitField()->getLength()));
      conectado = false;
@@ -30,10 +29,9 @@ Peer::Peer(Socket* socket){
      am_interested = 0;
      peer_choking = 1;
      peer_interested = 0;
-     corriendo = false;
-	 this->socket = socket;
-	 conectado = false;
-	 this->torrent = NULL;
+     this->socket = socket;
+     conectado = false;
+     this->torrent = NULL;
      this->bitField = NULL;
      this->entrante = true;
 
@@ -47,7 +45,6 @@ const std::string& Peer::getName(){
 /****************************************************************************/
 void Peer::start(std::string hash){
      this->hash = hash;
-     corriendo = true;
      Thread::start();
 }
 
@@ -136,10 +133,10 @@ void Peer::run(){
 	  this->emisor = new ThreadEmisor(this->socket);
 	  this->receptor = new ThreadReceptor(this->socket,false);
      
-	  socket->setTimeout(30,0);
+	  //socket->setTimeout(30,0);
 	  socket->conectar();
 	  if(!socket->esValido()){
-	       corriendo = false;
+	       stop();
 	       std::cout << "ERROR DEL SOCKET: " << socket->obtenerError() << std::endl;
 	       torrent->eliminarPeer(this);
 	       return;
@@ -220,7 +217,7 @@ void Peer::run(){
      /* Aviso al torrent que me pude conectar */
      torrent->peerConected(this);
 
-     while(corriendo && receptor->isRunning()){
+     while(isRunning() && receptor->isRunning()){
 	  Message *respuesta = proto.decode(*datos);
 	  
 	  switch(respuesta->id){
@@ -250,7 +247,7 @@ void Peer::run(){
 	       else{
 		    //Cerrar conexion y salir
 		    std::cout << "Bitfield de longitud erronea recibido \n";
-		    corriendo = false;
+		    stop();
 	       }
 	       break;
 	  case REQUEST:
@@ -296,7 +293,7 @@ void Peer::run(){
 		    
 	       }
 	       else{
-		    corriendo = false;
+		    stop();
 	       }
 	       break;
 	  case CANCEL:
@@ -311,7 +308,7 @@ void Peer::run(){
 
 	  default:
 	       std::cout << "Lucia, deja de mandar mensajes sin sentido!!! @ " << socket << "\n";
-	       corriendo = false;
+	       stop();
 	       break;
 	  }
      }

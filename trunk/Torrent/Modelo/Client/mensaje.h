@@ -10,16 +10,16 @@ protected:
      char* datos;
      friend class ThreadReceptor;
      friend class ThreadEmisor;
+
+     /* copia un mensaje */
+     Mensaje(const Mensaje& mensaje){}
+     Mensaje operator=(const Mensaje& mensaje){ return mensaje;}
+
      
 public:
      /* Crea un nuevo mensaje vacío */
      Mensaje(void);
 
-     /* copia un mensaje */
-     Mensaje(const Mensaje* mensaje);
-
-     /* copia un mensaje */
-     Mensaje(const Mensaje& mensaje);
 
      /* devuelve el tamamio de la seccion de datos */
      unsigned int getTamanio(void);

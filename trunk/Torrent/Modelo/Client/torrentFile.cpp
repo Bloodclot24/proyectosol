@@ -22,24 +22,24 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
      
      if(node->typeNode == BE_DICT){
 	  /* la seccion info debe ser un diccionario */
-	  std::map<std::string, BeNode*>* dict = &(node->beDict->elements);
+	  std::map<std::string, BeNode*> &dict = node->beDict->elements;
 	  BeNode* elemento;
 	  /* Extraigo todos los elementos que necesito */
 
-	  elemento = (*dict)[INFO_NAME];
+	  elemento = dict[INFO_NAME];
 	  if(elemento != NULL)
 	       newFile->name = elemento->beStr;
 	  
-	  elemento = (*dict)[INFO_PIECELEN];
+	  elemento = dict[INFO_PIECELEN];
 	  if(elemento != NULL)
 	       newFile->pieceLength = elemento->beInt;
 	  else newFile->pieceLength = 0;
 
-	  elemento = (*dict)[INFO_PIECES];
+	  elemento = dict[INFO_PIECES];
 	  if(elemento != NULL)
 	       newFile->pieces = elemento->beStr;
 	  
-	  elemento = (*dict)[INFO_PRIVATE];
+	  elemento = dict[INFO_PRIVATE];
 	  if(elemento != NULL)
 	       newFile->isPrivate = elemento->beInt;
 	  else newFile->isPrivate = 0;
@@ -47,7 +47,7 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 	  std::cout << "Primer archivo "<< newFile;
 	  fileList->push_back(newFile);
 
-	  elemento = (*dict)[INFO_FILES];
+	  elemento = dict[INFO_FILES];
 	  if(elemento != NULL){
 	       /* Si existe, hay mas de un archivo*/
 	       std::list<BeNode*> &lista = elemento->beList->elements;
@@ -65,20 +65,20 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 		    newFile = new TorrentFile();
 		    
 		    /* obtengo el diccionario de este archivo */
-		    dict= &((*it)->beDict->elements);
+		    std::map<std::string, BeNode*> &fileDict = (*it)->beDict->elements;
 
-		    elemento = (*dict)[INFO_LENGTH];
+		    elemento = fileDict[INFO_LENGTH];
 		    if(elemento != NULL)
 			 newFile->length = elemento->beInt;
 		    else newFile->length = 0;
 		    
-		    elemento = (*dict)[INFO_MD5];
+		    elemento = fileDict[INFO_MD5];
 		    if(elemento != NULL)
 			 newFile->md5 = elemento->beStr;
 
-		    elemento = (*dict)[INFO_PATH];
+		    elemento = fileDict[INFO_PATH];
 		    if(elemento != NULL){
-			 std::list<BeNode*> lista = elemento->beList->elements;
+			 std::list<BeNode*> &lista = elemento->beList->elements;
 			 
 			 std::string ruta(rutaInicial);
 			 std::list<BeNode*>::iterator it;
@@ -98,12 +98,12 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 	  }
 	  else{
 	       /* Si no existe hay un solo archivo */
-	       elemento = (*dict)[INFO_LENGTH];
+	       elemento = dict[INFO_LENGTH];
 	       if(elemento != NULL)
 		    newFile->length = elemento->beInt;
 	       else newFile->length = 0;
 
-	       elemento = (*dict)[INFO_MD5];
+	       elemento = dict[INFO_MD5];
 	       if(elemento != NULL)
 		    newFile->md5 = elemento->beStr;
 
