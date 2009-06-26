@@ -38,7 +38,7 @@ HttpResponse* ThreadReceptor::getResponse(){
 /****************************************************************************/
 void ThreadReceptor::finalizar(void){
      if(isRunning()){
-	  join();
+	  finish();
 	  socket->setTimeout(0,1);
 	  socket->cerrar();
      }

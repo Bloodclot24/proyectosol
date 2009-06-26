@@ -39,7 +39,7 @@ public:
       * que pudiera quedar en la cola */
      void finalizar(void){
 	  if(isRunning()){
-	       join();
+	       finish();
 	       socket->setTimeout(0,1);
 	       socket->cerrar();
 	       while(!colaDeEspera.empty()){

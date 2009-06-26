@@ -10,7 +10,7 @@ void ThreadAceptor::comenzar(){
 
 void ThreadAceptor::finalizar(void){
      if(isRunning()){
-	  join();
+	  finish();
 	  socket->setTimeout(0,1);
 	  socket->cerrar();
      }

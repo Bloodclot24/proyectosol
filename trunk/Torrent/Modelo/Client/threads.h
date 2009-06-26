@@ -69,6 +69,7 @@ protected:
      void stop(){ corriendo = false; }
      Thread(){ corriendo = false; }
      virtual void run() = 0;
+     void finish(){ stop(); join(); }
      
 public:
      int start(){ 
