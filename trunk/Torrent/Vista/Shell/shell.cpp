@@ -312,7 +312,7 @@ void Shell::mostrarPiece(int number, std::string size, int blocks, int block,
 
 /*--------------------------------------------------------------------------*/
 /**Mensajes**/
-void Shell::mostrarMensaje(std::string mensaje) {
+void Shell::mostrarMessage(std::string mensaje) {
 	
 	std::cout << mensaje << std::endl;		 		
 }

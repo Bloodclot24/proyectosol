@@ -23,6 +23,10 @@ public:
 	  colaDeEspera.push(mensaje);
 	  return true;
      }
+
+     void esperarEmision(){
+	  while(!colaDeEspera.empty());
+     }
      
      /* Crea un nuevo thread asociado a un socket para emitir datos */
      ThreadEmisor(Socket *socket){
@@ -39,12 +43,12 @@ public:
       * que pudiera quedar en la cola */
      void finish(void){
 	  if(isRunning()){
-	       Thread::finish();
 	       socket->setTimeout(0,1);
+	       Thread::finish();
 	       socket->cerrar();
 	       while(!colaDeEspera.empty()){
 		    Mensaje *mensaje = colaDeEspera.popFront();
-		    delete mensaje;
+		    //delete mensaje;
 	       }
 	  }
      }

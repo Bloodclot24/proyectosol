@@ -333,6 +333,9 @@ int Torrent::announce(){
 
      /* envio el request HTTP */
      emisor->enviarMensaje(mensaje);
+
+     emisor->esperarEmision();
+     sleep(10);
      
      /* recibo la respuesta */
      HttpResponse *resp = receptor->getResponse();
@@ -352,6 +355,7 @@ int Torrent::announce(){
 	  rotarTrackers();
 	  return -1;
      }
+
      std::list<BeNode*>* list = parser.beDecode(resp->getContent());
 
      if(list == NULL ||	(primero = list->front()) == NULL	\
@@ -438,14 +442,13 @@ int Torrent::announce(){
 
 /****************************************************************************/
 int Torrent::start(){
-     while(announce() != 0);
-     
+
      estado = DOWNLOADING;
-     
+  
      /* Comienzo el proceso */
      Thread::start();	  
 
-     return 0;
+     return 1;
 }
 
 /****************************************************************************/
@@ -750,6 +753,8 @@ void Torrent::run(){
      //Logica. Basicamente pido datos.
      ProtocoloBitTorrent proto;
 
+     while(announce() != 0);
+
      mutexPeers.lock();
        std::list<Peer*>::iterator it;
        int i;
@@ -918,9 +923,6 @@ int Torrent::stop(){
 
      //TODO: ver tema mutex	
      this->estado= STOPPED;
-     this->emisor->finish();
-     this->receptor->finish();
-     
      std::list<Peer*>::iterator it;
      
      for(it=listaPeers.begin(); it != listaPeers.end(); it++){

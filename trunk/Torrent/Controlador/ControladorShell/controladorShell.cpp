@@ -34,11 +34,11 @@ bool ControladorShell::addTorrent(std::string pathTorrent) {
 			this->cantFiles++;
 			return true;
 		} else {
-			shell->mostrarMensaje("Error al cargar el archivo");
+			shell->mostrarMessage("Error al cargar el archivo");
 			return false;
 		}
 	} else {
-		shell->mostrarMensaje("Debe seleccionar un archivo .torrent");
+		shell->mostrarMessage("Debe seleccionar un archivo .torrent");
 		return false;
 	}
 }
@@ -61,13 +61,13 @@ void ControladorShell::mostrarTrackers() {
 void ControladorShell::mostrarFiles() {
 	
 	shell->mostrarArchivos();
-	std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
-	std::list<Torrent*>::iterator it;
+	const std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
+	std::list<Torrent*>::const_iterator it;
 	int contador= 1;
 	std::string estado;
 	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++, contador++) {
 		Torrent* torrent= *it;
-		estado= getEstadoTorrent(torrent->getEstadoTorrent());
+		estado= getEstadoTorrent(torrent->getEstado());
 		shell->mostrarArchivo(contador, torrent->getName(), 0, "", 0, estado, "", "");		
 	}	
 }
@@ -79,7 +79,7 @@ void ControladorShell::mostrarGeneral(std::string numFile) {
 	
 	if(valido) {
 		Torrent* torrent= obtenerTorrent(obtenerFilename(numFile));
-		std::string estado= getEstadoTorrent(torrent->getEstadoTorrent());
+		std::string estado= getEstadoTorrent(torrent->getEstado());
 		shell->mostrarGeneral(obtenerFilename(numFile), "", estado);
 	}
 }
@@ -117,9 +117,9 @@ void ControladorShell::removeFile(std::string numFile) {
 	
 	if(valido) {
 		if(!cliente.remove(obtenerFilename(numFile)))
-			shell->mostrarMensaje("No se pudo BORRAR el archivo.");
+			shell->mostrarMessage("No se pudo BORRAR el archivo.");
 	} else  	
-		shell->mostrarMensaje("No es un numero de archivo valido.");
+		shell->mostrarMessage("No es un numero de archivo valido.");
 }
 
 /*--------------------------------------------------------------------------*/
@@ -129,9 +129,9 @@ void ControladorShell::startFile(std::string numFile) {
 	
 	if(valido) {
 		if(!cliente.start(obtenerFilename(numFile)))
-			shell->mostrarMensaje("ERROR: No se pudo INICIAR la descarga.");
+			shell->mostrarMessage("ERROR: No se pudo INICIAR la descarga.");
 	} else
-		shell->mostrarMensaje("ERROR: No es un numero de archivo valido.");		
+		shell->mostrarMessage("ERROR: No es un numero de archivo valido.");		
 }
 
 /*--------------------------------------------------------------------------*/
@@ -141,9 +141,9 @@ void ControladorShell::pauseFile(std::string numFile) {
 	
 	if(valido) {
 		if(!cliente.pause(obtenerFilename(numFile)))
-			shell->mostrarMensaje("ERROR: No se pudo PAUSAR la descarga.");
+			shell->mostrarMessage("ERROR: No se pudo PAUSAR la descarga.");
 	} else  	
-		shell->mostrarMensaje("ERROR: No es un numero de archivo valido.");
+		shell->mostrarMessage("ERROR: No es un numero de archivo valido.");
 }
 
 /*--------------------------------------------------------------------------*/
@@ -153,9 +153,9 @@ void ControladorShell::stopFile(std::string numFile) {
 	
 	if(valido) {
 		if(!cliente.stop(obtenerFilename(numFile)))
-			shell->mostrarMensaje("ERROR: No se pudo DETENER la descarga.");
+			shell->mostrarMessage("ERROR: No se pudo DETENER la descarga.");
 	} else  	
-		shell->mostrarMensaje("ERROR: No es un numero de archivo valido.");	
+		shell->mostrarMessage("ERROR: No es un numero de archivo valido.");	
 }
 
 /*--------------------------------------------------------------------------*/
@@ -178,8 +178,8 @@ uint32_t ControladorShell::obtenerOrden(std::string filename) {
 /*--------------------------------------------------------------------------*/
 const char* ControladorShell::obtenerFilename(std::string numFile) {
 	
-	std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
-	std::list<Torrent*>::iterator it;
+	const std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
+	std::list<Torrent*>::const_iterator it;
 	int contador= 1;
 	int buscado= atoi(numFile.c_str());
 	bool encontrado= false;
@@ -202,7 +202,7 @@ const char* ControladorShell::obtenerFilename(std::string numFile) {
  * =============== */		 
 /*--------------------------------------------------------------------------*/
 /*Message*/
-void agregarMessage(std::string message) {
+void ControladorShell::agregarMessage(std::string message) {
 
 	shell->mostrarMessage(message);
 }

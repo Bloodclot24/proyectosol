@@ -57,9 +57,9 @@ bool Controlador::guardarConfig() {
 	uint32_t contador = 0;
 	std::string snumero;
 	uint32_t auxiliar;	
-    std::stringstream cvz;
-	std::list<Torrent*>* listaTorrents  = this->cliente.getListaTorrents();
-	std::list<Torrent*>::iterator it;
+	std::stringstream cvz;
+	const std::list<Torrent*>* listaTorrents  = this->cliente.getListaTorrents();
+	std::list<Torrent*>::const_iterator it;
 	config.open(NAME_FILE_CONFIG , std::fstream::out);
 	std::cout << "SE CREO CONFIG\n";
 	if(!bitfieldFile.is_open()) resultado = false;
@@ -162,16 +162,16 @@ bool Controlador::cargarConfig() {
 				std::cout<<"Esperando addTorrent: \n";
 				std::cout<<"Se realizo addTorrent: \n";
 				
-				char* tamanioBitField = new char[sizeof(uint32_t)];
-				bitFieldFile.read(tamanioBitField, sizeof(uint32_t));
-				uint32_t tamanioBF = *tamanioBitField;
-				char* datosBitField = new char[tamanioBF];
-				bitFieldFile.read(datosBitField,tamanioBF);
-				datosBitField[tamanioBF] = '\0';
+// 				char* tamanioBitField = new char[sizeof(uint32_t)];
+// 				bitFieldFile.read(tamanioBitField, sizeof(uint32_t));
+// 				uint32_t tamanioBF = *tamanioBitField;
+// 				char* datosBitField = new char[tamanioBF];
+// 				bitFieldFile.read(datosBitField,tamanioBF);
+// 				datosBitField[tamanioBF] = '\0';
 				
-				//cliente.addTorrent(pathTorrent.c_str());
+				cliente.addTorrent(pathTorrent.c_str());
 				//Aca va el nuevo addTorrent
-				cliente.addTorrent(pathTorrent.c_str(), datosBitField);
+				//cliente.addTorrent(pathTorrent.c_str(), datosBitField);
 
 				
 				resultado = true;
@@ -241,17 +241,21 @@ std::string Controlador::getEstadoTorrent(EstadoTorrent estado) {
 /*--------------------------------------------------------------------------*/
 Torrent* Controlador::obtenerTorrent(std::string filename) {
 	
-	std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
-	std::list<Torrent*>::iterator it;
+	const std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
+	std::list<Torrent*>::const_iterator it;
 	bool encontrado= false;
 	
 	for(it= listaTorrents->begin(); it != listaTorrents->end() && !encontrado; it++) {
 
-		if(filename ==  (*it)->getName())
+	     if(filename ==  (*it)->getName()){
 			encontrado= true;
+			break;
+	     }
 	}	
 	
-	return *(--it);
+	if(encontrado)
+	     return *(it);
+	return NULL;
 }
 
 /****************************************************************************/

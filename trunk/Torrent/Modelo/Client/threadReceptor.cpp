@@ -23,7 +23,6 @@ Deque<char>* ThreadReceptor::getColaDeDatos(){
 /****************************************************************************/
 void ThreadReceptor::comenzar(){
      start();
-     finish();
 }
 
 /****************************************************************************/
@@ -44,8 +43,8 @@ void ThreadReceptor::finish(void){
 	  condHttp.signal(); //Por si alguien se quedo esperando una respuesta
 	  mutexHttp.unlock();
 
-	  Thread::finish();
 	  socket->setTimeout(0,1);
+	  Thread::finish();
 	  socket->cerrar();
      }
 }
