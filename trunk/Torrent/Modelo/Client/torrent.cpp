@@ -635,10 +635,13 @@ uint32_t Torrent::rarestFirst()
 	  //Me fijo si tengo esa parte
 	  uint32_t parteExistente = this->bitField->getField(posMenor); 
 	  if(parteExistente){
-	       //TODO ver lista de partes en proceso.
-	       //si la tengo, seteo esa posicion con un valor
-	       //muy grande asi no vuelve a ser el menor
-	       vectorPiezas[posMenor] = INT_MAX;
+	       BitField *fields = piezasEnProceso[posMenor];
+	       if(fields != NULL){
+		   	//TODO ver lista de partes en proceso.
+	       	//si la tengo, seteo esa posicion con un valor
+	       	//muy grande asi no vuelve a ser el menor
+	       	vectorPiezas[posMenor] = INT_MAX;
+	       }
 	  }else{
 	       //Si no la tenia, encontre la pieza mas rara
 	       //de las que me faltan y devuelvo la posicion
@@ -865,3 +868,32 @@ Torrent::~Torrent(){
 	  delete archivos;
      }
 }
+
+/****************************************************************************/
+int Torrent::stop(){
+
+	//TODO: ver tema mutex	
+	this->estado= STOPPED;
+	this->emisor->finish();
+	this->receptor->finish();
+	
+	std::list<Peer*>::iterator it;
+
+    for(it=listaPeers.begin(); it != listaPeers.end(); it++){
+	  	(*it)->finish();
+	  	listaPeers.remove(*it);
+	  	delete (*it);
+    }
+			
+	return 1;
+}
+
+/****************************************************************************/
+int Torrent::pause(){
+	
+	//TODO: ver tema mutex
+	this->estado= PAUSED;
+	return 1; 
+}
+
+/****************************************************************************/
