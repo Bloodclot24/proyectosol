@@ -56,7 +56,7 @@ public:
 //	void setBitFieldTorrent(const char* filename, char* data);
 
 	/* obtiene la lista de torrents */
-	std::list<Torrent*>* getListaTorrents();
+	const std::list<Torrent*>* getListaTorrents();
 	
 	/* obtiene el puerto de conexion por defecto */
 	uint32_t  getPortDefault();

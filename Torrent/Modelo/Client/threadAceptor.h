@@ -9,9 +9,7 @@ class  ThreadAceptor;
 
 class ThreadAceptor:Thread{
 private:
-     bool corriendo;
      Socket *socket;
-     
      
 public:
      ThreadAceptor(Socket *socket);

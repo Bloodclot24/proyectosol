@@ -23,8 +23,6 @@ private:
 
      std::string hash;
 
-     bool corriendo;
-     
      BitField *bitField;
 
      std::string name;

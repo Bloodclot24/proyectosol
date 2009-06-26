@@ -26,9 +26,9 @@ bool Client::addTorrent(const char* path){
 /*--------------------------------------------------------------------------*/
 bool Client::addTorrent(const char* path, char* bitfield) {
 	
-	Torrent *torrent = new Torrent(path, bitfield);
-	
-	if(torrent->isValid()){
+     Torrent *torrent = new Torrent(path, bitfield);
+     
+     if(torrent->isValid()){
 	  torrents.push_back(torrent);
 	  return true;
      }
@@ -68,7 +68,7 @@ bool Client::start(const char* filename){
 bool Client::stop(const char* filename) {
 	
 	Torrent* torrent= buscarTorrent(filename);
-	if(torrent && torrent->getEstadoTorrent() ==  DOWNLOADING) {
+	if(torrent && torrent->getEstado() ==  DOWNLOADING) {
 		torrent->stop();
 		return true;
 	} else
@@ -79,7 +79,7 @@ bool Client::stop(const char* filename) {
 bool Client::pause(const char* filename) {
 	
 	Torrent* torrent= buscarTorrent(filename);
-	if(torrent && torrent->getEstadoTorrent() ==  DOWNLOADING) {
+	if(torrent && torrent->getEstado() ==  DOWNLOADING) {
 		torrent->pause();
 		return true;
 	} else
@@ -103,18 +103,20 @@ bool Client::remove(const char* filename) {
 /*--------------------------------------------------------------------------*/
 Torrent* Client::buscarTorrent(const char* filename) {
 	
-	std::list<Torrent*>::iterator it;
-	bool encontrado= false;
-	
-    for(it= torrents.begin(); it!= torrents.end() && !encontrado; it++) {     	
-     	if(strcmp(filename, (*it)->getName().c_str()) == 0)
-     		encontrado= true;	
+     std::list<Torrent*>::iterator it;
+     bool encontrado= false;
+     
+     for(it= torrents.begin(); it!= torrents.end() && !encontrado; it++) {     	
+	  if(strcmp(filename, (*it)->getName().c_str()) == 0){
+	       encontrado = true;
+		    break;
+	  }
      }
      
-    if(!encontrado)
-    	return NULL;
-  	else   
-    	return *(--it);
+     if(!encontrado)
+	  return NULL;
+     else   
+	  return *(it);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -125,7 +127,7 @@ Torrent* Client::buscarTorrent(const char* filename) {
 //}
 
 /*--------------------------------------------------------------------------*/
-std::list<Torrent*>* Client::getListaTorrents(){
+const std::list<Torrent*>* Client::getListaTorrents(){
 	return &torrents;
 }
 
