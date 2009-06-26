@@ -316,8 +316,8 @@ void Peer::run(){
      std::cout << "FUERA PEER\n";
 
      conectado = false;
-     receptor->finalizar();
-     emisor->finalizar();
+     receptor->finish();
+     emisor->finish();
      socket->cerrar();
      delete receptor;
      delete emisor;
@@ -325,4 +325,10 @@ void Peer::run(){
 
      /* Le aviso al torrent que finalizo este peer */
      torrent->eliminarPeer(this);
+}
+
+
+void Peer::finish(){
+     Thread::finish();
+
 }

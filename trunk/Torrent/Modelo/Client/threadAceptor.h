@@ -16,7 +16,7 @@ public:
 
      void comenzar();
 
-     void finalizar(void);
+     void finish(void);
 
      void run();
 

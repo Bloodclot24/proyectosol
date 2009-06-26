@@ -30,7 +30,7 @@ public:
 
      void comenzar();
 
-     void finalizar(void);
+     void finish(void);
      
      Deque<char>* getColaDeDatos();
 		     

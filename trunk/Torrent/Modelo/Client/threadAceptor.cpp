@@ -8,9 +8,9 @@ void ThreadAceptor::comenzar(){
      start();
 }
 
-void ThreadAceptor::finalizar(void){
+void ThreadAceptor::finish(void){
      if(isRunning()){
-	  finish();
+	  Thread::finish();
 	  socket->setTimeout(0,1);
 	  socket->cerrar();
      }

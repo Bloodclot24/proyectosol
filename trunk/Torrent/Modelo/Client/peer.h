@@ -75,6 +75,8 @@ public:
      /* Comienza el procesamiento y flujo de datos. */
      void start(std::string hash);
 
+     void finish();
+
 };
 
 
