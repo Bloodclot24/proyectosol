@@ -196,4 +196,15 @@ const char* ControladorShell::obtenerFilename(std::string numFile) {
 	return filename.c_str();
 }
 
+
+/*--------------------------------------------------------------------------*/
+/* MODELO -> VISTA 
+ * =============== */		 
+/*--------------------------------------------------------------------------*/
+/*Message*/
+void agregarMessage(std::string message) {
+
+	shell->mostrarMessage(message);
+}
+
 /****************************************************************************/
