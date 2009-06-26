@@ -14,6 +14,9 @@ HttpResponse::HttpResponse(std::string respuesta):response(respuesta){
      if(response.find("Content-Length: ") == std::string::npos)
 	  longitudContenido = -1;
      offsetContenido = response.find("\r\n\r\n",0)+4;
+//      size_t posicion;
+//      posicion=response.find("Content-Type: ");
+
 }
 
 /* Devuelve los datos que nos interesan */

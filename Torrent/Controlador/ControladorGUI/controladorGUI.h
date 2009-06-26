@@ -54,23 +54,10 @@ class ControladorGUI: public Controlador {
 		/* MODELO -> VISTA 
 		* =============== */		 
 		/*Files*/ 		 
-		virtual void actualizarDone(std::string file, int piece, int done);
-		virtual void actualizarStatus(std::string file, int piece, std::string status);
-		virtual void actualizarDownSpeed(std::string file, int piece, 
-		                                 std::string downSpeed);
-		virtual void actualizarUpSpeed(std::string file, int piece, 
-		                               std::string upSpeed);
 		virtual void start(std::string filename);
 		virtual void pause(std::string filename);
 		virtual void stop(std::string filename);
 		
-		/*Trackers*/
-		virtual void agregarTracker(std::string name, std::string status,
-		                            int seed);
-		virtual void modificarStatusTracker(std::string name, 
-		                                    std::string status);
-		virtual void agregarSeedTracker(std::string name, int seed);
-		virtual void eliminarTracker(std::string name);
 		
 		/*Message*/
 		virtual void agregarMessage(std::string message);

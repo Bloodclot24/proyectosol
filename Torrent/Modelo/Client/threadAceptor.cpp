@@ -10,8 +10,8 @@ void ThreadAceptor::comenzar(){
 
 void ThreadAceptor::finish(void){
      if(isRunning()){
-	  Thread::finish();
 	  socket->setTimeout(0,1);
+	  Thread::finish();
 	  socket->cerrar();
      }
 }

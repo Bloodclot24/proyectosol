@@ -27,9 +27,16 @@ std::list<BeNode*>* ParserBencode::beDecode(const std::string& buffer){
 
      do {
 	  beNode= beDecode(str, endPosition, endPosition);
-	  list->push_back(beNode);
-     } while(endPosition != BE_END);
+	  if(beNode != NULL)
+	       list->push_back(beNode);
+     } while(endPosition != BE_END && beNode != NULL);
 
+     if(list->size() == 0){
+	  delete list;
+	  delete str;
+	  list = NULL;
+     }
+	  
      return list;
 }
 
@@ -59,12 +66,18 @@ BeNode* ParserBencode::beDecode(const std::string *cadena,
 	  beNode->typeNode= BE_DICT;
 	  beNode->beDict= beDecodeDict(cadena, inicioNodo, finNodo);
 	  
-     } else {
+     } else{
 	  beNode->typeNode= BE_STR;
 	  beNode->beStr= beDecodeStr(cadena, inicioNodo, finNodo);
+
+	  if(beNode->beStr.length() == 0){
+	       delete beNode;
+	       beNode=NULL;
+	  }
      }
 
-     beNode->end   = finNodo; 
+     if(beNode != NULL)
+	  beNode->end   = finNodo; 
 
      if(finNodo+1 == cadena->length())
 	  finNodo= BE_END;
@@ -79,11 +92,22 @@ std::string ParserBencode::beDecodeStr(const std::string *stringStr,
 
      std::string auxiliar;
      std::string::size_type startStr= stringStr->find(SEPARATOR, 
-                                                     startPosition);
-     std::string lenghtStr;
-     lenghtStr.assign(*stringStr, startPosition, startStr);
-     auxiliar.assign(*stringStr, startStr+1, atoi(lenghtStr.c_str()));
-     endPosition= startStr+atoi(lenghtStr.c_str());
+						      startPosition);
+
+     if(startStr != std::string::npos){
+	  bool ok=true;
+	  for(std::string::size_type i=startPosition;i<(startStr)&&ok; i++){
+	       if(!isdigit((const int)(*stringStr)[i]))
+		    ok=false;
+
+	  }
+	  if(ok){
+	       std::string lenghtStr;
+	       lenghtStr.assign(*stringStr, startPosition, startStr);
+	       auxiliar.assign(*stringStr, startStr+1, atoi(lenghtStr.c_str()));
+	       endPosition= startStr+atoi(lenghtStr.c_str());
+	  }
+     }
      return(auxiliar);			
 }
 
@@ -114,10 +138,15 @@ BeList* ParserBencode::beDecodeList(const std::string *stringList,
      caracter.assign(*stringList, startPosition+1, 1);
 	
      do {
-		beNode= beDecode(stringList, startPosition+1, endPosition);
-	  	beList->elements.push_back(beNode);
-	  	next.assign(*stringList, endPosition+1, 1);
-	  	startPosition= endPosition;
+	  beNode= beDecode(stringList, startPosition+1, endPosition);
+	  if(beNode != NULL){
+	       beList->elements.push_back(beNode);
+	       next.assign(*stringList, endPosition+1, 1);
+	       startPosition= endPosition;
+	  }
+	  else{
+	       next = END;
+	  }
      } while(next != END);
      endPosition++;
 	
@@ -138,11 +167,15 @@ BeDict* ParserBencode::beDecodeDict(const std::string *stringDict,
 	 std::string clave= beDecodeStr(stringDict, startPosition+1, 
 					endPosition);
 	 BeNode* beNode= beDecode(stringDict, endPosition+1, endPosition);
-	 
-	 startPosition= endPosition;
-	 beDict->elements.insert(std::pair<std::string, BeNode*>(clave, 
-								 beNode));
-	 next.assign(*stringDict, endPosition+1, 1);
+	 if(beNode != NULL){
+	      startPosition = endPosition;
+	      beDict->elements.insert(std::pair<std::string, BeNode*>(clave,
+								      beNode));
+	      next.assign(*stringDict, endPosition+1, 1);
+	 }
+	 else{
+	      next = END;
+	 }
     }
     endPosition++;
     

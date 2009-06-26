@@ -91,7 +91,7 @@ class Shell {
 		                  int completed);
 		                  
 		/*Mensajes*/
-		void mostrarMensaje(std::string mensaje);
+		void mostrarMessage(std::string mensaje);
 };
 
 /****************************************************************************/
