@@ -8,8 +8,7 @@ BitField::BitField(uint32_t length){
      this->length = length;
      bytesLength = ceil((double)length/8);
      data = new char[bytesLength];
-     for(int i=0;i<bytesLength;i++)
-	  data[i] = '\0';
+     memset(data,0,bytesLength);
 }
 
 /* Copia los datos de *bitField */

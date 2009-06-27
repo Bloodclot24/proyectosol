@@ -10,28 +10,34 @@ class Deque{
 private:
      Mutex mutex;
      CVariable condition;
-     std::deque<t> queue;
+     std::deque<t>* queue;
+     bool valida;
 
 public:
      Deque<t>():condition(&mutex){
-	  
+	  valida = true;
      }
 
      t popFront(){
 	  t temp;
+
 	  mutex.lock();
-	  while(queue.empty())
-	       condition.wait();
-	  temp = queue.front();
-	  queue.pop_front();
+	  if(valida){
+	       while(queue.empty())
+		    condition.wait();
+	       temp = queue.front();
+	       queue.pop_front();
+	  }
 	  mutex.unlock();
-	  return temp;
+	  return temp;	  
      }
 
      void push(t dato){
 	  mutex.lock();
-	  queue.push_back(dato);
-	  condition.signal();
+	  if(valida){
+	       queue.push_back(dato);
+	       condition.signal();
+	  }
 	  mutex.unlock();
      }
 
@@ -47,6 +53,10 @@ public:
 	  size_t tamanio = queue.size();
 	  mutex.unlock();
 	  return tamanio;
+     }
+
+     ~Deque(){
+	  
      }
      
 };

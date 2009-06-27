@@ -298,6 +298,10 @@ int Torrent::announce(){
 
      /* Agrego algunos parametros al request */
      /* Hash que identifica al torrent */
+
+     std::cout << "Hash sin URLENCODE " << idHash << "\n";
+     std::cout << "Hash con URLENCODE " << HttpRequest::UrlEncode(idHash) << "\n";
+
      req.addParam("info_hash", HttpRequest::UrlEncode(idHash));
      
      /* 20 bytes que nos identifican */
@@ -328,6 +332,8 @@ int Torrent::announce(){
      /* Creo un mensaje con el request */
      Mensaje *mensaje = new Mensaje;
 
+     std::cout << "REQUEST (PARA VERO)\n: "<< req.getRequest()->c_str()<< "\n";
+
      mensaje->copiarDatos(req.getRequest()->c_str(),	\
 			  req.getRequest()->length());
 
@@ -335,7 +341,7 @@ int Torrent::announce(){
      emisor->enviarMensaje(mensaje);
 
      emisor->esperarEmision();
-     sleep(10);
+     sleep(2);
      
      /* recibo la respuesta */
      HttpResponse *resp = receptor->getResponse();

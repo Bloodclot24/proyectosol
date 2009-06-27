@@ -63,6 +63,8 @@ private:
 	       //delete mensaje;
 	  }
      }
+public:
+     ~ThreadEmisor(){};
 };
 
 #endif
