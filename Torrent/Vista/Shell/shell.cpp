@@ -303,6 +303,7 @@ void Shell::mostrarPiece(int number, std::string size, int blocks, int block,
 	std::cout << std::left << blocks;
 	std::cout.width(MAX_BLOCK);
 	std::cout.fill(RELLENO);		
+
 	std::cout << std::left << block;
 	std::cout.width(MAX_COMPLETED);
 	std::cout.fill(RELLENO);

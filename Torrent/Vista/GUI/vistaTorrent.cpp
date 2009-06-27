@@ -328,7 +328,9 @@ void VistaTorrent::on_tool_start_clicked() {
 	
 	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection= 
 												treeView_transf->get_selection();
+
 	Gtk::TreeModel::iterator iter= refTreeSelection->get_selected();
+
 	if(iter) {
   		Gtk::TreeModel::Row row= *iter;
    		

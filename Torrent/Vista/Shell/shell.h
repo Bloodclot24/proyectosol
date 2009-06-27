@@ -18,7 +18,7 @@
 #define MAX_DONE 7
 #define MAX_STATUS 15
 #define MAX_SPEED 15
-#define MAX_NAME 20
+#define MAX_NAME 50
 #define MAX_SEED 7
 #define MAX_CLIENT 20
 #define MAX_IP 15
@@ -26,7 +26,7 @@
 #define MAX_BLOCKS 15
 #define MAX_BLOCK 7
 #define MAX_FILES 114
-#define MAX_TRACKERS 42
+#define MAX_TRACKERS 72
 #define MAX_PEERS 35
 #define MAX_PIECES 51
 #define MAX_KEY 51

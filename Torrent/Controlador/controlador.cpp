@@ -5,15 +5,10 @@ Controlador::Controlador(): cliente() {
 
 	FileManager::crearDirectorio(PATH_DOWNLOADS);
 	FileManager::crearDirectorio(PATH_CONFIG);
-	this->refrescador= new RefreshVista(this);
-	this->refrescador->start();
 }
 
 /*--------------------------------------------------------------------------*/
-Controlador::~Controlador() {
-
-	this->refrescador->stop();	
-};
+Controlador::~Controlador() { };
 
 /*--------------------------------------------------------------------------*/
 bool Controlador::validarExtensionFile(std::string path) {
@@ -31,20 +26,23 @@ std::string Controlador::crearCopiaTorrent(std::string pathTorrent) {
 	
 	std::fstream file;
   	file.open(pathTorrent.c_str(), std::fstream::in);
-	file.seekg(0, std::fstream::end);
-	uint32_t last= file.tellg();
-	file.seekg(0, std::fstream::beg);
-	char* buffer= new char[last*sizeof(char)];
-	file.read(buffer,last);
-	std::fstream fileCopia;
-	std::string ruta;
-	ruta+= PATH_CONFIG;
-	ruta+= FileManager::obtenerFilename(pathTorrent);
-	fileCopia.open(ruta.c_str(), std::fstream::out);
-  	fileCopia.write(buffer, last); 
-  	file.close();
-  	fileCopia.close();
-  	
+  	std::string ruta;
+		
+	if(file.is_open()) {
+		file.seekg(0, std::fstream::end);
+		uint32_t last= file.tellg();
+		file.seekg(0, std::fstream::beg);
+		char* buffer= new char[last*sizeof(char)];
+		file.read(buffer,last);
+		std::fstream fileCopia;
+		ruta+= PATH_CONFIG;
+		ruta+= FileManager::obtenerFilename(pathTorrent);
+		fileCopia.open(ruta.c_str(), std::fstream::out);
+	  	fileCopia.write(buffer, last); 
+	  	file.close();
+	  	fileCopia.close();
+	}
+	
   	return ruta;
 }
 
@@ -209,12 +207,6 @@ bool Controlador::cargarConfig() {
 	
 	config.close();
 	return resultado;
-}
-
-/*--------------------------------------------------------------------------*/
-void Controlador::refrescar() {
-	
-	refrescador->refrescar();
 }
 
 /*--------------------------------------------------------------------------*/
