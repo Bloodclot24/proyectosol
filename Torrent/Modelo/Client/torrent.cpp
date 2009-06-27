@@ -861,10 +861,13 @@ int Torrent::stop(){
      std::list<Peer*>::iterator it;
      
      for(it=listaPeers.begin(); it != listaPeers.end(); it++){
-	  (*it)->finish();
-	  listaPeers.remove(*it);
-	  delete (*it);
+	 	(*it)->finish();
+	 	//listaPeers.remove(*it);
+	  	//delete (*it);
      }
+     listaPeers.clear();
+     
+     std::cout << "Lista de peers: " << listaPeers.empty() << std::endl;
      
      return 1;
 }
