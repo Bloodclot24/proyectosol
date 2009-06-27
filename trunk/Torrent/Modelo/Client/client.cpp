@@ -9,25 +9,10 @@ Client::Client(){
 }
 
 /*--------------------------------------------------------------------------*/
-bool Client::addTorrent(const char* path){
-	
-     Torrent *torrent = new Torrent(path);
-	
-     if(torrent->isValid()){
-	  torrents.push_back(torrent);
-	  return true;
-     }
-     else {
-	  delete torrent;
-	  return false;
-     }
-}
-
-/*--------------------------------------------------------------------------*/
-bool Client::addTorrent(const char* path, char* bitfield) {
+bool Client::addTorrent(const char* path, BitField* bitfield){
 	
      Torrent *torrent = new Torrent(path, bitfield);
-     
+	
      if(torrent->isValid()){
 	  torrents.push_back(torrent);
 	  return true;

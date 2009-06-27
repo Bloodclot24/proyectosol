@@ -34,10 +34,7 @@ public:
 	Client();
 	
      /* agrega un torrent */
-    bool addTorrent(const char* path);
-        
-    /* agrega un torrent con un bitfield pasado por parametro*/
-    bool addTorrent(const char* path, char* bitfield);
+    bool addTorrent(const char* path, BitField* bitfield= NULL);
 
      /* comienza a descargar un torrent */
     bool start(const char* filename);

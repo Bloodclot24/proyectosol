@@ -67,7 +67,6 @@ bool Controlador::guardarConfig() {
 	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++,contador++){
 		
 		BitField* bitfield = (*it)->getBitField();
-		char* data = bitfield->getData();
    		cvz <<  contador;
    		snumero = cvz.str();
    		std::string ruta;
@@ -77,9 +76,10 @@ bool Controlador::guardarConfig() {
 		ruta += EXTENSION_BITFIELD;
 		bitfieldFile.open(ruta.c_str(), std::fstream::out);
 		if(bitfieldFile.is_open()) {
-			auxiliar = bitfield->getBytesLength();
+			auxiliar= bitfield->getLength();
 			bitfieldFile.write((const char*)&auxiliar,sizeof(uint32_t));
-			bitfieldFile.write(data, strlen(data));		
+			char* data = bitfield->getData();
+			bitfieldFile.write(data, bitfield->getBytesLength());		
 			bitfieldFile.close();
 			resultado= true;
 		}
@@ -162,17 +162,21 @@ bool Controlador::cargarConfig() {
 				std::cout<<"Esperando addTorrent: \n";
 				std::cout<<"Se realizo addTorrent: \n";
 				
-// 				char* tamanioBitField = new char[sizeof(uint32_t)];
-// 				bitFieldFile.read(tamanioBitField, sizeof(uint32_t));
-// 				uint32_t tamanioBF = *tamanioBitField;
-// 				char* datosBitField = new char[tamanioBF];
-// 				bitFieldFile.read(datosBitField,tamanioBF);
-// 				datosBitField[tamanioBF] = '\0';
+				/**********/				
+ 				char* lengthBitField= new char[sizeof(uint32_t)];
+ 				bitFieldFile.read(lengthBitField, sizeof(uint32_t));
+ 				uint32_t length= *((uint32_t*)lengthBitField);
+				BitField* bitField= new BitField(length);
 				
-				cliente.addTorrent(pathTorrent.c_str());
-				//Aca va el nuevo addTorrent
-				//cliente.addTorrent(pathTorrent.c_str(), datosBitField);
-
+				uint32_t lengthBytes = bitField->getBytesLength();
+ 				char* dataBitField = new char[bitField->getBytesLength()];
+ 				bitFieldFile.read(dataBitField, lengthBytes);
+ 				dataBitField[lengthBytes] = '\0';
+				
+				bitField->setData(dataBitField);
+				
+				cliente.addTorrent(pathTorrent.c_str(), bitField);
+				/**********/
 				
 				resultado = true;
 				//delete[] tamanioBitField;

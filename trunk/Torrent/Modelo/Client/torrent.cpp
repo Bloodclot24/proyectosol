@@ -26,7 +26,9 @@
 #define DICT_PEERS      "peers"
 
 /****************************************************************************/
-Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
+Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondition(&requestMutex){
+     
+     this->bitField= bitfieldGuardado;
      
      ParserBencode parser;
      /* Decodifico todo el .torrent y obtengo una lista con toda la
@@ -127,24 +129,26 @@ Torrent::Torrent(const char* fileName):requestCondition(&requestMutex){
 	  delete info;
 
 	  if(valido){
-
-	       pieceSize = (*(archivos->begin()))->getPieceLength();
-	       sizeInPieces = ceil(getTotalSize()/pieceSize);
-	       
-	       std::cout << "PieceSize" << pieceSize << " SizeInPieces "<< sizeInPieces << "\n";
-
-	       bitField = new BitField(sizeInPieces);
-	       
-	       //Si alguno de los archivos y ya existia, verifico si hay datos validos
-	       if(check){
-		    std::cout << "Los archivos ya existian, verificando ........\n" ;
-		    for(int i=0;i<sizeInPieces;i++){
-			 if(validarPieza(i)==1)
-			      bitField->setField(i,1);
-		    }
-	       }
-	       
-	  }
+			
+			if(!bitField) {
+			
+				pieceSize = (*(archivos->begin()))->getPieceLength();
+		       	sizeInPieces = ceil(getTotalSize()/pieceSize);
+		       
+		       	std::cout << "PieceSize" << pieceSize << " SizeInPieces "<< sizeInPieces << "\n";
+	
+		       	this->bitField = new BitField(sizeInPieces);
+		       
+		       	//Si alguno de los archivos y ya existia, verifico si hay datos validos
+		       	if(check){
+			    	std::cout << "Los archivos ya existian, verificando ........\n" ;
+			    	for(int i=0;i<sizeInPieces;i++){
+				 		if(validarPieza(i)==1)
+				      		bitField->setField(i,1);
+			    	}
+		       	}
+			}   
+	  	}
      }
      else{
 	  valido = false;
@@ -167,81 +171,6 @@ void  Torrent::armarListaDeTrackers(const std::list<BeNode*> &listaLista){
 	  }
      }
 }
-
-/****************************************************************************/
-Torrent::Torrent(const char* fileName, char* bitfield):requestCondition(&requestMutex){
-	
-	     ParserBencode parser;
-     /* Decodifico todo el .torrent y obtengo una lista con toda la
-      * informacion */
-     std::list<BeNode*> *info = parser.beDecode(fileName);
-
-     this->nombreTorrent = FileManager::obtenerFilename(fileName);
-
-     peersActivos=0;
-     estado = STOPPED;
-     
-     if(info != NULL){
-	  valido = true;
-
-	  BeNode* primero = info->front();
-	  
-	  if(primero->typeNode == BE_DICT){
-	       std::map<std::string, BeNode*>* dict =	\
-		    &(primero->beDict->elements);
-	       
-	       BeNode* elemento;
-	       
-	       /* Extraigo todos los elementos que necesito */
-	       elemento = (*dict)[DICT_TRACKER];
-	       if(elemento != NULL)
-		    this->announceUrl = elemento->beStr;
-
-	       elemento = (*dict)[DICT_DATE];
-	       if(elemento != NULL)
-		    this->creationDate = elemento->beInt;
-	       else this->creationDate = 0;
-	       
-	       elemento = (*dict)[DICT_COMMENTS];
-	       if(elemento != NULL)
-		    this->comment = elemento->beStr;
-	       
-	       elemento = (*dict)[DICT_CREATOR];
-	       if(elemento != NULL)
-		    this->createdBy = elemento->beStr;
-	       
-	       elemento = (*dict)[DICT_ENCODING];
-	       if(elemento != NULL)
-	       this->encoding = elemento->beInt;
-	       else this->encoding = 0;
-	       
-	       /* Informacion de todos los archivos */
-	       elemento = (*dict)[DICT_INFO];
-	       if(elemento != NULL){
-		    Sha1 hasher;
-		    idHash = hasher.ejecutarSha1(			\
-			 elemento->buffer->substr(			\
-			      elemento->start,				\
-			      (elemento->end+1)-elemento->start)	\
-			 );
-		    /* parseo la estructura con los archivos */
-		    archivos = TorrentFile::Parse(elemento);
-	       }
-	       else valido=false;
-
-	  }
-     }
-	  
-	  /* libero los elementos antes de eliminar */
-	  ParserBencode::beFree(info);
-	  delete info;
-
-	  this->bitField= bitField; 
-	  
-	  //else{
-	  //   valido = false;
-} 
-
 
 /****************************************************************************/
 BitField* Torrent::getBitField(){
