@@ -245,6 +245,10 @@ class VistaTorrent {
 		void cerrarFileChooser();
 		void mostrarMensaje(std::string mensaje);
 		void borrarMensaje();
+		
+		/*DelayDialog*/
+		void correrDelayDialog();
+		void cerrarDelayDialog();
 };
 
 /****************************************************************************/

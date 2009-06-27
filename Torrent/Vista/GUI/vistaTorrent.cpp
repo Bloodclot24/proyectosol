@@ -265,12 +265,13 @@ void VistaTorrent::on_tool_add_torrent_clicked() {
 
 	Gtk::FileChooserDialog* fileChooserDialog;
     refXml->get_widget("fileChooserDialog", fileChooserDialog);
+  	
   	bool fin= false;
   	int result;
   	while(!fin) {
 		result= fileChooserDialog->run();
 		
-		switch(-result) {
+		switch(result) {
 		  	case Gtk::RESPONSE_ACCEPT: {
 		      Glib::ustring file= fileChooserDialog->get_filename();
 		      fin= controlador->addTorrent(file);
@@ -808,6 +809,7 @@ void VistaTorrent::mostrarMensaje(std::string mensaje) {
     message->set_label(mensaje);
 }
 
+/*--------------------------------------------------------------------------*/
 void VistaTorrent::borrarMensaje() {
 
 	Gtk::Label* message;
@@ -816,12 +818,28 @@ void VistaTorrent::borrarMensaje() {
 }
 
 /*--------------------------------------------------------------------------*/
-/**EXIT**/
 void VistaTorrent::cerrarFileChooser() {
 	
 	Gtk::FileChooserDialog* fileChooserDialog;
     refXml->get_widget("fileChooserDialog", fileChooserDialog);
     fileChooserDialog->hide();
+}
+
+/*--------------------------------------------------------------------------*/
+/*DelayDialog*/
+void VistaTorrent::correrDelayDialog() {
+	
+	Gtk::Window* delayDialog;
+    refXml->get_widget("dialog_delay", delayDialog);	
+    delayDialog->show_all();
+}
+
+/*--------------------------------------------------------------------------*/
+void VistaTorrent::cerrarDelayDialog() {
+	
+	Gtk::Window* delayDialog;
+    refXml->get_widget("dialog_delay", delayDialog);
+	delayDialog->hide();	
 }
 
 /****************************************************************************/
