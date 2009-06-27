@@ -687,7 +687,13 @@ void Torrent::run(){
      //Logica. Basicamente pido datos.
      ProtocoloBitTorrent proto;
 
-     while(announce() != 0);
+//////////////////////     while(announce() != 0);
+     Peer *peer = new							\
+	  Peer("localhost",						\
+	       6881,							\
+	       this);
+     
+     agregarPeer(peer);
 
      mutexPeers.lock();
        std::list<Peer*>::iterator it;

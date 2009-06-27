@@ -5,7 +5,6 @@ std::string ProtocoloBitTorrent::handshake(std::string str, std::string info_has
      char pstrlen= str.length();
 
      std::string mensajeHandshake;
-//     uint64_t reserved= 0;//Revisar, xq deberia mostrar los 8bytes de 0's
      std::string reserved("\0\0\0\0\0\0\0\0",8);
      mensajeHandshake= pstrlen + str + reserved + info_hash + peer_id;
      return mensajeHandshake;
@@ -100,8 +99,8 @@ std::string ProtocoloBitTorrent::piece(uint32_t index, uint32_t begin, uint32_t 
      begin= htonl(begin);
      std::string aux((char*)&len, 4);
      aux += id;
-     aux += index;
-     aux += begin;
+     aux += std::string((char*)&index,4);
+     aux += std::string((char*)&begin,4);
      return aux;
 }
 			
