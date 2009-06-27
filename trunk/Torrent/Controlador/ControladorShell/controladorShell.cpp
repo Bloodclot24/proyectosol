@@ -4,7 +4,7 @@
 ControladorShell::ControladorShell() {
 
 	this->shell= new Shell(this);	
-	this->cantFiles= 1;
+	this->cantFiles= 0;
 	this->contadorOrden= 0;
 	cargarConfig();
 }
@@ -28,9 +28,14 @@ bool ControladorShell::addTorrent(std::string pathTorrent) {
 	bool valido= validarExtensionFile(pathTorrent);
 	
 	if(valido) {
-		std::string filename=  crearCopiaTorrent(pathTorrent);
-
-		if(cliente.addTorrent(filename.c_str())) {
+		std::string pathCopia= crearCopiaTorrent(pathTorrent);
+		
+		if(pathCopia.length() == 0) {
+			shell->mostrarMessage("Error El archivo no existe");
+			return false;
+		}
+		
+		if(cliente.addTorrent(pathCopia.c_str())) {
 			this->cantFiles++;
 			return true;
 		} else {
@@ -53,8 +58,17 @@ void ControladorShell::addUrlTorrent() {
 void ControladorShell::mostrarTrackers() {
 	
 	shell->mostrarTrackers();
-	//PEDIR TRACKERS
-	//shell->mostrarTracker("Vero", "Disponible", 5);
+	
+	const std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
+	std::list<Torrent*>::const_iterator it;
+	int contador= 1;
+	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++, contador++) {
+		Torrent* torrent= *it;
+					
+		shell->mostrarTracker(torrent->getAnnounceUrl(), 
+		                      "Disponible", torrent->getPeersActivos());
+	}	
+	
 } 
 
 /*--------------------------------------------------------------------------*/

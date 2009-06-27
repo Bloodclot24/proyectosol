@@ -8,12 +8,15 @@ ControladorGUI::ControladorGUI() {
 	this->downloading= 0;
 	this->completed= 0;
 	this->active= 0;
+	this->refrescador= new RefreshVista(this);
+	this->refrescador->start();
 	cargarConfig();
 }
 
 /*--------------------------------------------------------------------------*/
 ControladorGUI::~ControladorGUI() {
 
+	this->refrescador->stop();	
 	guardarConfig();
 	delete vista;	
 }
@@ -57,12 +60,13 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 			vista->cerrarFileChooser();
 			this->all++;
 			actualizarCantActividades();
-			//vista->agregarTracker("SUN", "working", 10);
 			std::string filename= FileManager::obtenerFilename(pathCopia);
 			Torrent* torrent= obtenerTorrent(filename);
 			std::string estado= getEstadoTorrent(torrent->getEstado());
 			vista->agregarArchivo(filename, 0, "", 0, estado, 
 							  "", "");
+			vista->agregarTracker(torrent->getAnnounceUrl(), "Disponible",
+			                      torrent->getPeersActivos());
 			vista->borrarMensaje();
 			
 			return true;
@@ -221,6 +225,14 @@ void ControladorGUI::actualizarPestanias(std::string filename) {
 uint32_t ControladorGUI::obtenerOrden(std::string filename) {
 	
 	return(vista->obtenerOrden(filename));
+}
+
+
+/*--------------------------------------------------------------------------*/
+/* Refrescador */		
+void ControladorGUI::refrescar() {
+	
+	refrescador->refrescar();
 }
 
 /*--------------------------------------------------------------------------*/

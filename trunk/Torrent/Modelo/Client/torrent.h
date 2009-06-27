@@ -171,6 +171,13 @@ public:
 	  return estado; 
      };
 
+	 /* Devuelve announce URL torrent */
+     const std::string getAnnounceUrl() { return announceUrl; };
+	 
+	 /* Devuelve la cantidad de peers activos */
+     const int getPeersActivos() { return peersActivos; };
+	 
+	 	
      ~Torrent();
 };
 

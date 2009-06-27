@@ -8,7 +8,8 @@
 class ControladorGUI: public Controlador {
 
 	private:
-		VistaTorrent* vista;	
+		VistaTorrent* vista;
+		RefreshVista* refrescador;	
 		
 		int all;
 		int downloading;
@@ -50,14 +51,17 @@ class ControladorGUI: public Controlador {
 		
 		virtual uint32_t obtenerOrden(std::string filename);
 		virtual void insertarOrdenado(std::string filename, uint32_t orden) {};
+					
+		/* Refrescador */		
+		virtual void refrescar();
+		
 		
 		/* MODELO -> VISTA 
-		* =============== */		 
+		 * =============== */		 
 		/*Files*/ 		 
 		virtual void start(std::string filename);
 		virtual void pause(std::string filename);
-		virtual void stop(std::string filename);
-		
+		virtual void stop(std::string filename);		
 		
 		/*Message*/
 		virtual void agregarMessage(std::string message);

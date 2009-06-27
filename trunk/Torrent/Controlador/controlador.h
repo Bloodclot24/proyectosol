@@ -23,7 +23,6 @@ class Controlador {
 	
 	protected:
 		Client cliente;
-		RefreshVista* refrescador;
 		
 		bool validarExtensionFile(std::string path);
 		std::string getEstadoTorrent(EstadoTorrent estado);
@@ -39,7 +38,6 @@ class Controlador {
 		virtual ~Controlador();
 
 		virtual void correr()= 0;
-		void refrescar();
 		
 		/*Files*/
 		virtual void mostrarFiles()= 0;
@@ -83,14 +81,17 @@ class Controlador {
 		virtual uint32_t obtenerOrden(std::string filename){return 0;}
 		virtual void insertarOrdenado(std::string filename, uint32_t orden)= 0;
 		
+		
+		/* Refrescador */
+		virtual void refrescar() { }
+		
 		/* MODELO -> VISTA 
 		 * =============== */
 		/*Files*/ 		 
 		virtual void start(std::string filename) {};
 		virtual void pause(std::string filename) {};
 		virtual void stop(std::string filename) {};
-		
-		
+				
 		/*Message*/
 		virtual void agregarMessage(std::string message)= 0;
 };
