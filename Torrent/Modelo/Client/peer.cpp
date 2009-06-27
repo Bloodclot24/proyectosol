@@ -273,14 +273,16 @@ void Peer::run(){
 			 mensaje = new Mensaje();
 			 mensaje->copiarDatos(aux.c_str(), aux.length());
 			 emisor->enviarMensaje(mensaje);
+
+			 std::cout << "??????????????????????????????????????????????????????????Envio el piece" << respuesta->index << " de tamanio " << respuesta->length << std::endl;
+			 std::cout << "Se lee en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
+			      ". Que corresponde al indice: " << respuesta->index << std::endl;
+
 		    
-			 TorrentFile* file = torrent->obtenerArchivo(respuesta->index);
-			 if(file != NULL){
-			      char *bloque = new char[respuesta->length];
-			      file->getManager()->obtenerPieza(bloque, respuesta->begin, respuesta->length);
-			      mensaje->asignarDatos(bloque, respuesta->length);
-			      emisor->enviarMensaje(mensaje);
-			 }
+			 char *bloque = new char[respuesta->length];
+			 torrent->readData(bloque, respuesta->index, respuesta->begin, respuesta->length);
+			 mensaje->asignarDatos(bloque, respuesta->length);
+			 emisor->enviarMensaje(mensaje);
 		    }
 		    break;
 	       case PIECE:
@@ -293,19 +295,12 @@ void Peer::run(){
 			      bloque += datos->popFront();
 			 }
 			 std::cout << "Recibo el piece" << respuesta->index << " de tamanio " << respuesta->length << std::endl;
-			 TorrentFile* file = torrent->obtenerArchivo(respuesta->index);
-			 if(file != NULL){
-			      std::cout << "Se escribe en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
-				   ". Que corresponde al indice: " << respuesta->index << std::endl;
-			      torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, respuesta->length);
-
-			 }
-			 else{
-			      std::cerr << "ERROR: <--------------------- NO EXISTE EL ARCHIVO??????\n";
-			 }
+			 std::cout << "Se escribe en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
+			      ". Que corresponde al indice: " << respuesta->index << std::endl;
+			 torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, respuesta->length);
+			 
 			 if(peer_choking == 0)
 			      torrent->peerUnchoked(this);
-		    
 		    }
 		    else{
 			 stop();
