@@ -10,7 +10,7 @@ class Deque{
 private:
      Mutex mutex;
      CVariable condition;
-     std::deque<t>* queue;
+     std::deque<t> queue;
      bool valida;
 
 public:

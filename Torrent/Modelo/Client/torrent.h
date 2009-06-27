@@ -98,8 +98,7 @@ private:
      void rotarTrackers();
 
 public:
-     Torrent(const char* fileName);
-     Torrent(const char* fileName, char* bitfield);
+     Torrent(const char* fileName, BitField* bitfieldGuardado= NULL);
 
      /* Comienza el torrent */
      int start();
