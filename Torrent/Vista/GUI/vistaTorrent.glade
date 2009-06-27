@@ -954,7 +954,12 @@ Ygounet Guido</property>
               <object class="GtkButton" id="Open_DialogAdd">
                 <property name="label" translatable="yes">gtk-ok</property>
                 <property name="visible">True</property>
+                <property name="app_paintable">True</property>
                 <property name="can_focus">True</property>
+                <property name="has_focus">True</property>
+                <property name="is_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="has_default">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
               </object>
@@ -975,7 +980,7 @@ Ygounet Guido</property>
     </child>
     <action-widgets>
       <action-widget response="5">Cancel_DialogAdd</action-widget>
-      <action-widget response="3">Open_DialogAdd</action-widget>
+      <action-widget response="-3">Open_DialogAdd</action-widget>
     </action-widgets>
   </object>
 </interface>
