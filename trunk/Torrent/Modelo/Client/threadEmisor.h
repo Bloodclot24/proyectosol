@@ -57,11 +57,15 @@ private:
 
      /* Funcion principal del thread */
      void run(){
+	  colaDeEspera.hold();
 	  while(isRunning()){
 	       Mensaje *mensaje = colaDeEspera.popFront();
-	       socket->enviar(mensaje->getDatos(), mensaje->getTamanio());
+	       if(colaDeEspera.isValid())
+		    socket->enviar(mensaje->getDatos(), mensaje->getTamanio());
+	       else stop();
 	       //delete mensaje;
 	  }
+	  colaDeEspera.release();
      }
 public:
      ~ThreadEmisor(){};

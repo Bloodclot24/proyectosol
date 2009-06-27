@@ -56,7 +56,12 @@ uint32_t BitField::getBytesLength() const{
 /* obtiene el estado de un bit del bitfield */
 /****************************************************************************/
 bool BitField::getField(uint32_t index) const{
-     return data[index/8] & (1 << (7-(index%8)));
+     if(index <= getLength())
+	  return data[index/8] & (1 << (7-(index%8)));
+     else{
+	  std::cerr << "Se pidio el offset " << index << ", cuando el limite es " << getLength() << std::endl;
+	  return 0;
+     }
 }
 
 /****************************************************************************/

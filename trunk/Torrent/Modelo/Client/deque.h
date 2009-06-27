@@ -13,23 +13,29 @@ private:
      std::deque<t> queue;
      bool valida;
 
+     Mutex holdMutex;
+     CVariable holdCondition;
+
+     int holdCounter;
+
 public:
-     Deque<t>():condition(&mutex){
+     Deque<t>():condition(&mutex),holdCondition(&holdMutex){
 	  valida = true;
+	  holdCounter = 0;
      }
 
      t popFront(){
 	  t temp;
-
+	  
 	  mutex.lock();
+	  while(queue.empty() && valida)
+	       condition.wait();
 	  if(valida){
-	       while(queue.empty())
-		    condition.wait();
 	       temp = queue.front();
 	       queue.pop_front();
 	  }
 	  mutex.unlock();
-	  return temp;	  
+	  return temp;
      }
 
      void push(t dato){
@@ -55,8 +61,45 @@ public:
 	  return tamanio;
      }
 
+     bool hold(){
+	  bool value = false;
+	  mutex.lock();
+	  holdMutex.lock();
+	  if(valida){
+	       value = true;
+	       holdCounter++;
+	  }
+	  holdMutex.unlock();
+	  mutex.unlock();
+	  return value;
+     }
+
+     void release(){
+	  holdMutex.lock();
+	  if(holdCounter > 0){
+	       holdCounter--;
+	       holdCondition.signal();
+	  }
+	  holdMutex.unlock();  
+     }
+
+     bool isValid(){
+	  bool state = false;
+	  mutex.lock();
+	  state = valida;
+	  mutex.unlock();
+	  return state;
+     }
+
      ~Deque(){
-	  
+	  mutex.lock();
+	  holdMutex.lock();
+	  valida=false;
+	  condition.signal();
+	  mutex.unlock();
+	  while(holdCounter > 0)
+	       holdCondition.wait();
+	  holdMutex.unlock();
      }
      
 };
