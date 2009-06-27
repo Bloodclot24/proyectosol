@@ -366,9 +366,6 @@ int Torrent::announce(){
 			 ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)), \
 			 this);
 	      
-// 	       std::string dir("localhost");
-// 	       Peer *peer = new Peer(dir, 6881, this);
-
 	       agregarPeer(peer);
 	  }
      }
@@ -419,6 +416,7 @@ void Torrent::eliminarPeer(Peer* peer){
 	       listaPeers.erase(it);
 	       encontrado = true;
 	       //delete peer;
+	       break;
 	  }
      }
 
@@ -668,6 +666,7 @@ int Torrent::validarPieza(uint32_t index){
 	  delete[] buffer;
 	  return -2;
      }
+     
      Sha1 hasher;
      std::string temp(buffer,pieceSize);
      std::string hash = hasher.ejecutarSha1(temp);
@@ -805,6 +804,7 @@ void Torrent::run(){
 /****************************************************************************/
 void Torrent::anunciarPieza(uint32_t index){
      std::list<Peer*>::iterator it;
+     Lock lock(mutexPeers);
 
      for(it=listaPeers.begin(); it != listaPeers.end(); it++){
 	  if((*it)->conectado)
@@ -846,8 +846,11 @@ Torrent::~Torrent(){
      std::list<TorrentFile*>::iterator it;
 
      if(archivos != NULL){
-	  for(it=archivos->begin();it!=archivos->end();it++)
-	       delete (*it);
+	  while(archivos->size() > 0){
+	       TorrentFile* file = archivos->front();
+	       archivos->pop_front();
+	       delete file;
+	  }
 	  
 	  delete archivos;
      }
@@ -855,19 +858,16 @@ Torrent::~Torrent(){
 
 /****************************************************************************/
 int Torrent::stop(){
-
-     //TODO: ver tema mutex	
+     Lock lock(mutexPeers);
+     //TODO: ver tema mutex estado
      this->estado= STOPPED;
-     std::list<Peer*>::iterator it;
      
-     for(it=listaPeers.begin(); it != listaPeers.end(); it++){
-	 	(*it)->finish();
-	 	//listaPeers.remove(*it);
-	  	//delete (*it);
+     while(listaPeers.size()>0){
+	  Peer* peer = listaPeers.front();
+	  listaPeers.pop_front();
+	  peer->finish();
+	  delete peer;
      }
-     listaPeers.clear();
-     
-     std::cout << "Lista de peers: " << listaPeers.empty() << std::endl;
      
      return 1;
 }

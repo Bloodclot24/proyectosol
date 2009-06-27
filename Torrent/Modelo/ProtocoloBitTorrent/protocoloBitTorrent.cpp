@@ -168,6 +168,7 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
      }
 			
      Message* message= new Message();
+     memset(message, 0, sizeof(Message));
 	
      uint32_t* longitudMsj = (uint32_t*)aux;
      uint32_t longMsj = ntohl(*longitudMsj);
@@ -203,7 +204,7 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 		    aux[bytes] = deque.popFront();
 		    bytes++;
 	       }
-	       message->piece.assign(aux,0,4);
+	       message->index = ntohl(*(uint32_t*)aux);
 
 	  } else if(id == ID_BITFIELD) {
 	       message->id= BITFIELD;

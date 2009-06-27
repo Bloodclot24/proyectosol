@@ -25,7 +25,6 @@ enum MsgId {CHOKE, UNCHOKE, INTERESTED, NOT_INTERESTED, HAVE, BITFIELD,
 
 typedef struct {
 	MsgId id;
-	std::string piece;
 	std::string bitfield;
 	uint32_t index;
 	uint32_t begin;

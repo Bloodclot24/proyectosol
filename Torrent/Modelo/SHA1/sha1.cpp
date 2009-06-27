@@ -31,7 +31,7 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 	//pre-procesamiento
 	//obtengo el tamaño del mensaje original
 	this->bitStream.setCadena(cadena);
-	uint64_t tamanioMsjOriginal = this->bitStream.bitLength();//cadena.length();
+	uint64_t tamanioMsjOriginal = this->bitStream.bitLength();
 	//agrego el bit 1 al final
 	this->bitStream.appendBit(1);
 	//obtengo la longitud  
@@ -56,6 +56,7 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 	     
 	     //Armo las palabras de 32 bits
 	     uint32_t palabra[80];
+	     memset(palabra,0,80);
 
 	     //copio como Big Endian cada una de las palabras
 	     for(int numPalabra=0;numPalabra<16;numPalabra++){
