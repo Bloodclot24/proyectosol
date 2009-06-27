@@ -84,7 +84,7 @@ public:
 	  pthread_join(this->thread, NULL); 
      }
 
-     virtual ~Thread(){ }
+     virtual ~Thread(){ stop(); }
 };
 
 #endif //COMMON_THREADS_INCLUDED

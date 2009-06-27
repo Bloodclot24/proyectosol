@@ -70,12 +70,6 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 		  palabra[i] = leftRotate(palabra[i-3] ^ palabra[i-8] ^ palabra[i-14] ^ palabra[i-16], 1);
 	     }
 
-// 	     for(i=0;i<80;i++){
-// 		  std::cout.width(8);
-// 		  std::cout.fill('0');
-// 		  std::cout << std::hex << palabra[i] << std::endl;
-// 	     }
-	
 	     uint32_t a = h0;
 	     uint32_t b = h1;
 	     uint32_t c = h2;
@@ -110,11 +104,6 @@ std::string Sha1::ejecutarSha1(std::string cadena)
 		  c = leftRotate(b, 30);
 		  b = a;
 		  a = auxiliar;
-//  		  std::cout << "Paso " <<std::dec<< i <<": ";
-//  		  std::cout.width(8);
-//  		  std::cout.fill('0');
-//  		  std::cout << std::hex << a << "  "<< b << "  " << c << "  " << d << "  " << e << std::endl;
-
 	     }
 
 	     h0 += a;

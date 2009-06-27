@@ -24,15 +24,10 @@ std::string HttpRequest::UrlEncode(std::string datos){
      unsigned char byte;
      for(size_t i=0;i<datos.length();i++){
 	  byte = datos[i];
-	  if( isalnum(byte) ){
-	       codificado << byte;
-	  }
-	  else{
-	       codificado << '%';
-	       if(byte<=0x0f)
-		    codificado << '0';
-	       codificado <<  std::hex << std::uppercase << (int)byte;
-	  }
+	  codificado << '%';
+	  if(byte<=0x0f)
+	       codificado << '0';
+	  codificado <<  std::hex << std::uppercase << (int)byte;
      }
      return codificado.str();
 }

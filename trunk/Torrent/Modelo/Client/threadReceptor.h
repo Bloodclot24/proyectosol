@@ -33,6 +33,8 @@ public:
      void finish(void);
      
      Deque<char>* getColaDeDatos();
+
+     ~ThreadReceptor(){};
 		     
 protected:
      void run();
