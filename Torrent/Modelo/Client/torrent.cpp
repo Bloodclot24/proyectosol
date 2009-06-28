@@ -755,7 +755,9 @@ void Torrent::run(){
 		    else{
 			 //@todo: no hay mas piezas que podamos pedir
 			 //hay que esperar
-			 
+			 sleep(10);
+			 std::cout << "Durmiendo un ratito\n";
+
 		    }
 	       }
 	  }
