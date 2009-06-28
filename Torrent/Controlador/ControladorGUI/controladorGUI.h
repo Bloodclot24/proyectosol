@@ -16,6 +16,9 @@ class ControladorGUI: public Controlador {
 		int completed;
 		int active;
 		void actualizarCantActividades();
+	
+	protected:
+		virtual void mostrarAnnounceUrlTorrent(Torrent* torrent);
 		
 	public:
 		ControladorGUI(); 
@@ -23,29 +26,19 @@ class ControladorGUI: public Controlador {
 
 		virtual void correr();
 		
+		/* VISTA -> MODELO 
+		 * =============== */
 		/*Files*/
 		virtual void mostrarFiles();
 		virtual bool addTorrent(std::string pathTorrent);
 		virtual void addUrlTorrent();
-
 		virtual void removeFile(std::string file);
 		virtual void startFile(std::string file);
 		virtual void pauseFile(std::string file);
 		virtual void stopFile(std::string file);
 		
-		virtual void actualizarDone(std::string file, int piece, int done);
-		virtual void actualizarStatus(std::string file, int piece, 
-		                              std::string status);
-		virtual void actualizarDownSpeed(std::string file, int piece, 
-		                                 std::string downSpeed);
-		virtual void actualizarUpSpeed(std::string file, int piece, 
-		                               std::string upSpeed);	
-		
 		/*Trackers*/
 		virtual void mostrarTrackers();
-		virtual void modificarStatusTracker(std::string name, std::string status);		
-		virtual void agregarSeedTracker(std::string name, int seed);
-		virtual void eliminarTracker(std::string name);
 		
 		/*Todas las Pestanias*/
 		virtual void actualizarPestanias(std::string filename);
@@ -53,9 +46,8 @@ class ControladorGUI: public Controlador {
 		virtual uint32_t obtenerOrden(std::string filename);
 		virtual void insertarOrdenado(std::string filename, uint32_t orden) {};
 					
-		/* Refrescador */		
+		/*Refrescador*/		
 		virtual void refrescar();
-		
 		
 		/* MODELO -> VISTA 
 		 * =============== */		 
@@ -63,6 +55,19 @@ class ControladorGUI: public Controlador {
 		virtual void start(std::string filename);
 		virtual void pause(std::string filename);
 		virtual void stop(std::string filename);		
+		virtual void actualizarDone(std::string file, int piece, int done);
+		virtual void actualizarStatus(std::string file, int piece, 
+		                              std::string status);
+		virtual void actualizarDownSpeed(std::string file, int piece, 
+		                                 std::string downSpeed);
+		virtual void actualizarUpSpeed(std::string file, int piece, 
+		                               std::string upSpeed);
+		
+		/*Trackers*/
+		virtual void modificarStatusTracker(std::string name, 
+		                                    std::string status);		
+		virtual void agregarSeedTracker(std::string name, int seed);
+		virtual void eliminarTracker(std::string name);
 		
 		/*Message*/
 		virtual void agregarMessage(std::string message);

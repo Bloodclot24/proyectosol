@@ -23,6 +23,23 @@ void ControladorShell::correr() {
 }
 
 /*--------------------------------------------------------------------------*/
+void ControladorShell::mostrarAnnounceUrlTorrent(Torrent* torrent) {
+	
+	if(torrent->getAnnounceUrl().length() != 0)
+		shell->mostrarTracker(torrent->getAnnounceUrl(), "Disponible",
+			                          torrent->getPeersActivos());
+	else {
+		const std::list<std::string>* listaUrl= torrent->getAnnounceUrlList();
+		std::list<std::string>::const_iterator it;
+		for(it = listaUrl->begin(); it != listaUrl->end(); it++)
+			shell->mostrarTracker((*it), "Disponible", torrent->getPeersActivos());
+	}
+}
+
+/*--------------------------------------------------------------------------*/
+/* VISTA -> MODELO 
+ * =============== */
+/*--------------------------------------------------------------------------*/
 bool ControladorShell::addTorrent(std::string pathTorrent) {
 	
 	bool valido= validarExtensionFile(pathTorrent);
@@ -62,13 +79,8 @@ void ControladorShell::mostrarTrackers() {
 	const std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
 	std::list<Torrent*>::const_iterator it;
 	int contador= 1;
-	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++, contador++) {
-		Torrent* torrent= *it;
-					
-		shell->mostrarTracker(torrent->getAnnounceUrl(), 
-		                      "Disponible", torrent->getPeersActivos());
-	}	
-	
+	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++, contador++)
+		mostrarAnnounceUrlTorrent(*it);				
 } 
 
 /*--------------------------------------------------------------------------*/
@@ -209,7 +221,6 @@ const char* ControladorShell::obtenerFilename(std::string numFile) {
 	
 	return filename.c_str();
 }
-
 
 /*--------------------------------------------------------------------------*/
 /* MODELO -> VISTA 

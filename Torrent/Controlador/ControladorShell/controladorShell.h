@@ -15,6 +15,9 @@ class ControladorShell: public Controlador {
 		uint32_t contadorOrden;
 		int cantFiles;
 		const char* obtenerFilename(std::string numFile);
+	
+	protected:
+		virtual void mostrarAnnounceUrlTorrent(Torrent* torrent);
 		
 	public:
 		ControladorShell(); 
@@ -22,6 +25,8 @@ class ControladorShell: public Controlador {
 	
 		virtual void correr();
 
+		/* VISTA -> MODELO 
+		 * =============== */
 		virtual bool addTorrent(std::string pathTorrent);
 		virtual void addUrlTorrent();
 		virtual void mostrarTrackers();
@@ -37,10 +42,10 @@ class ControladorShell: public Controlador {
 		virtual uint32_t obtenerOrden(std::string filename);
 		virtual void insertarOrdenado(std::string filename, uint32_t orden) {};
 	
-	/* MODELO -> VISTA 
-	 * =============== */		 
-	/*Message*/
-	virtual void agregarMessage(std::string message);
+		/* MODELO -> VISTA 
+		 * =============== */		 
+		/*Message*/
+		virtual void agregarMessage(std::string message);
 };
 
 /****************************************************************************/

@@ -32,6 +32,41 @@ void ControladorGUI::correr() {
 }
 
 /*--------------------------------------------------------------------------*/
+void ControladorGUI::actualizarCantActividades() {
+	
+	char sAux[15];
+	sprintf(sAux, "%d", all);
+	vista->modificarCantAll(sAux);
+	sprintf(sAux, "%d", downloading);
+	vista->modificarCantDownloading(sAux);
+	sprintf(sAux, "%d", completed);
+	vista->modificarCantCompleted(sAux);
+	sprintf(sAux, "%d", active);
+	vista->modificarCantActive(sAux);
+	sprintf(sAux, "%d", all-active);
+	vista->modificarCantInactive(sAux);	
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::mostrarAnnounceUrlTorrent(Torrent* torrent) {
+	
+	if(torrent->getAnnounceUrl().length() != 0)
+		vista->agregarTracker(torrent->getAnnounceUrl(), "Disponible",
+			                          torrent->getPeersActivos());
+	else {
+		const std::list<std::string>* listaUrl= torrent->getAnnounceUrlList();
+		std::list<std::string>::const_iterator it;
+		for(it = listaUrl->begin(); it != listaUrl->end(); it++)
+			vista->agregarTracker((*it), "Disponible", torrent->getPeersActivos());
+	}
+}
+
+/*--------------------------------------------------------------------------*/
+/* VISTA -> MODELO 
+ * =============== */
+/*--------------------------------------------------------------------------*/
+/**Files**/
+/*--------------------------------------------------------------------------*/
 void ControladorGUI::mostrarFiles() {
 	
 	const std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
@@ -64,9 +99,8 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 			Torrent* torrent= obtenerTorrent(filename);
 			std::string estado= getEstadoTorrent(torrent->getEstado());
 			vista->agregarArchivo(filename, 0, "", 0, estado, 
-							  "", "");
-			vista->agregarTracker(torrent->getAnnounceUrl(), "Disponible",
-			                      torrent->getPeersActivos());
+							  "", "");			
+			mostrarAnnounceUrlTorrent(torrent);
 			vista->borrarMensaje();
 			
 			return true;
@@ -136,82 +170,14 @@ void ControladorGUI::stopFile(std::string file) {
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarDone(std::string file, int piece, int done) {
-
-	vista->actualizarDone(file, piece, done);	
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarStatus(std::string file, int piece, 
-		                                               std::string status) {
-	
-	vista->actualizarStatus(file, piece, status);
-	actualizarCantActividades();		                              	
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarDownSpeed(std::string file, int piece, 
-		                                             std::string downSpeed) {
-	
-	vista->actualizarDownSpeed(file, piece, downSpeed);
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarUpSpeed(std::string file, int piece, 
-		                                 std::string upSpeed) {	
-	
-	vista->actualizarUpSpeed(file, piece, upSpeed);
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarCantActividades() {
-	
-	char sAux[15];
-	sprintf(sAux, "%d", all);
-	vista->modificarCantAll(sAux);
-	sprintf(sAux, "%d", downloading);
-	vista->modificarCantDownloading(sAux);
-	sprintf(sAux, "%d", completed);
-	vista->modificarCantCompleted(sAux);
-	sprintf(sAux, "%d", active);
-	vista->modificarCantActive(sAux);
-	sprintf(sAux, "%d", all-active);
-	vista->modificarCantInactive(sAux);	
-}
-
-/*--------------------------------------------------------------------------*/
 /**Trackers**/
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::mostrarTrackers() {
 	
 	const std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
 	std::list<Torrent*>::const_iterator it;
-	int contador= 1;
-	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++, contador++) {
-		Torrent* torrent= *it;
-					
-		vista->agregarTracker(torrent->getAnnounceUrl(), 
-		                      "Disponible", torrent->getPeersActivos());
-	}	
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::modificarStatusTracker(std::string name,     
-                                                        std::string status) {
-	
-	vista->modificarStatusTracker(name, status);
-}		
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::agregarSeedTracker(std::string name, int seed) {
-	
-	vista->agregarSeedTracker(name, seed);
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::eliminarTracker(std::string name) {
-	
-	vista->eliminarTracker(name);
+	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++)
+		mostrarAnnounceUrlTorrent(*it);			
 }
 
 /*--------------------------------------------------------------------------*/
@@ -242,14 +208,18 @@ uint32_t ControladorGUI::obtenerOrden(std::string filename) {
 	return(vista->obtenerOrden(filename));
 }
 
-
 /*--------------------------------------------------------------------------*/
-/* Refrescador */		
+/**Refrescador**/		
 void ControladorGUI::refrescar() {
 	
 	refrescador->refrescar();
 }
 
+/*--------------------------------------------------------------------------*/
+/* MODELO -> VISTA 
+ * =============== */		 
+/*--------------------------------------------------------------------------*/
+/**Files**/ 		
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::start(std::string filename) {
 	
@@ -268,9 +238,58 @@ void ControladorGUI::stop(std::string filename) {
 	vista->stop(filename);
 }
 
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::actualizarDone(std::string file, int piece, int done) {
+
+	vista->actualizarDone(file, piece, done);	
+}
 
 /*--------------------------------------------------------------------------*/
-/*Message*/
+void ControladorGUI::actualizarStatus(std::string file, int piece, 
+		                                               std::string status) {
+	
+	vista->actualizarStatus(file, piece, status);
+	actualizarCantActividades();		                              	
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::actualizarDownSpeed(std::string file, int piece, 
+		                                             std::string downSpeed) {
+	
+	vista->actualizarDownSpeed(file, piece, downSpeed);
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::actualizarUpSpeed(std::string file, int piece, 
+		                                 std::string upSpeed) {	
+	
+	vista->actualizarUpSpeed(file, piece, upSpeed);
+}
+
+/*--------------------------------------------------------------------------*/
+/**Trackers**/
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::modificarStatusTracker(std::string name,     
+                                                        std::string status) {
+	
+	vista->modificarStatusTracker(name, status);
+}		
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::agregarSeedTracker(std::string name, int seed) {
+	
+	vista->agregarSeedTracker(name, seed);
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::eliminarTracker(std::string name) {
+	
+	vista->eliminarTracker(name);
+}
+
+/*--------------------------------------------------------------------------*/
+/**Message**/
+/*--------------------------------------------------------------------------*/
 void ControladorGUI::agregarMessage(std::string message) {
 	
 	vista->agregarMessage(message);
