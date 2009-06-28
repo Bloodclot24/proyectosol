@@ -28,7 +28,7 @@ void BitField::setBlock(char c, uint32_t blockIndex){
 /* cambia la data del bitfield */
 /****************************************************************************/
 void BitField::setData(char* data) {	
-	delete[] data;
+	delete this->data;
 	this->data= data;
 }
 

@@ -16,8 +16,10 @@ void RefreshVista::run() {
 		mutex.lock();
 		std::cout << "ESPERANDO!!!!!!!!!!!!!!!" << std::endl; 
 		cVariable.wait();
-		if(corriendo)
+		if(corriendo) {
 			controlador->mostrarFiles();
+			controlador->mostrarTrackers();
+		}
 		mutex.unlock();
 	}
 	

@@ -9,7 +9,6 @@
 #include "../Modelo/FileManager/fileManager.h"
 #include "../Vista/refreshVista.h"
 
-
 #define EXTENSION ".torrent"
 #define TAM_EXTENSION 8
 #define PATH_DOWNLOADS  "Downloads"
@@ -62,7 +61,7 @@ class Controlador {
 		virtual void mostrarGeneral(std::string numfile) {};
 		
 		/*Trackers*/
-		virtual void mostrarTrackers() {};
+		virtual void mostrarTrackers()= 0;
 		virtual void modificarStatusTracker(std::string name,
 		                                    std::string status) {};		
 		virtual void agregarSeedTracker(std::string name, int seed) {};

@@ -73,11 +73,18 @@ bool Controlador::guardarConfig() {
 		ruta += snumero;
 		ruta += EXTENSION_BITFIELD;
 		bitfieldFile.open(ruta.c_str(), std::fstream::out);
+		
 		if(bitfieldFile.is_open()) {
 			auxiliar= bitfield->getLength();
 			bitfieldFile.write((const char*)&auxiliar,sizeof(uint32_t));
-			char* data = bitfield->getData();
-			bitfieldFile.write(data, bitfield->getBytesLength());		
+			
+			std::cout << "Length: "<< auxiliar << std::endl;
+						
+			bitfieldFile.write(bitfield->getData(), bitfield->getBytesLength());		
+			
+			std::cout << "Data: "<< bitfield->getData() << std::endl;
+			
+			
 			bitfieldFile.close();
 			resultado= true;
 		}
@@ -164,13 +171,22 @@ bool Controlador::cargarConfig() {
  				char* lengthBitField= new char[sizeof(uint32_t)];
  				bitFieldFile.read(lengthBitField, sizeof(uint32_t));
  				uint32_t length= *((uint32_t*)lengthBitField);
+				
+				std::cout<< "Length: " << length << std::endl;
+				
 				BitField* bitField= new BitField(length);
 				
 				uint32_t lengthBytes = bitField->getBytesLength();
+ 				
+ 				std::cout<< "lengthBytes: " << bitField->getBytesLength() << std::endl;
+				 				
  				char* dataBitField = new char[bitField->getBytesLength()];
  				bitFieldFile.read(dataBitField, lengthBytes);
  				dataBitField[lengthBytes] = '\0';
 				
+				std::cout<< "Data: " << dataBitField << std::endl;
+				
+								
 				bitField->setData(dataBitField);
 				
 				cliente.addTorrent(pathTorrent.c_str(), bitField);

@@ -181,6 +181,21 @@ void ControladorGUI::actualizarCantActividades() {
 
 /*--------------------------------------------------------------------------*/
 /**Trackers**/
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::mostrarTrackers() {
+	
+	const std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
+	std::list<Torrent*>::const_iterator it;
+	int contador= 1;
+	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++, contador++) {
+		Torrent* torrent= *it;
+					
+		vista->agregarTracker(torrent->getAnnounceUrl(), 
+		                      "Disponible", torrent->getPeersActivos());
+	}	
+}
+
+/*--------------------------------------------------------------------------*/
 void ControladorGUI::modificarStatusTracker(std::string name,     
                                                         std::string status) {
 	
