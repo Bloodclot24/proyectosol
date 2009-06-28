@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 #include "../Modelo/Client/client.h"
 #include "../Modelo/Client/bitField.h"
@@ -22,6 +23,7 @@ class Controlador {
 	
 	protected:
 		Client cliente;
+		std::vector<std::string> listaOrdenada; 
 		
 		bool validarExtensionFile(std::string path);
 		std::string getEstadoTorrent(EstadoTorrent estado);
@@ -67,7 +69,6 @@ class Controlador {
 
 		/*Orden*/
 		virtual uint32_t obtenerOrden(std::string filename){return 0;}
-		virtual void insertarOrdenado(std::string filename, uint32_t orden)= 0;
 		
 		/* Refrescador */
 		virtual void refrescar() {}

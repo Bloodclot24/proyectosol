@@ -10,6 +10,7 @@ class RefreshVista: public Thread {
 	private:
 		Controlador* controlador;
 		bool corriendo;
+		bool pedido;
 		Mutex mutex;
 		CVariable cVariable;
 	

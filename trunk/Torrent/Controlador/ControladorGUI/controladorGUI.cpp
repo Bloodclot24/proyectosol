@@ -26,8 +26,6 @@ void ControladorGUI::correr() {
 	
 	//provisoriamente estos botones no estaran habilitados
 	vista->disableAddUrlTorrent();
-	vista->disableMoveUp();
-	vista->disableMoveDown();
 	vista->correr();
 }
 
@@ -69,16 +67,16 @@ void ControladorGUI::mostrarAnnounceUrlTorrent(Torrent* torrent) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::mostrarFiles() {
 	
-	const std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
-	std::list<Torrent*>::const_iterator it;
+	std::cout << "---MOSTRANDO LISTA---" << std::endl;
 
-	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++) {
+  	for(uint32_t i= 0; i < listaOrdenada.size(); i++) {
 		this->all++;
-		Torrent* torrent= *it;
+		Torrent* torrent= obtenerTorrent(listaOrdenada[i]);
 		std::string estado= getEstadoTorrent(torrent->getEstado());
-		vista->agregarArchivo(torrent->getName(), 0, "", 0, estado, "", "");		
-	}				  
-	
+		std::cout << "torrent: " << torrent->getName() << std::endl;
+		vista->agregarArchivo(torrent->getName(), 0, "", 0, estado, "", "");
+  	}		
+		
 	actualizarCantActividades();					  
 }
 
