@@ -42,6 +42,7 @@ class ControladorGUI: public Controlador {
 		                               std::string upSpeed);	
 		
 		/*Trackers*/
+		virtual void mostrarTrackers();
 		virtual void modificarStatusTracker(std::string name, std::string status);		
 		virtual void agregarSeedTracker(std::string name, int seed);
 		virtual void eliminarTracker(std::string name);

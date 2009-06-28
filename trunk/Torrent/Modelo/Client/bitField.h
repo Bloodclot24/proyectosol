@@ -2,6 +2,8 @@
 #define BITFIELD_H_INCLUDED
 
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 /* Clase que representa un bitfield */
 class BitField{

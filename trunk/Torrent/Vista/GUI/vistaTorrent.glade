@@ -514,6 +514,7 @@
                     <property name="model">liststore_trackers</property>
                     <child>
                       <object class="GtkTreeViewColumn" id="trackers_name">
+                        <property name="resizable">True</property>
                         <property name="title">Name</property>
                         <child>
                           <object class="GtkCellRendererText" id="cell_trackers_name"/>
