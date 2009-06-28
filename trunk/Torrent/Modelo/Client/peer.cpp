@@ -274,13 +274,11 @@ void Peer::run(){
 			 mensaje->copiarDatos(aux.c_str(), aux.length());
 			 emisor->enviarMensaje(mensaje);
 
-			 std::cout << "??????????????????????????????????????????????????????????Envio el piece" << respuesta->index << " de tamanio " << respuesta->length << std::endl;
-			 std::cout << "Se lee en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
-			      ". Que corresponde al indice: " << respuesta->index << std::endl;
-
+			 std::cout << "Me piden el piece" << respuesta->index << " offset "<< respuesta->begin << " de tamanio " << respuesta->length << std::endl;
 		    
 			 char *bloque = new char[respuesta->length];
 			 torrent->readData(bloque, respuesta->index, respuesta->begin, respuesta->length);
+			 mensaje = new Mensaje();
 			 mensaje->asignarDatos(bloque, respuesta->length);
 			 emisor->enviarMensaje(mensaje);
 		    }
@@ -341,5 +339,4 @@ void Peer::run(){
 
 void Peer::finish(){
      Thread::finish();
-
 }
