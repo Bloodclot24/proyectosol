@@ -29,6 +29,8 @@
 Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondition(&requestMutex){
      
      this->bitField= bitfieldGuardado;
+
+     partsRequested = 0;
      
      ParserBencode parser;
      /* Decodifico todo el .torrent y obtengo una lista con toda la
@@ -428,8 +430,8 @@ void Torrent::eliminarPeer(Peer* peer){
 	  }
      }
 
-     std::cout << "SE ELIMINO UN PEEEEEER\n";
-     std::cout << "QUEDAN " << listaPeers.size() << "\n";
+     std::cerr << "SE ELIMINO UN PEEEEEER\n";
+     std::cerr << "QUEDAN " << listaPeers.size() << "\n";
 
      //if(!encontrado)
 	  //announce();
@@ -583,7 +585,6 @@ uint64_t Torrent::obtenerByteOffset(uint32_t index){
 /****************************************************************************/
 uint32_t Torrent::rarestFirst() 
 {
-     Lock lock(mutexPeers);
 
      std::list<Peer*>::iterator it=listaPeers.begin();
      const BitField* bitField = (*it)->getBitField();
@@ -601,37 +602,31 @@ uint32_t Torrent::rarestFirst()
 	       vectorPiezas[i] += pieza;
 	  }
      }
-	
-     uint32_t menor = vectorPiezas[0];
-     uint32_t posMenor = 0;
-     bool encontrado = false;
-     while(!encontrado){
-	  //Busco la pieza que esta menor cantidad de veces,
-	  //es decir la pieza mas rara.
-	  for(uint32_t i=1; i<tamanio; i++){
-	       if(menor > vectorPiezas[i]){
-		    menor = vectorPiezas[i];
-		    posMenor = i;
-	       }
-	  }
-	  //Me fijo si tengo esa parte
-	  uint32_t parteExistente = this->bitField->getField(posMenor); 
-	  if(parteExistente){
-	       BitField *fields = piezasEnProceso[posMenor];
-	       if(fields != NULL){
-		   	//TODO ver lista de partes en proceso.
-	       	//si la tengo, seteo esa posicion con un valor
-	       	//muy grande asi no vuelve a ser el menor
-	       	vectorPiezas[posMenor] = INT_MAX;
-	       }
-	  }else{
-	       //Si no la tenia, encontre la pieza mas rara
-	       //de las que me faltan y devuelvo la posicion
-	       encontrado = true;
+
+     DownloadSlot *ds=NULL;
+
+     for(int i=0;i<piezasEnProceso.size(); i++){
+	  ds = piezasEnProceso.front();
+	  piezasEnProceso.pop();
+	  vectorPiezas[ds->getPieceIndex()] = 0;
+	  piezasEnProceso.push(ds);
+     }
+
+     uint32_t menor = -1;
+     uint32_t posMenor = -1;
+     //Busco la pieza que esta menor cantidad de veces,
+     //es decir la pieza mas rara.
+     for(uint32_t i=1;i<tamanio;i++){
+	  
+	  if(vectorPiezas[i] > 0 && menor > vectorPiezas[i] && 
+	     this->bitField->getField(i) == 0){
+	       
+	       menor = vectorPiezas[i];
+	       posMenor = i;
 	  }
      }
+
      return posMenor;		
-	
 }
 
 /****************************************************************************/
@@ -656,7 +651,7 @@ TorrentFile* Torrent::obtenerArchivo(uint32_t index)
 		}
 	}
 	if(!encontrado) return NULL;
-	return *(--it);
+	return (*it);
 }
 
 /****************************************************************************/
@@ -690,12 +685,12 @@ void Torrent::run(){
      ProtocoloBitTorrent proto;
      
 //     while(announce() != 0);
-      Peer *peer = new						\
- 	  Peer("localhost",						\
- 	       6881,							\
- 	       this);
+       Peer *peer = new						\
+  	  Peer("localhost",						\
+  	       6881,							\
+  	       this);
      
-      agregarPeer(peer);
+       agregarPeer(peer);
 
      mutexPeers.lock();
      std::list<Peer*>::iterator it;
@@ -714,99 +709,57 @@ void Torrent::run(){
 	  }
 	  else{
 	       std::cout << "Puedo realizar un request. (" << peersEnEspera.size()<<")\n";
-	       sleep(1);
 	       Lock lock(downloadMutex);
 	       
-	       static uint32_t index = 0; // rarestFirst();
-	       std::cout << "Realizo un request de la pieza " << index <<".\n";
-	       std::cout << "Peers en la cola de espera: " << peersEnEspera.size() << "\n";
-	       
-	       
-	       BitField *fields = piezasEnProceso[index];
-	       if(fields != NULL){
-		    std::cout << "La pieza esta siendo procesada en algun lado\n";
-		    uint32_t inicio=-1,fin=-1;
-		    uint32_t size;
-		    uint32_t j;
-		    for(j=0;fields->getField(j) != 0 && j < fields->getLength();j++);
-		    inicio = j;
-		    for(j=inicio+1;fields->getField(j) != 1 && j < fields->getLength();j++);
-		    fin = j;
-		    
-		    if(inicio >= fields->getLength()){
-			   std::cout << "UPAAAAA, nos pasamos de pieza, vamos por la que sigue!!\n";
-			   piezasEnProceso[index]=NULL;
-			   //delete fields;
-			   bitField->setField(index,1);
-			   //Me fijo que la pieza sea valida antes de continuar
-			   if(validarPieza(index))
-				//Anunciar el have
-				anunciarPieza(index);
-			   
-			   index++;
-			   inicio=0;
-			   fin=REQUEST_SIZE_DEFAULT;
-			   
-		      }
-		      
-		      std::cout << "INICIO: " << inicio << " FIN: " << fin << std::endl;
-		      size = fin-inicio;
-		      
-		      size_t i = peersEnEspera.size();
-		      Peer *peer;
-		      while(i>0){
-			   peer = peersEnEspera.popFront();
-			   if(peer->havePiece(index))
-				i=0;
-			   else{
-				peersEnEspera.push(peer);
-				peer = NULL;
-				i--;
-			   }
-		      }
-		      if(peer != NULL){
-			   if(size>REQUEST_SIZE_DEFAULT)
-				size = REQUEST_SIZE_DEFAULT;
-			   for(uint32_t i=0;i<size;i++)
-				fields->setField(inicio+i,1);
-			   peer->sendRequest(index,inicio,size);
-		      }
-		      else{
-			   index++;
-		      }
-		 }
-		 else{
-		      std::cout << "No estamos procesando la pieza.\n";
-		      size_t i = peersEnEspera.size();
-		      Peer *peer;
-		      while(i>0){
-			   peer = peersEnEspera.popFront();
-			   if(peer->havePiece(index))
-				i=0;
-			   else{
-				peersEnEspera.push(peer);
-				peer = NULL;
-				i--;
-			   }
-		      }
-		      if(peer != NULL){
-			   //Si encontramos al peer que tiene la pieza
-			   //Creo un bitfield con la cantidad de bits
-			   //necesarias para representar una pieza
-			   fields = new BitField((*archivos->begin())->getPieceLength());
-			   piezasEnProceso[index] = fields;
-			   std::cout << "Se envia el request de la pieza " << index << std::endl;
-			   for(uint32_t i=0;i<REQUEST_SIZE_DEFAULT;i++)
-				fields->setField(i,1);
-			   peer->sendRequest(index,0,REQUEST_SIZE_DEFAULT);
-		      }
-		      else{
-			   index++;
-		      }
-		    
-		 }
-	    }
-       }
+	       // si tenemos piezas en proceso
+	       if(piezasEnProceso.size() > 0){
+		    DownloadSlot *ds = NULL;
+		    Peer *peer=NULL;
+
+		    // por cada bloque en proceso
+		    int size = piezasEnProceso.size();
+		    for(int i=0;i<size; i++){
+			 ds = piezasEnProceso.front();
+			 piezasEnProceso.pop();
+
+			 int j=peersEnEspera.size();
+			 while(j>0){
+			      peer = peersEnEspera.popFront();
+			      //si encuentro algun peer que la tenga
+ 			      if(peer->havePiece(ds->getPieceIndex()))
+				   j=0;
+			      else{
+				   peersEnEspera.push(peer);
+				   peer = NULL;
+				   j--;
+			      }
+			 }
+			 if(peer != NULL){
+			      //se la asigno para enviar el request
+			      peer->sendRequest(ds);
+			      size--;
+			      partsRequested++;
+			 }
+			 else{
+			      //si no, pruebo con el proximo bloque
+			      piezasEnProceso.push(ds);
+			 }
+		    }
+	       }
+	       // Si no estoy realizando tantos requests como puedo
+	       if(partsRequested < MAX_REQUESTS){
+		    //pido otra pieza y agrego los download slots
+		    uint32_t index = rarestFirst();
+		    if(index != -1)
+			 DownloadSlot::agregarSlots(piezasEnProceso, index, pieceSize, REQUEST_SIZE_DEFAULT);
+		    else{
+			 //@todo: no hay mas piezas que podamos pedir
+			 //hay que esperar
+			 
+		    }
+	       }
+	  }
+     }
 }
 
 /****************************************************************************/
@@ -847,6 +800,20 @@ void Torrent::peerUnchoked(Peer* peer){
      peersEnEspera.push(peer);
      std::cout << "Seal de unchoke ("<< peersEnEspera.size() <<") \n";
      requestCondition.signal();     
+}
+
+/****************************************************************************/
+void Torrent::peerTransferFinished(Peer* peer){
+     Lock lock(downloadMutex);
+     partsRequested--;
+
+}
+
+/****************************************************************************/
+void Torrent::peerTransferCanceled(Peer* peer){
+     Lock lock(downloadMutex);
+     partsRequested--;
+
 }
 
 /****************************************************************************/

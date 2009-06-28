@@ -7,6 +7,7 @@ class Peer;
 #include "threads.h"
 #include "threadEmisor.h"
 #include "threadReceptor.h"
+#include "downloadSlot.h"
 
 #include "torrentFile.h"
 #include "../ParserBencode/parserBencode.h"
@@ -17,6 +18,7 @@ class Peer;
 #include <iostream>
 #include <limits.h>
 #include <math.h>
+#include <queue>
 
 /* Estados posibles del torrent */
 enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING, ERROR};
@@ -71,7 +73,10 @@ private:
      /* representa las piezas que estamos bajando. Como cada pieza se
       * baja por partes, esto nos indica que partes de cada pieza
       * tenemos y que partes nos faltan */
-     std::map<uint32_t, BitField*> piezasEnProceso;
+     std::queue<DownloadSlot*> piezasEnProceso;
+
+     /* indica la cantidad de partes que estamos esperando */
+     int partsRequested;
 
      /* numero de peers activos */
      int peersActivos;

@@ -13,9 +13,6 @@ class ThreadReceptor:public Thread{
      bool ocupado;    /* indica si hay pedidos en espera */
      bool http;       /* indica si se va arecibir informacion http */
      
-     void* buffer;    /* buffer donde almaceno los datos */
-     int tamanioBuffer;
-
      Deque<char> colaDeDatos;
 
      HttpResponse *response;
@@ -34,7 +31,10 @@ public:
      
      Deque<char>* getColaDeDatos();
 
-     ~ThreadReceptor(){};
+     ~ThreadReceptor(){
+	  std::cerr << "chau receptorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr" << &colaDeDatos <<"\n";
+	  finish();
+     };
 		     
 protected:
      void run();

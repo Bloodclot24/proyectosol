@@ -153,6 +153,7 @@ public:
       * utilizandola, espera a que terminen.
       */
      ~Deque(){
+	  std::cerr << "chau dequeeeeeeeeeeeeeeeeeeee" << this <<"\n";
 	  mutex.lock();
 	  holdMutex.lock();
 	  valida=false;
@@ -160,7 +161,9 @@ public:
 	  mutex.unlock();
 	  while(holdCounter > 0)
 	       holdCondition.wait();
+	  std::cerr << "chau dequeeeeeeeeeeeeeeeeeeee  preeeeeeeeeeeunlockkkkk" << this <<"\n";
 	  holdMutex.unlock();
+	  std::cerr << "chau dequeeeeeeeeeeeeeeeeeeee  postttttttttttunlockkkkk \n";
      }
      
 };
