@@ -155,6 +155,10 @@ public:
      /* Avisa a todos los peers conectados que tenemos una pieza */
      void anunciarPieza(uint32_t index);
 
+     void peerTransferFinished(Peer* peer);
+
+     void peerTransferCanceled(Peer* peer);
+
      /* Realiza un announce al tracker */
      int announce();
 

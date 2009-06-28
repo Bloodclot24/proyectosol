@@ -311,10 +311,9 @@ void Peer::run(){
 			      ". Que corresponde al indice: " << respuesta->index << std::endl;
 			 torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, respuesta->length);
 
-			 
-
 			 if(peer_choking == 0)
 			      torrent->peerUnchoked(this);
+			 torrent->peerTransferFinished(this);
 		    }
 		    else{
 			 stop();
