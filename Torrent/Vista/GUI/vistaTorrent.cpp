@@ -104,7 +104,8 @@ void VistaTorrent::correr() {
                                           refXml->get_object("liststore_messages");   	
 	treeModel_messages= Glib::RefPtr<Gtk::ListStore>::cast_static(obj_treeModel_messages); 
 	
-	controlador->refrescar();
+	controlador->mostrarFiles();
+	controlador->mostrarTrackers();
 
     Gtk::Main::run(*main_window);    
 }

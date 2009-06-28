@@ -9,7 +9,7 @@ class ControladorGUI: public Controlador {
 
 	private:
 		VistaTorrent* vista;
-		RefreshVista* refrescador;	
+		RefreshVista* refrescador;
 		
 		int all;
 		int downloading;
