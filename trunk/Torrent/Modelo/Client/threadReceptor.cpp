@@ -8,8 +8,6 @@
 ThreadReceptor::ThreadReceptor(Socket *socket, bool http):condHttp(&mutexHttp){
      this->socket = socket;
      ocupado = false;
-     buffer = NULL;
-     tamanioBuffer = 0;
      this->http = http; // indica si es o no para recibir informacion http
      response = NULL;
 }

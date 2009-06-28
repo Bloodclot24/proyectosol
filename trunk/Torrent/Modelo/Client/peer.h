@@ -11,6 +11,9 @@ class Torrent;
 #include "torrent.h"
 #include "bitField.h"
 
+#include "downloadSlot.h"
+#include <queue>
+
 class Peer:public Thread{
 private:
      Socket *socket;
@@ -29,6 +32,8 @@ private:
      uint32_t port;
      
      bool entrante;
+
+     std::queue<DownloadSlot*> requests;
 
 protected:
      void run();
@@ -65,6 +70,8 @@ public:
 
      /* Envia un request de una parte */
      void sendRequest(uint32_t index, uint32_t offset, uint32_t size);
+
+     void sendRequest(DownloadSlot* ds);
 
      /* Le pregunta a este peer si tiene una cierta pieza completa */
      bool havePiece(uint32_t index);

@@ -115,6 +115,19 @@ void Peer::sendRequest(uint32_t index, uint32_t offset,		\
      emisor->enviarMensaje(mensaje);
      std::cout << "Request de: " << index << " tamaï¿½o: " << size << " offset: " << offset << std::endl;
 }
+/****************************************************************************/
+void Peer::sendRequest(DownloadSlot* ds){
+     Mensaje *mensaje = new Mensaje();
+     ProtocoloBitTorrent proto;
+     std::string msg = proto.request(ds->getPieceIndex(), ds->getOffset(), ds->getLength());
+     mensaje->copiarDatos(msg.c_str(), msg.length());
+     requests.push(ds);
+     emisor->enviarMensaje(mensaje);
+     std::cout << "Request de: " <<  ds->getPieceIndex() << " tamaño: " \
+	       << ds->getOffset() << " offset: " << ds->getLength()	\
+	       << std::endl;
+}
+
 
 /****************************************************************************/
 bool Peer::havePiece(uint32_t index){
@@ -136,6 +149,7 @@ void Peer::run(){
 	  if(!socket->esValido()){
 	       stop();
 	       std::cout << "ERROR DEL SOCKET: " << socket->obtenerError() << std::endl;
+	       conectado = false;
 	       torrent->eliminarPeer(this);
 	       return;
 	  }
@@ -201,7 +215,7 @@ void Peer::run(){
 	  }
 	  //asigno el hash obtenido al peer
 	  this->hash.clear();
-	  this->hash = hashRecibido;		
+	  this->hash = hashRecibido;
      
 	  /* Envio un handshake */
 	  mensaje = new Mensaje();
@@ -296,7 +310,9 @@ void Peer::run(){
 			 std::cout << "Se escribe en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
 			      ". Que corresponde al indice: " << respuesta->index << std::endl;
 			 torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, respuesta->length);
+
 			 
+
 			 if(peer_choking == 0)
 			      torrent->peerUnchoked(this);
 		    }
@@ -325,6 +341,7 @@ void Peer::run(){
      std::cout << "FUERA PEER\n";
 
      conectado = false;
+     datos->release();
      receptor->finish();
      emisor->finish();
      socket->cerrar();
