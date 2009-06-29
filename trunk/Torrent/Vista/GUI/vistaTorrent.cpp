@@ -442,27 +442,27 @@ void VistaTorrent::disableMoveDown() {
 
 /*--------------------------------------------------------------------------*/
 /**Panel Descargas y Subidas**/
-void VistaTorrent::agregarArchivo(std::string file, int piece, std::string 
-								  size, int done, std::string status,
+void VistaTorrent::agregarArchivo(std::string file, std::string size, 
+								  int done, std::string status, 
 								  std::string downSpeed, std::string
-								  upSpeed) {
+								  upSpeed, std::string time) {
 	
 	Gtk::TreeModel::Row row= *(treeModel_transf->append());
   	
   	row[columns_transf.col_icon]= Gdk::Pixbuf::create_from_file(getPathStatusIcon(status));
 	row[columns_transf.col_file]= file;
-  	row[columns_transf.col_piece]= piece;
   	row[columns_transf.col_size]= size;
   	row[columns_transf.col_done]= done;
   	row[columns_transf.col_status]= status;
   	row[columns_transf.col_downSpeed]= downSpeed;
-  	row[columns_transf.col_upSpeed]= upSpeed;                                  	
+  	row[columns_transf.col_upSpeed]= upSpeed;
+  	row[columns_transf.col_time]= time;                                   	
 }
 
 /*--------------------------------------------------------------------------*/
-void VistaTorrent::actualizarDone(std::string file, int piece, int done) {
+void VistaTorrent::actualizarDone(std::string file, int done) {
 	
-	Gtk::TreeModel::Row row= buscarRow_transf(file, piece);
+	Gtk::TreeModel::Row row= buscarRow_transf(file);
 	
 	std::cout << "Se actualizo done de " << row[columns_transf.col_done];
 	std::cout << " a " << done << std::endl;
@@ -471,10 +471,9 @@ void VistaTorrent::actualizarDone(std::string file, int piece, int done) {
 }
 
 /*--------------------------------------------------------------------------*/
-void VistaTorrent::actualizarStatus(std::string file, int piece, 
-									std::string status) {
+void VistaTorrent::actualizarStatus(std::string file, std::string status) {
 	
-	Gtk::TreeModel::Row row= buscarRow_transf(file, piece);
+	Gtk::TreeModel::Row row= buscarRow_transf(file);
 	
 	std::cout << "Se actualizo done de " << row[columns_transf.col_status];
 	std::cout << " a " << status << std::endl;
@@ -485,10 +484,10 @@ void VistaTorrent::actualizarStatus(std::string file, int piece,
 }
 
 /*--------------------------------------------------------------------------*/
-void VistaTorrent::actualizarDownSpeed(std::string file, int piece,
+void VistaTorrent::actualizarDownSpeed(std::string file, 
                                        std::string downSpeed) {
 	
-	Gtk::TreeModel::Row row= buscarRow_transf(file, piece);
+	Gtk::TreeModel::Row row= buscarRow_transf(file);
 
 	std::cout << "Se actualizo down speed de " << row[columns_transf.col_downSpeed];
 	std::cout << " a " << downSpeed << std::endl;
@@ -497,15 +496,26 @@ void VistaTorrent::actualizarDownSpeed(std::string file, int piece,
 }
 
 /*--------------------------------------------------------------------------*/
-void VistaTorrent::actualizarUpSpeed(std::string file, int piece, 
+void VistaTorrent::actualizarUpSpeed(std::string file, 
                                      std::string upSpeed) {
 	
-	Gtk::TreeModel::Row row= buscarRow_transf(file, piece);
+	Gtk::TreeModel::Row row= buscarRow_transf(file);
 	
 	std::cout << "Se actualizo up speed de " << row[columns_transf.col_upSpeed];
 	std::cout << " a " << upSpeed << std::endl;
 	
 	row[columns_transf.col_upSpeed]= upSpeed;
+}
+
+void VistaTorrent::actualizarTime(std::string file, std::string time) {
+
+	Gtk::TreeModel::Row row= buscarRow_transf(file);
+	
+	std::cout << "Se actualizo up speed de " << row[columns_transf.col_time];
+	std::cout << " a " << time << std::endl;
+	
+	row[columns_transf.col_time]= time;
+		
 }
 
 /*--------------------------------------------------------------------------*/
@@ -561,26 +571,6 @@ void VistaTorrent::stop(std::string filename) {
   										getPathStatusIcon("Stopped"));
 	row[columns_transf.col_upSpeed]= "";
   	row[columns_transf.col_downSpeed]= "";
-}
-
-/*--------------------------------------------------------------------------*/
-Gtk::TreeModel::Row VistaTorrent::buscarRow_transf(std::string file, 
-                                                   int piece) {
-	
-	typedef Gtk::TreeModel::Children type_children;
-	type_children children = treeModel_transf->children();
-	Gtk::TreeModel::Row row;
-	bool found= false;
-	for(type_children::iterator iter= children.begin(); !found&&  
-	    iter != children.end(); ++iter) {
-  	
-  		row= *iter;
-  		if(row[columns_transf.col_file] == file && 
-  		   row[columns_transf.col_piece] == piece)
-  		   found= true;
-	}
-	
-	return(row);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -832,15 +822,15 @@ void VistaTorrent::cerrarFileChooser() {
 /*DelayDialog*/
 void VistaTorrent::correrDelayDialog() {
 	
-	Gtk::Window* delayDialog;
+	Gtk::Dialog* delayDialog;
     refXml->get_widget("dialog_delay", delayDialog);	
-    delayDialog->show_all();
+    delayDialog->run();
 }
 
 /*--------------------------------------------------------------------------*/
 void VistaTorrent::cerrarDelayDialog() {
 	
-	Gtk::Window* delayDialog;
+	Gtk::Dialog* delayDialog;
     refXml->get_widget("dialog_delay", delayDialog);
 	delayDialog->hide();	
 }

@@ -49,6 +49,10 @@ class ControladorGUI: public Controlador {
 		/*Refrescador*/		
 		virtual void refrescar();
 		
+		/* DialogDelay */
+		virtual void mostrarDialogDelay();
+		virtual void esconderDialogDelay();
+		
 		/* MODELO -> VISTA 
 		 * =============== */		 
 		/*Files*/ 		 
@@ -62,6 +66,7 @@ class ControladorGUI: public Controlador {
 		                                 std::string downSpeed);
 		virtual void actualizarUpSpeed(std::string file, int piece, 
 		                               std::string upSpeed);
+		virtual void actualizarTime(std::string file, std::string time);	
 		
 		/*Trackers*/
 		virtual void modificarStatusTracker(std::string name, 

@@ -12,34 +12,6 @@
       <column type="gint"/>
     </columns>
   </object>
-  <object class="GtkListStore" id="liststore_peers">
-    <columns>
-      <!-- column-name IP -->
-      <column type="gchararray"/>
-      <!-- column-name Client -->
-      <column type="gchararray"/>
-    </columns>
-  </object>
-  <object class="GtkListStore" id="liststore_tranferences">
-    <columns>
-      <!-- column-name Image -->
-      <column type="GdkPixbuf"/>
-      <!-- column-name File -->
-      <column type="gchararray"/>
-      <!-- column-name Piece -->
-      <column type="gint"/>
-      <!-- column-name Size -->
-      <column type="gchararray"/>
-      <!-- column-name Done -->
-      <column type="gint"/>
-      <!-- column-name Status -->
-      <column type="gchararray"/>
-      <!-- column-name Up -->
-      <column type="gchararray"/>
-      <!-- column-name Down -->
-      <column type="gchararray"/>
-    </columns>
-  </object>
   <object class="GtkListStore" id="liststore_pieces">
     <columns>
       <!-- column-name # -->
@@ -70,12 +42,41 @@
       <column type="gchararray"/>
     </columns>
   </object>
+  <object class="GtkListStore" id="liststore_peers">
+    <columns>
+      <!-- column-name IP -->
+      <column type="gchararray"/>
+      <!-- column-name Estado -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
+  <object class="GtkListStore" id="liststore_tranferences">
+    <columns>
+      <!-- column-name Image -->
+      <column type="GdkPixbuf"/>
+      <!-- column-name File -->
+      <column type="gchararray"/>
+      <!-- column-name Size -->
+      <column type="gchararray"/>
+      <!-- column-name Done -->
+      <column type="gint"/>
+      <!-- column-name Status -->
+      <column type="gchararray"/>
+      <!-- column-name Up -->
+      <column type="gchararray"/>
+      <!-- column-name Down -->
+      <column type="gchararray"/>
+      <!-- column-name Time -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkWindow" id="main_window">
     <property name="title" translatable="yes">&#x592A;&#x967D;-Torrent</property>
     <property name="window_position">center-always</property>
     <property name="default_width">750</property>
     <property name="default_height">750</property>
     <property name="icon">images/logo.png</property>
+    <property name="accept_focus">False</property>
     <child>
       <object class="GtkTable" id="table">
         <property name="visible">True</property>
@@ -289,17 +290,6 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkTreeViewColumn" id="column_piece">
-                    <property name="title">#</property>
-                    <child>
-                      <object class="GtkCellRendererText" id="cell_piece"/>
-                      <attributes>
-                        <attribute name="text">2</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                </child>
-                <child>
                   <object class="GtkTreeViewColumn" id="column_size">
                     <property name="title">Size</property>
                     <child>
@@ -352,6 +342,17 @@
                       <object class="GtkCellRendererText" id="cell_down"/>
                       <attributes>
                         <attribute name="text">7</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn" id="treeviewcolumn_time">
+                    <property name="title">ETA</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="cellrenderertext_time"/>
+                      <attributes>
+                        <attribute name="text">8</attribute>
                       </attributes>
                     </child>
                   </object>
@@ -603,10 +604,10 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkTreeViewColumn" id="pieces_client">
-                        <property name="title">Client</property>
+                      <object class="GtkTreeViewColumn" id="pieces_estado">
+                        <property name="title">Estado</property>
                         <child>
-                          <object class="GtkCellRendererText" id="cell_pieces_client"/>
+                          <object class="GtkCellRendererText" id="cell_pieces_estado"/>
                           <attributes>
                             <attribute name="text">1</attribute>
                           </attributes>
@@ -648,106 +649,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow_pieces">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hscrollbar_policy">automatic</property>
-                <property name="vscrollbar_policy">automatic</property>
-                <child>
-                  <object class="GtkTreeView" id="treeview_pieces">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="model">liststore_pieces</property>
-                    <child>
-                      <object class="GtkTreeViewColumn" id="pieces_number">
-                        <property name="title">#</property>
-                        <child>
-                          <object class="GtkCellRendererText" id="cell_pieces_number"/>
-                          <attributes>
-                            <attribute name="text">0</attribute>
-                          </attributes>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkTreeViewColumn" id="pieces_size">
-                        <property name="title">Size</property>
-                        <child>
-                          <object class="GtkCellRendererText" id="cell_pieces_size"/>
-                          <attributes>
-                            <attribute name="text">1</attribute>
-                          </attributes>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkTreeViewColumn" id="pieces_blocks">
-                        <property name="title">Blocks</property>
-                        <child>
-                          <object class="GtkCellRendererText" id="cell_pieces_blocks"/>
-                          <attributes>
-                            <attribute name="text">2</attribute>
-                          </attributes>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkTreeViewColumn" id="cell_pieces_block">
-                        <property name="title">Block</property>
-                        <child>
-                          <object class="GtkCellRendererProgress" id="cell_pieces_progress">
-                            <property name="width">140</property>
-                          </object>
-                          <attributes>
-                            <attribute name="value">3</attribute>
-                          </attributes>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkTreeViewColumn" id="pieces_completed">
-                        <property name="title">Completed</property>
-                        <child>
-                          <object class="GtkCellRendererText" id="cell_pieces_completed"/>
-                          <attributes>
-                            <attribute name="text">4</attribute>
-                          </attributes>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="position">3</property>
-              </packing>
+              <placeholder/>
             </child>
             <child type="tab">
-              <object class="GtkHBox" id="hbox_pieces">
-                <property name="visible">True</property>
-                <child>
-                  <object class="GtkImage" id="image_pieces">
-                    <property name="visible">True</property>
-                    <property name="pixbuf">images/tabIcons/pieces.png</property>
-                  </object>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label_pieces">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Pieces</property>
-                  </object>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="position">3</property>
-                <property name="tab_fill">False</property>
-              </packing>
+              <placeholder/>
             </child>
             <child>
               <object class="GtkScrolledWindow" id="scrolledwindow_messages">
@@ -873,6 +778,7 @@
     <property name="pixbuf">images/toolIcons/move_down.png</property>
   </object>
   <object class="GtkAboutDialog" id="aboutDialog">
+    <property name="no_show_all">True</property>
     <property name="border_width">5</property>
     <property name="window_position">center-always</property>
     <property name="default_width">320</property>
@@ -983,5 +889,73 @@ Ygounet Guido</property>
       <action-widget response="5">Cancel_DialogAdd</action-widget>
       <action-widget response="-3">Open_DialogAdd</action-widget>
     </action-widgets>
+  </object>
+  <object class="GtkDialog" id="dialog_delay">
+    <property name="can_focus">True</property>
+    <property name="has_focus">True</property>
+    <property name="is_focus">True</property>
+    <property name="can_default">True</property>
+    <property name="has_default">True</property>
+    <property name="receives_default">True</property>
+    <property name="border_width">5</property>
+    <property name="title" translatable="yes">Espere...</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
+    <property name="window_position">center-always</property>
+    <property name="icon">images/logo.png</property>
+    <property name="type_hint">normal</property>
+    <property name="deletable">False</property>
+    <property name="has_separator">False</property>
+    <child internal-child="vbox">
+      <object class="GtkVBox" id="dialog-vbox3">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child>
+          <object class="GtkHBox" id="hbox1">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkImage" id="image_delay">
+                <property name="visible">True</property>
+                <property name="stock">gtk-execute</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_delay">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">&lt;b&gt;Se esta generando el archivo&lt;/b&gt;</property>
+                <property name="use_markup">True</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child internal-child="action_area">
+          <object class="GtkHButtonBox" id="dialog-action_area3">
+            <property name="visible">True</property>
+            <property name="layout_style">end</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
   </object>
 </interface>

@@ -11,6 +11,8 @@ class RefreshVista: public Thread {
 		Controlador* controlador;
 		bool corriendo;
 		bool pedido;
+		bool showing;
+		bool hid;
 		Mutex mutex;
 		CVariable cVariable;
 	
@@ -19,6 +21,7 @@ class RefreshVista: public Thread {
 		virtual void run();
 		void stop();
 		void refrescar();
+		bool hide();
 };
 
 /****************************************************************************/

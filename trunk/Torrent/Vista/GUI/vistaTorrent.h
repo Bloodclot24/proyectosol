@@ -56,28 +56,27 @@ class VistaTorrent {
 				ModelColumns_transf() {
 			  		add(col_icon);
 			  		add(col_file);
-			  		add(col_piece);
 			  		add(col_size);
 			  		add(col_done);
 			  		add(col_status);	
 			  		add(col_downSpeed);
 			  		add(col_upSpeed);
+			  		add(col_time);
 				}
 		
 		    	Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf> > col_icon;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_file;
-		    	Gtk::TreeModelColumn<int> col_piece;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_size;
 		    	Gtk::TreeModelColumn<int> col_done;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_status;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_downSpeed;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_upSpeed;
+		    	Gtk::TreeModelColumn<Glib::ustring> col_time;
 		};
 		
 		Glib::RefPtr<Gtk::ListStore> treeModel_transf;
 		ModelColumns_transf columns_transf;
 		  
-		Gtk::TreeModel::Row buscarRow_transf(std::string file, int piece);
 		Gtk::TreeModel::Row buscarRow_transf(std::string file);
 		Glib::RefPtr<Gtk::TreeSelection> refTreeSelection;
 		void on_selection_changed();
@@ -186,20 +185,39 @@ class VistaTorrent {
 		ModelColumns_messages columns_messages;
 						
 	public:
+		/**
+		 * Crea una VistaTorrent. 
+		 * 
+		 * @param controlador Controlador del modelo.
+		 */
 		VistaTorrent(Controlador* controlador);
+		
+		/**
+		 * Comienza a correr la interfaz grafica. 
+		 */
 		void correr();
 		
 		/*Panel Descargas y Subidas*/
-		void agregarArchivo(std::string file, int piece, std::string size,
-		                    int done, std::string status, std::string 
-		                    downSpeed, std::string upSpeed);
+		/**
+		 * Agrega un archivo al panel de transferencias.
+		 * 
+		 * @param file Nombre del archivo.
+		 * @param size Tamanio del archivo.
+		 * @param done Porcentaje del archivo completado.
+		 * @param status Estado del archivo.
+		 * @param downSpeed Velocidad de bajada.
+		 * @param upSpeed Velocidad de subida.
+		 */
+		void agregarArchivo(std::string file, std::string size, int done,
+							std::string status, std::string downSpeed, 
+							std::string upSpeed, std::string time);
 		
-		void actualizarDone(std::string file, int piece, int done);
-		void actualizarStatus(std::string file, int piece, std::string status);
-		void actualizarDownSpeed(std::string file, int piece, 
-		                         std::string downSpeed);
-		void actualizarUpSpeed(std::string file, int piece, 
-		                       std::string upSpeed);
+		void actualizarDone(std::string file, int done);
+		void actualizarStatus(std::string file, std::string status);
+		void actualizarDownSpeed(std::string file, std::string downSpeed);
+		void actualizarUpSpeed(std::string file, std::string upSpeed);
+		void actualizarTime(std::string file, std::string time);
+
 		uint32_t obtenerOrden(std::string filename);
 		void start(std::string filename);
 		void pause(std::string filename);

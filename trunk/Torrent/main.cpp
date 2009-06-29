@@ -2,6 +2,7 @@
 #include "Controlador/ControladorShell/controladorShell.h"
 #include "Controlador/ControladorGUI/controladorGUI.h"
 
+/****************************************************************************/
 int main(int argc, char *argv[]) {
 	
 	Controlador* controlador;
@@ -18,4 +19,6 @@ int main(int argc, char *argv[]) {
 	delete controlador;
 	return 0;
 }
+
+/****************************************************************************/
 

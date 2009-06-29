@@ -1,7 +1,9 @@
 #include "client.h"
 
 /****************************************************************************/
-Client::Client(){
+Client::Client(Controlador* controlador) {
+	
+	this->controlador= controlador;
 	this->puertoPorDefecto = PORT_IN;
 	this->cantidadDePeers = PEERS_NUM_WANT;
 	this->socket = new Socket("localhost",PORT_IN);
@@ -14,6 +16,7 @@ bool Client::addTorrent(const char* path, BitField* bitfield){
      Torrent *torrent = new Torrent(path, bitfield);
 	
      if(torrent->isValid()){
+	  torrent.setControlador(controlador);
 	  torrents.push_back(torrent);
 	  return true;
      }
@@ -53,22 +56,22 @@ bool Client::start(const char* filename){
 bool Client::stop(const char* filename) {
 	
 	Torrent* torrent= buscarTorrent(filename);
-	if(torrent && torrent->getEstado() ==  DOWNLOADING) {
-		torrent->stop();
-		return true;
-	} else
-		return false;	
+	if(torrent) {
+		if(torrent->stop())
+			return true;
+	}
+	return false;	
 }
      
 /*--------------------------------------------------------------------------*/
 bool Client::pause(const char* filename) {
 	
 	Torrent* torrent= buscarTorrent(filename);
-	if(torrent && torrent->getEstado() ==  DOWNLOADING) {
-		torrent->pause();
-		return true;
-	} else
-		return false;	
+	if(torrent) {
+		if(torrent->pause())
+			return true;
+	} 
+	return false;	
 }
 
 /*--------------------------------------------------------------------------*/
@@ -80,9 +83,8 @@ bool Client::remove(const char* filename) {
 		torrents.remove(torrent);
 		delete torrent;
 		return true;
-	} else
-		return false;		
-	
+	}
+	return false;		
 }
 
 /*--------------------------------------------------------------------------*/

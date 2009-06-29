@@ -1,7 +1,7 @@
 #include "controlador.h"
 
 /****************************************************************************/
-Controlador::Controlador(): cliente(), listaOrdenada() {
+Controlador::Controlador(): cliente(this), listaOrdenada() {
 
 	FileManager::crearDirectorio(PATH_DOWNLOADS);
 	FileManager::crearDirectorio(PATH_CONFIG);
