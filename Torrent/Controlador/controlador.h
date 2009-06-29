@@ -5,6 +5,8 @@
 #include <fstream>
 #include <vector>
 
+class Controlador;
+
 #include "../Modelo/Client/client.h"
 #include "../Modelo/Client/bitField.h"
 #include "../Modelo/FileManager/fileManager.h"
@@ -22,7 +24,7 @@
 class Controlador {
 	
 	protected:
-		Client cliente;
+		Client* cliente;
 		std::vector<std::string> listaOrdenada; 
 		
 		bool validarExtensionFile(std::string path);
@@ -104,3 +106,5 @@ class Controlador {
 
 /****************************************************************************/
 #endif /*CONTROLADOR_H_*/
+class Controlador;
+ 

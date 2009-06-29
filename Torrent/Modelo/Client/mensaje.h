@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include <iostream>
+#include <stdio.h>
+#include <string.h>
 
 class Mensaje{
 protected:
@@ -17,7 +19,7 @@ protected:
 
      
 public:
-     /* Crea un nuevo mensaje vacío */
+     /* Crea un nuevo mensaje vaco */
      Mensaje(void);
 
 

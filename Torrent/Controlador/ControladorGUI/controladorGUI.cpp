@@ -87,13 +87,13 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 	bool valido= validarExtensionFile(pathTorrent);
 	
 	if(valido) {
-		refrescador->refrescar();
+		//refrescador->refrescar();
 		
 		std::string pathCopia= crearCopiaTorrent(pathTorrent);
 			
-		if(cliente.addTorrent(pathCopia.c_str())) {
-			if(refrescador->hide())
-				vista->cerrarDelayDialog();
+		if(cliente->addTorrent(pathCopia.c_str())) {
+//			if(refrescador->hide())
+//				vista->cerrarDelayDialog();
 				
 			vista->cerrarFileChooser();
 			this->all++;
@@ -127,7 +127,7 @@ void ControladorGUI::addUrlTorrent() {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::removeFile(std::string file) {
 	
-	if(cliente.remove(file.c_str())) { 
+	if(cliente->remove(file.c_str())) { 
 		this->all--;
 		actualizarCantActividades();	
 	} else 
@@ -137,7 +137,7 @@ void ControladorGUI::removeFile(std::string file) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::startFile(std::string file) {
 	
-	if(cliente.start(file.c_str())) {
+	if(cliente->start(file.c_str())) {
 		vista->start(file);
 		this->active++;	
 		this->downloading++;
@@ -150,7 +150,7 @@ void ControladorGUI::startFile(std::string file) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::pauseFile(std::string file) {
 	
-	if(cliente.pause(file.c_str())) {
+	if(cliente->pause(file.c_str())) {
 		vista->pause(file);
 		this->active--;		
 		this->downloading--;
@@ -163,7 +163,7 @@ void ControladorGUI::pauseFile(std::string file) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::stopFile(std::string file) {
 
-	if(cliente.stop(file.c_str())) {
+	if(cliente->stop(file.c_str())) {
 		vista->stop(file);
 		this->active--;		
 		this->downloading--;		
@@ -178,7 +178,7 @@ void ControladorGUI::stopFile(std::string file) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::mostrarTrackers() {
 	
-	const std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
+	const std::list<Torrent*>* listaTorrents= this->cliente->getListaTorrents();
 	std::list<Torrent*>::const_iterator it;
 	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++)
 		mostrarAnnounceUrlTorrent(*it);			
@@ -314,6 +314,8 @@ void ControladorGUI::eliminarTracker(std::string name) {
 /**Message**/
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::agregarMessage(std::string message) {
+	
+	std::cout << "MENSAJE: --------> " << message << std::endl;
 	
 	vista->agregarMessage(message);
 }

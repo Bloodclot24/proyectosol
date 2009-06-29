@@ -15,17 +15,17 @@ class Peer;
 #include "bitField.h"
 #include "threads.h"
 
+/** 
+ * Estados posibles del Torrent
+ */
+enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING, ERROR};
+class Torrent;
 #include "../../Controlador/controlador.h"
 
 #include <iostream>
 #include <limits.h>
 #include <math.h>
 #include <queue>
-
-/** 
- * Estados posibles del Torrent
- */
-enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING, ERROR};
 
 /** 
  * Clase que modela cada Torrent que maneja el cliente.
@@ -40,7 +40,7 @@ private:
      uint32_t sizeInPieces;	/**< Cantidad de piezas total del
 				 * Torrent */
 
-     uint32_t pieceSize;	/**< El tamaño de cada pieza del
+     uint32_t pieceSize;	/**< El tamao de cada pieza del
 				 * Torrent */
 
      std::string announceUrl;	/**< URL del announce del tracker. */
@@ -172,10 +172,10 @@ public:
      int start();
 
      /** 
-      * Devuelve el tamaño en bytes total de todos los archivos
+      * Devuelve el tamao en bytes total de todos los archivos
       * contenidos en el torrent.
       *
-      * @return Tamaño en bytes.
+      * @return Tamao en bytes.
       */
      uint64_t getTotalSize();
 
@@ -254,7 +254,7 @@ public:
       * @param offset El offset dentro de la pieza donde se deben
       * escribir los datos.
       *
-      * @param size El temaño del buffer de datos.
+      * @param size El temao del buffer de datos.
       * 
       * @return Si tuvo exito devuelve 0, en caso contrario devuelve -1.
       */
@@ -270,7 +270,7 @@ public:
       *
       * @param offset El offset dentro de la pieza.
       *
-      * @param size El tamaño del buffer de datos.
+      * @param size El tamao del buffer de datos.
       * 
       * @return Devuelve 0 si tuvo exito o -1 en caso contrario.
       */
@@ -398,8 +398,10 @@ public:
       * @param controlador El controlador.
       */
      void setControlador(Controlador *controlador){ 
-	  this->controlador = controlador;
+	 	this->controlador = controlador;
      }
+      
+     const std::list<std::string>* getAnnounceUrlList() { return &announceUrlList; }
           
      /** 
       * Destruye al Torrent y libera los recursos asociados.
