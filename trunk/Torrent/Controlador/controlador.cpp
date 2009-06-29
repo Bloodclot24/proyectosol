@@ -1,10 +1,11 @@
 #include "controlador.h"
 
 /****************************************************************************/
-Controlador::Controlador(): cliente(this), listaOrdenada() {
+Controlador::Controlador(): listaOrdenada() {
 
 	FileManager::crearDirectorio(PATH_DOWNLOADS);
 	FileManager::crearDirectorio(PATH_CONFIG);
+	this->cliente= new Client(this);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -56,7 +57,7 @@ bool Controlador::guardarConfig() {
 	std::string snumero;
 	uint32_t auxiliar;	
 	std::stringstream cvz;
-	const std::list<Torrent*>* listaTorrents  = this->cliente.getListaTorrents();
+	const std::list<Torrent*>* listaTorrents  = this->cliente->getListaTorrents();
 	std::list<Torrent*>::const_iterator it;
 	config.open(NAME_FILE_CONFIG , std::fstream::out);
 	std::cout << "----------- CREANDO CONFIG -------------" << std::endl;
@@ -209,7 +210,7 @@ bool Controlador::cargarConfig() {
 								
 				bitField->setData(dataBitField);
 				
-				cliente.addTorrent(pathTorrent.c_str(), bitField);
+				cliente->addTorrent(pathTorrent.c_str(), bitField);
 				/**********/
 				
 				resultado = true;
@@ -279,7 +280,7 @@ std::string Controlador::getEstadoTorrent(EstadoTorrent estado) {
 /*--------------------------------------------------------------------------*/
 Torrent* Controlador::obtenerTorrent(std::string filename) {
 	
-	const std::list<Torrent*>* listaTorrents= this->cliente.getListaTorrents();
+	const std::list<Torrent*>* listaTorrents= this->cliente->getListaTorrents();
 	std::list<Torrent*>::const_iterator it;
 	bool encontrado= false;
 	

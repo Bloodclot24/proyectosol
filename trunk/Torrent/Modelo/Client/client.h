@@ -9,14 +9,16 @@
 #include "threadAceptor.h"
 #include "socket.h"
 
+class Client;
+#include "../../Controlador/controlador.h"
+
 #define CLIENT_ID      "-TR010-abcdefghijklm"
 #define PORT_IN        12345
 #define PEERS_NUM_WANT 50
 #define MAX_REQUESTS   10
 
 /* Modelo del cliente torrent */
-class Controlador;
-class Client{
+class Client {
 private:
      std::string nickUsuario;
      std::list<Torrent*> torrents;
@@ -73,3 +75,4 @@ public:
 };
 
 #endif /* CLIENT_H_INCLUDED */
+class Client;

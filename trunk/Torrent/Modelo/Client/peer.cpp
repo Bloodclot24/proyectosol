@@ -120,7 +120,7 @@ void Peer::sendRequest(DownloadSlot* ds){
      mensaje->copiarDatos(msg.c_str(), msg.length());
      requests.push(ds);
      emisor->enviarMensaje(mensaje);
-     std::cout << "Request de: " <<  ds->getPieceIndex() << " tamaño: " \
+     std::cout << "Request de: " <<  ds->getPieceIndex() << " tamao: " \
 	       << ds->getOffset() << " offset: " << ds->getLength()	\
 	       << std::endl;
 }
@@ -264,7 +264,7 @@ void Peer::run(){
 		    break;
 	       case BITFIELD:
 		    if(respuesta->length == torrent->getBitField()->getBytesLength()){
-			 int i;
+			 uint32_t i;
 			 for(i=0;i < respuesta->length && datos->isValid(); i++)
 			      bitField->setBlock(datos->popFront(),i);     
 			 if(i < respuesta->length)

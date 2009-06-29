@@ -135,7 +135,7 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 		    
 		    //Si alguno de los archivos y ya existia, verifico si hay datos validos
 		    if(check){
-			 for(int i=0;i<sizeInPieces;i++){
+			 for(uint32_t i=0;i<sizeInPieces;i++){
 			      if(validarPieza(i)==1)
 				   bitField->setField(i,1);
 			 }
@@ -197,10 +197,11 @@ int Torrent::announce(){
      /* conecto el socket */
      socket->conectar();
 
+	 
      if(!socket->esValido()){
-	  controlador->agregarMessage("Error al conectar: "    \
-				      + socket->obtenerError() \
-				      + std::endl);
+	  	std::string mensaje("Error al conectar: ");
+	 	mensaje+= socket->obtenerError();
+	  controlador->agregarMessage(mensaje);
 	  delete socket;
 	  rotarTrackers();
 	  return -1;
@@ -283,9 +284,7 @@ int Torrent::announce(){
      if(list == NULL ||	(primero = list->front()) == NULL	\
 	|| primero->typeNode != BE_DICT){
 
-	  controlador.agregarMessage("ERROR: No se pudo decodificar"+	\
-				     "la respuesta del tracker."+	\
-				     std::endl);
+	  controlador->agregarMessage("ERROR: No se pudo decodificar la respuesta del tracker");
 	  rotarTrackers();
 	  return -1;
      }
@@ -580,7 +579,7 @@ uint32_t Torrent::rarestFirst()
 
      DownloadSlot *ds=NULL;
 
-     for(int i=0;i<piezasEnProceso.size(); i++){
+     for(uint32_t i=0;i<piezasEnProceso.size(); i++){
 	  ds = piezasEnProceso.front();
 	  piezasEnProceso.pop();
 	  vectorPiezas[ds->getPieceIndex()] = 0;
@@ -663,9 +662,9 @@ void Torrent::run(){
      ProtocoloBitTorrent proto;
      
      while(announce() != 0);
-//       Peer *peer = new						\
-//  	  Peer("localhost",						\
-//  	       6881,							\
+//       Peer *peer = new
+//  	  Peer("localhost",						
+//  	       6881,							
 //  	       this);
 //     
 //       agregarPeer(peer);
@@ -735,7 +734,7 @@ void Torrent::run(){
 		    mutexBitField.lock();
 		    bitField->setField(index,true);
 		    mutexBitField.unlock();
-		    if(index != -1){
+		    if(index != (uint32_t)-1){
 			 int contador = DownloadSlot::agregarSlots(piezasEnProceso, index, pieceSize, REQUEST_SIZE_DEFAULT);
 			 piezasAVerificar[index] = contador;
 		    }
@@ -752,7 +751,7 @@ void Torrent::run(){
 		    //@todo: no hay mas piezas que podamos pedir
 		    //hay que esperar
 		    std::cout << "Durmiendo un ratito\n";
-		    dormit = true;
+		    dormir = true;
 	       }
 	  }
      }

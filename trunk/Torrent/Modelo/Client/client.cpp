@@ -16,7 +16,7 @@ bool Client::addTorrent(const char* path, BitField* bitfield){
      Torrent *torrent = new Torrent(path, bitfield);
 	
      if(torrent->isValid()){
-	  torrent.setControlador(controlador);
+	  torrent->setControlador(controlador);
 	  torrents.push_back(torrent);
 	  return true;
      }
