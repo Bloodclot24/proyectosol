@@ -684,13 +684,13 @@ void Torrent::run(){
      //Logica. Basicamente pido datos.
      ProtocoloBitTorrent proto;
      
-//     while(announce() != 0);
-       Peer *peer = new						\
-  	  Peer("localhost",						\
-  	       6881,							\
-  	       this);
-     
-       agregarPeer(peer);
+     while(announce() != 0);
+//       Peer *peer = new						\
+//  	  Peer("localhost",						\
+//  	       6881,							\
+//  	       this);
+//     
+//       agregarPeer(peer);
 
      mutexPeers.lock();
      std::list<Peer*>::iterator it;
@@ -815,7 +815,6 @@ void Torrent::peerTransferFinished(Peer* peer){
 void Torrent::peerTransferCanceled(Peer* peer){
      Lock lock(downloadMutex);
      partsRequested--;
-
 }
 
 /****************************************************************************/
@@ -835,26 +834,36 @@ Torrent::~Torrent(){
 
 /****************************************************************************/
 int Torrent::stop(){
-     Lock lock(mutexPeers);
-     //TODO: ver tema mutex estado
-     this->estado= STOPPED;
+
+	Lock lock(mutexPeers);
+	Lock lock2(mutexEstado);
      
-     while(listaPeers.size()>0){
-	  Peer* peer = listaPeers.front();
-	  listaPeers.pop_front();
-	  peer->finish();
-	  delete peer;
+	if(this->estado != STOPPED) {
+		this->estado= STOPPED;
+	     
+		while(listaPeers.size()>0){
+			Peer* peer= listaPeers.front();
+		  	listaPeers.pop_front();
+		  	peer->finish();
+		  	delete peer;
+		  	return 1;	
+		}
      }
      
-     return 1;
+     return 0;
 }
 
 /****************************************************************************/
 int Torrent::pause(){
+
+	Lock lock(mutexEstado);
 	
-	//TODO: ver tema mutex
-	this->estado= PAUSED;
-	return 1; 
+	if(this->estado == DOWNLOADING) {
+		this->estado= PAUSED;
+		return 1; 
+	}
+	
+	return 0;
 }
 
 /****************************************************************************/

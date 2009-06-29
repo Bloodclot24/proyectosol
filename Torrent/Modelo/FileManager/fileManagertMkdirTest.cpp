@@ -1,7 +1,7 @@
 #include "fileManager.h"
 
 /****************************************************************************/
-/*PRUEBA FILEMANAGER*/
+/*PRUEBA UNITARIA FILEMANAGER*/
 /****************************************************************************/
 int main(int argc, char *argv[]) {
 	
