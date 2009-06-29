@@ -1,7 +1,5 @@
 #include "HttpResponse.h"
 
-/* dado un string con la respuesta, lo parsea obteniendo los
- * datos que nos interesan */
 /****************************************************************************/
 HttpResponse::HttpResponse(std::string respuesta):response(respuesta){
      offsetVersion = 0;
@@ -19,8 +17,7 @@ HttpResponse::HttpResponse(std::string respuesta):response(respuesta){
 
 }
 
-/* Devuelve los datos que nos interesan */
-/****************************************************************************/
+/*--------------------------------------------------------------------------*/
 std::string HttpResponse::getContent(){
      if(longitudContenido == -1)
 	  longitudContenido = response.length()-offsetContenido;
@@ -28,13 +25,12 @@ std::string HttpResponse::getContent(){
      return str;
 }
 
-/****************************************************************************/
+/*--------------------------------------------------------------------------*/
 int HttpResponse::getContentLength(){
      return longitudContenido;
 }
 
-/* Dado un string codificado en URL, decodifica los datos */
-/****************************************************************************/
+/*--------------------------------------------------------------------------*/
 std::string HttpResponse::UrlDecode(std::string datos){
      std::string decodificado;
      unsigned char byte;
@@ -56,3 +52,5 @@ std::string HttpResponse::UrlDecode(std::string datos){
      }
      return decodificado;
 }
+
+/****************************************************************************/
