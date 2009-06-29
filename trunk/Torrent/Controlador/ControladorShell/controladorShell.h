@@ -6,7 +6,7 @@
 #include "../../Vista/Shell/shell.h"
 
 /****************************************************************************/
-/*
+/**
  * El controlador del shell de la aplicacion Sun Torrent.
  */
 class ControladorShell: public Controlador {

@@ -21,7 +21,7 @@ class Controlador;
 #define NAME_FILE_CONFIG "Downloads/Config/config.sun"
 
 /****************************************************************************/
-/*
+/**
  * El controlador generico de la aplicacion Sun Torrent.
  */
 class Controlador {

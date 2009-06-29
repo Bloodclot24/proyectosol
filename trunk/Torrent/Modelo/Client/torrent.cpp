@@ -126,8 +126,7 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 
 	  if(valido){
 			
-	       if(bitField == NULL){
-		    
+	       if(bitfieldGuardado == NULL){
 		    pieceSize = (*(archivos->begin()))->getPieceLength();
 		    sizeInPieces = ceil(getTotalSize()/pieceSize);
 		    
@@ -140,7 +139,10 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 				   bitField->setField(i,1);
 			 }
 		    }
-	       }   
+	       }
+	       else{
+		    bitField = bitfieldGuardado;
+	       }
 	  }
      }
      else{
@@ -354,12 +356,14 @@ int Torrent::announce(){
 /****************************************************************************/
 int Torrent::start(){
 
-     estado = DOWNLOADING;
+     if(estado != DOWNLOADING){
+	  estado = DOWNLOADING;
   
-     /* Comienzo el proceso */
-     Thread::start();	  
-
-     return 1;
+	  /* Comienzo el proceso */
+	  Thread::start();	  
+	  return 1;
+     }
+     return 0;
 }
 
 /****************************************************************************/
@@ -662,31 +666,37 @@ void Torrent::run(){
      ProtocoloBitTorrent proto;
      
 //     while(announce() != 0);
-       Peer *peer = new
+     Peer *peer = new
   	  Peer("localhost",						
   	       6881,							
   	       this);
      
-       agregarPeer(peer);
-
+     agregarPeer(peer);
+     
      mutexPeers.lock();
      std::list<Peer*>::iterator it;
      int i;
      for(i=0,it=listaPeers.begin(); it!=listaPeers.end() && i<30; it++, i++){
-  	  (*it)->start(idHash);
+	  (*it)->start(idHash);
      }
      
      bool dormir = false;
-     while(getEstado() == DOWNLOADING){
+     mutexEstado.lock();
+     while(estado == DOWNLOADING){
 	  if(peersEnEspera.size()<1 || dormir){
 	       mutexPeers.unlock();
 	       requestMutex.lock();
 	       dormir=false;
-	       requestCondition.wait();
+	       if(estado == DOWNLOADING){
+		    mutexEstado.unlock();
+		    requestCondition.wait();
+		    mutexEstado.lock();
+	       }
 	       requestMutex.unlock();
 	       mutexPeers.lock();
 	  }
 	  else{
+	       mutexEstado.unlock();
 	       std::cout << "Puedo realizar un request. (" << peersEnEspera.size()<<")\n";
 	       Lock lock(downloadMutex);
 	       
@@ -753,8 +763,10 @@ void Torrent::run(){
 		    std::cout << "Durmiendo un ratito\n";
 		    dormir = true;
 	       }
+	       mutexEstado.lock();
 	  }
      }
+     mutexEstado.unlock();
      mutexPeers.unlock();
 }
 
@@ -874,7 +886,7 @@ Torrent::~Torrent(){
 
 /****************************************************************************/
 int Torrent::stop(){
-     Lock lock2(mutexEstado);
+     mutexEstado.lock();
      
      if(this->estado != STOPPED) {
 	  this->estado= STOPPED;
@@ -885,10 +897,19 @@ int Torrent::stop(){
 	       peer->finish();
 	       delete peer;
 	  }
+	  while(peersEnEspera.size() > 0){
+	       peersEnEspera.popFront();
+	  }
+	       
+	  partsRequested = 0;
+	  
+	  requestMutex.lock();
 	  requestCondition.signal();
+	  requestMutex.unlock();
+	  mutexEstado.unlock();
 	  return 1;
      }
-     
+     mutexEstado.unlock();
      return 0;
 }
 

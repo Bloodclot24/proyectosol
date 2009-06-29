@@ -5,7 +5,7 @@
 #include "../../Vista/GUI/vistaTorrent.h"
 
 /****************************************************************************/
-/*
+/**
  * El controlador de la vista de la aplicacion Sun Torrent.
  */
 class ControladorGUI: public Controlador {
