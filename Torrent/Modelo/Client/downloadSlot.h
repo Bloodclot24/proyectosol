@@ -15,6 +15,7 @@ private:
      uint32_t offset;
      uint32_t length;
      int errorCount;
+     Peer* peer;
 
 public:
      /** 
@@ -73,6 +74,24 @@ public:
      }
 
      /** 
+      * Asocia un Peer a este DownloadSlot.
+      * 
+      * @param peer El peer a asociar.
+      */
+     void setPeer(Peer *peer){
+	  this->peer = peer;
+     }
+     
+     /** 
+      * Devuelve el Peer asociado al DownloadSlot.
+      * 
+      * @return El Peer asociado o NULL si no tiene ninguno.
+      */
+     Peer* getPeer(){
+	  return peer;
+     }
+
+     /** 
       * Crea los DownloadSlot necesarios para cubrir todos los bloques
       * del tamaño dado en la pieza indicada por index y los agrega en
       * una cola.
@@ -81,9 +100,12 @@ public:
       * @param index El numero de la pieza.
       * @param pieceSize El tamaño total de la pieza.
       * @param partSize El tamaño de los bloques a crear.
+      * 
+      * @return El numero de bloques que se agregaron a la cola.
       */
-     static void agregarSlots(std::queue<DownloadSlot*> &cola, uint32_t index, uint32_t pieceSize, uint32_t partSize){
+     static int agregarSlots(std::queue<DownloadSlot*> &cola, uint32_t index, uint32_t pieceSize, uint32_t partSize){
 	  DownloadSlot *ds;
+	  int contador = 0;
 	  for(int i=0;i<pieceSize;){
 	       uint32_t length;
 	       if(pieceSize-i >= partSize)
@@ -94,8 +116,9 @@ public:
 	       i+=length;
 	       
 	       cola.push(ds);
+	       contador++;
 	  }
-
+	  return contador;
      }
 };
 
