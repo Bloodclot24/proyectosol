@@ -199,8 +199,8 @@ int Torrent::announce(){
 
 	 
      if(!socket->esValido()){
-	  	std::string mensaje("Error al conectar: ");
-	 	mensaje+= socket->obtenerError();
+	  std::string mensaje("Error al conectar: ");
+	  mensaje+= socket->obtenerError();
 	  controlador->agregarMessage(mensaje);
 	  delete socket;
 	  rotarTrackers();
@@ -661,13 +661,13 @@ void Torrent::run(){
      //Logica. Basicamente pido datos.
      ProtocoloBitTorrent proto;
      
-     while(announce() != 0);
-//       Peer *peer = new
-//  	  Peer("localhost",						
-//  	       6881,							
-//  	       this);
-//     
-//       agregarPeer(peer);
+//     while(announce() != 0);
+       Peer *peer = new
+  	  Peer("localhost",						
+  	       6881,							
+  	       this);
+     
+       agregarPeer(peer);
 
      mutexPeers.lock();
      std::list<Peer*>::iterator it;
@@ -755,6 +755,7 @@ void Torrent::run(){
 	       }
 	  }
      }
+     mutexPeers.unlock();
 }
 
 /****************************************************************************/
@@ -873,20 +874,19 @@ Torrent::~Torrent(){
 
 /****************************************************************************/
 int Torrent::stop(){
-
-	Lock lock(mutexPeers);
-	Lock lock2(mutexEstado);
+     Lock lock2(mutexEstado);
      
-	if(this->estado != STOPPED) {
-		this->estado= STOPPED;
-	     
-		while(listaPeers.size()>0){
-			Peer* peer= listaPeers.front();
-		  	listaPeers.pop_front();
-		  	peer->finish();
-		  	delete peer;
-		  	return 1;	
-		}
+     if(this->estado != STOPPED) {
+	  this->estado= STOPPED;
+	  
+	  while(listaPeers.size()>0){
+	       Peer* peer= listaPeers.front();
+	       listaPeers.pop_front();
+	       peer->finish();
+	       delete peer;
+	  }
+	  requestCondition.signal();
+	  return 1;
      }
      
      return 0;

@@ -306,12 +306,14 @@ void Peer::run(){
 			 ". Que corresponde al indice: " << respuesta->index << std::endl;
 		    torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, respuesta->length);
 		    
+		    requests.hold();
 		    int size = requests.size();
 		    DownloadSlot *ds = NULL;
 		    for(int i=0;i<size;i++){
 			 ds = requests.popFront();
-			 if(respuesta->index == ds->getPieceIndex() &&	\
-			    respuesta->begin == ds->getOffset() &&	\
+			 if(requests.isValid() && ds != NULL &&		\
+			    respuesta->index == ds->getPieceIndex() &&	\
+			    respuesta->begin == ds->getOffset()     &&	\
 			    respuesta->length == ds->getLength()){
 			      break;
 			 }
@@ -320,8 +322,10 @@ void Peer::run(){
 			      ds = NULL;
 			 }
 		    }
-		    
-		    torrent->peerTransferFinished(this,ds);
+		    requests.release();
+		    if(ds != NULL)
+			 torrent->peerTransferFinished(this,ds);
+		    else stop();
 		    break;
 	       }
 	       case CANCEL:
@@ -361,3 +365,4 @@ void Peer::run(){
 void Peer::finish(){
      Thread::finish();
 }
+
