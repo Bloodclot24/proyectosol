@@ -16,6 +16,9 @@ Peer::Peer(const std::string& host, int puerto , Torrent* torrent){
      this->bitField = new BitField(ceil(torrent->getBitField()->getLength()));
      conectado = false;
      this->entrante = false;
+     downloaded = 0;
+     uploaded = 0;
+     corrupted = 0;
 }
 
 /****************************************************************************/
@@ -31,7 +34,9 @@ Peer::Peer(Socket* socket){
      this->torrent = NULL;
      this->bitField = NULL;
      this->entrante = true;
-
+     downloaded = 0;
+     uploaded = 0;
+     corrupted = 0;
 }
 
 /****************************************************************************/
@@ -292,6 +297,7 @@ void Peer::run(){
 			 mensaje = new Mensaje();
 			 mensaje->asignarDatos(bloque, respuesta->length);
 			 emisor->enviarMensaje(mensaje);
+			 uploaded += respuesta->length;
 		    }
 		    break;
 	       case PIECE:
@@ -323,6 +329,7 @@ void Peer::run(){
 			 }
 		    }
 		    requests.release();
+		    downloaded += respuesta->length;
 		    if(ds != NULL)
 			 torrent->peerTransferFinished(this,ds);
 		    else stop();

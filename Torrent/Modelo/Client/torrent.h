@@ -120,7 +120,11 @@ private:
 
      Mutex downloadMutex;
 
-     Controlador *controlador;
+     Controlador *controlador;	/**< El controlador mediante el cual
+				 * me comunico con la vista. */
+
+     uint32_t piezasVerificadas; /**< Cantidad de piezas verificadas
+				  * y validas. */
 
 private:
 
@@ -402,7 +406,28 @@ public:
      }
       
      const std::list<std::string>* getAnnounceUrlList() { return &announceUrlList; }
-          
+     
+     /** 
+      * Devuelve el porcentaje bajado del total del Torrent.
+      *
+      * @return Elporcentaje bajado.
+      */
+     double getPorcentaje();
+ 
+     /** 
+      * Devuelve la velocidad de subida en bytes/s.
+      * 
+      * @return La velocidad de subida.
+      */
+     uint32_t getVelocidadSubida();
+
+     /** 
+      * Devuelve la velocidad de bajada en bytes/s.
+      * 
+      * @return La velocidad de bajada.
+      */
+     uint32_t getVelocidadBajada();
+     
      /** 
       * Destruye al Torrent y libera los recursos asociados.
       * Llama a stop().

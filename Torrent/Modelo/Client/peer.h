@@ -57,6 +57,13 @@ private:
 				     * cuando hacemos un
 				     * request. */
 
+     uint64_t downloaded;	/**< Cantidad de bytes que bajo este
+				 * peer */
+     uint64_t uploaded;		/**< Cantidad de bytes que subio el
+				 * peer. */
+
+     uint64_t corrupted;	/**< Cantidad de piezas corruptas que
+				 * nos envio */
 protected:
      /** 
       * Metodo principal de la clase. Toda la logica se desarrolla aca
