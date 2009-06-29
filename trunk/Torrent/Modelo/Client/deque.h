@@ -95,7 +95,7 @@ public:
      }
 
      /** 
-      * Devuelve el tamaño de la cola.
+      * Devuelve el tamaÃ±o de la cola.
       * 
       * @return la cantidad de objetos en espera.
       */

@@ -5,9 +5,7 @@
 #include "mensaje.h"
 
 /****************************************************************************/
-Peer::Peer(const std::string& host, int puerto , Torrent* torrent){// 	\
-//      socket(host, puerto),emisor(&socket),receptor(&socket, false){
-
+Peer::Peer(const std::string& host, int puerto , Torrent* torrent){
      port = puerto;
      name = host;
      am_choking = 1;
@@ -22,8 +20,7 @@ Peer::Peer(const std::string& host, int puerto , Torrent* torrent){// 	\
 
 /****************************************************************************/
 Peer::Peer(Socket* socket){
-	 
-	 port = PORT_IN;
+     port = PORT_IN;
      name = "";
      am_choking = 1;
      am_interested = 0;
@@ -298,27 +295,35 @@ void Peer::run(){
 		    }
 		    break;
 	       case PIECE:
-		    if(torrent->getBitField()->getField(respuesta->index) == 0){
-			 //OK, me envian datos que no tenia. TODO:
-			 //verificar que el offset se corresponda con datos
-			 //que no tenemos
-			 std::string bloque;
-			 while(bloque.length() < respuesta->length && datos->isValid()){
-			      bloque += datos->popFront();
+	       {
+		    //OK, me envian datos. 
+		    std::string bloque;
+		    while(bloque.length() < respuesta->length && datos->isValid()){
+			 bloque += datos->popFront();
+		    }
+		    std::cout << "Recibo el piece" << respuesta->index << " de tamanio " << respuesta->length << std::endl;
+		    std::cout << "Se escribe en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
+			 ". Que corresponde al indice: " << respuesta->index << std::endl;
+		    torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, respuesta->length);
+		    
+		    int size = requests.size();
+		    DownloadSlot *ds = NULL;
+		    for(int i=0;i<size;i++){
+			 ds = requests.popFront();
+			 if(respuesta->index == ds->getPieceIndex() &&	\
+			    respuesta->begin == ds->getOffset() &&	\
+			    respuesta->length == ds->getLength()){
+			      break;
 			 }
-			 std::cout << "Recibo el piece" << respuesta->index << " de tamanio " << respuesta->length << std::endl;
-			 std::cout << "Se escribe en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
-			      ". Que corresponde al indice: " << respuesta->index << std::endl;
-			 torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, respuesta->length);
-
-			 if(peer_choking == 0)
-			      torrent->peerUnchoked(this);
-			 torrent->peerTransferFinished(this);
+			 else{
+			      requests.push(ds);
+			      ds = NULL;
+			 }
 		    }
-		    else{
-			 stop();
-		    }
+		    
+		    torrent->peerTransferFinished(this,ds);
 		    break;
+	       }
 	       case CANCEL:
 	       
 		    break;

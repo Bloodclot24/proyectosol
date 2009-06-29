@@ -96,9 +96,6 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 		    archivos = TorrentFile::Parse(elemento);
 		    int status=0;
 
-		    std::cout << "Verificando estado de los archivos:\n";
-
-		    std::cout << "Lista: "<< archivos << "\n";
 		    std::list<TorrentFile*>::iterator it=archivos->begin();
 		    if(archivos->size() > 1)
 			 it++;
@@ -106,19 +103,16 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 			 TorrentFile *file = *it;
 			 
 			 FileManager * manager= file->getManager();
-			 std::cout << "Archivo " << file << " , manager" << manager << "\n";
 			 status=manager->getStatus();
 			 if(status == -1){
 			      valido = false;
-			      std::cout << "este archivo molesta\n";
+			      //este archivo no se pudo crear.
 			 }
 			 else if(status == 1){
 			      check=1;
-			      std::cout << "este archivo ya existia\n";
+			      //el archivo ya existia.
 			 }
-			 else{
-			      std::cout << "este archivo NO existia\n";
-			 }
+			 //else -> el archivo no existia.
 		    }
 
 	       }
@@ -132,25 +126,22 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 
 	  if(valido){
 			
-			if(!bitField) {
-			
-				pieceSize = (*(archivos->begin()))->getPieceLength();
-		       	sizeInPieces = ceil(getTotalSize()/pieceSize);
-		       
-		       	std::cout << "PieceSize" << pieceSize << " SizeInPieces "<< sizeInPieces << "\n";
-	
-		       	this->bitField = new BitField(sizeInPieces);
-		       
-		       	//Si alguno de los archivos y ya existia, verifico si hay datos validos
-		       	if(check){
-			    	std::cout << "Los archivos ya existian, verificando ........\n" ;
-			    	for(int i=0;i<sizeInPieces;i++){
-				 		if(validarPieza(i)==1)
-				      		bitField->setField(i,1);
-			    	}
-		       	}
-			}   
-	  	}
+	       if(bitField == NULL){
+		    
+		    pieceSize = (*(archivos->begin()))->getPieceLength();
+		    sizeInPieces = ceil(getTotalSize()/pieceSize);
+		    
+		    this->bitField = new BitField(sizeInPieces);
+		    
+		    //Si alguno de los archivos y ya existia, verifico si hay datos validos
+		    if(check){
+			 for(int i=0;i<sizeInPieces;i++){
+			      if(validarPieza(i)==1)
+				   bitField->setField(i,1);
+			 }
+		    }
+	       }   
+	  }
      }
      else{
 	  valido = false;
@@ -207,8 +198,9 @@ int Torrent::announce(){
      socket->conectar();
 
      if(!socket->esValido()){
-	  std::cout << "Error al conectar: " <<		\
-	       socket->obtenerError() << std::endl;
+	  controlador->agregarMessage("Error al conectar: "    \
+				      + socket->obtenerError() \
+				      + std::endl);
 	  delete socket;
 	  rotarTrackers();
 	  return -1;
@@ -218,8 +210,7 @@ int Torrent::announce(){
      emisor = new ThreadEmisor(socket);
 
      if(receptor == NULL || emisor == NULL){
-	  std::cout << "Error al crear los threads receptor/emisor."	\
-		    << std::endl;
+	  //Error al crear los threads
 	  socket->cerrar();
 	  delete socket;
      }
@@ -229,9 +220,6 @@ int Torrent::announce(){
 
      /* Agrego algunos parametros al request */
      /* Hash que identifica al torrent */
-
-     std::cout << "Hash sin URLENCODE " << idHash << "\n";
-     std::cout << "Hash con URLENCODE " << HttpRequest::UrlEncode(idHash) << "\n";
 
      req.addParam("info_hash", HttpRequest::UrlEncode(idHash));
      
@@ -263,8 +251,6 @@ int Torrent::announce(){
      /* Creo un mensaje con el request */
      Mensaje *mensaje = new Mensaje;
 
-     std::cout << "REQUEST (PARA VERO)\n: "<< req.getRequest()->c_str()<< "\n";
-
      mensaje->copiarDatos(req.getRequest()->c_str(),	\
 			  req.getRequest()->length());
 
@@ -272,7 +258,6 @@ int Torrent::announce(){
      emisor->enviarMensaje(mensaje);
 
      emisor->esperarEmision();
-     sleep(2);
      
      /* recibo la respuesta */
      HttpResponse *resp = receptor->getResponse();
@@ -298,9 +283,9 @@ int Torrent::announce(){
      if(list == NULL ||	(primero = list->front()) == NULL	\
 	|| primero->typeNode != BE_DICT){
 
-	  std::cout <<							\
-	       "ERROR: No se pudo decodificar la respuesta del tracker." \
-		    << std::endl;
+	  controlador.agregarMessage("ERROR: No se pudo decodificar"+	\
+				     "la respuesta del tracker."+	\
+				     std::endl);
 	  rotarTrackers();
 	  return -1;
      }
@@ -346,13 +331,6 @@ int Torrent::announce(){
 	  std::cout << "INFO: Lista de PEERS -> " << std::endl;
 	  
 	  for(size_t i=0;i<elemento->beStr.length();i+=6){
-	       std::cout << ((int)elemento->beStr[i] & 0xff) << "."	\
-			 << ((int)elemento->beStr[i+1] & 0xff) << "."	\
-			 << ((int)elemento->beStr[i+2] & 0xff) << "."	\
-			 << ((int)elemento->beStr[i+3] & 0xff) << ":"	\
-			 << ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)) \
-			 << std::endl;
-	       
 	       std::string snumero;
 	       std::stringstream cvz;
 	       cvz << ((int)elemento->beStr[i+0] & 0xff) << "."		\
@@ -363,11 +341,11 @@ int Torrent::announce(){
 	       
 	       //creo el nuevo peer con los datos obtenidos
 	      
-	       Peer *peer = new					\
+	       Peer *peer = new						\
 		    Peer(snumero,					\
 			 ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)), \
 			 this);
-	      
+	       
 	       agregarPeer(peer);
 	  }
      }
@@ -519,13 +497,11 @@ int Torrent::readData(char *data, uint32_t index, uint32_t offset, uint32_t size
      while(restante > 0){
 	  if(comienzo+restante <= (*it)->getSize()){
 	       // Cae toda la parte dentro del archivo
-	       std::cout << "	       // Cae toda la parte dentro del archivo\n";
 	       (*it)->getManager()->obtenerPieza(data, comienzo, restante);
 	       restante = 0;
 	  }
 	  else{
 	       // Cae una parte adentro y otra parte en el siguiente archivo
-	       std::cout << "// Cae una parte adentro y otra parte en el siguiente archivo\n"  ;
 	       uint64_t aux=(*it)->getSize()-comienzo;
 	       (*it)->getManager()->obtenerPieza(data, comienzo, aux);
 	       data += aux;
@@ -546,7 +522,6 @@ uint64_t Torrent::getTotalSize(){
      uint64_t acumulador=0;
 
      for(it=archivos->begin();it!=archivos->end(); it++){
-	  std::cout << "Tamanio = " << (*it)->getSize() << "\n";
 	  acumulador += (*it)->getSize();
      }
      return acumulador;
@@ -616,7 +591,8 @@ uint32_t Torrent::rarestFirst()
      uint32_t posMenor = -1;
      //Busco la pieza que esta menor cantidad de veces,
      //es decir la pieza mas rara.
-     for(uint32_t i=1;i<tamanio;i++){
+     mutexBitField.lock();
+     for(uint32_t i=0;i<tamanio;i++){
 	  
 	  if(vectorPiezas[i] > 0 && menor > vectorPiezas[i] && 
 	     this->bitField->getField(i) == 0){
@@ -625,6 +601,7 @@ uint32_t Torrent::rarestFirst()
 	       posMenor = i;
 	  }
      }
+     mutexBitField.unlock();
 
      return posMenor;		
 }
@@ -663,20 +640,21 @@ int Torrent::validarPieza(uint32_t index){
 	  delete[] buffer;
 	  return -2;
      }
+     int returnValue=0;
      
      Sha1 hasher;
      std::string temp(buffer,pieceSize);
      std::string hash = hasher.ejecutarSha1(temp);
      std::string hashes = (*archivos->begin())->getHashes();
      if(hashes.compare(index*20,20,hash) == 0){
-	  std::cout << "La pieza es "<< index << " valida.\n";
-	  bitField->setField(index,1);
+	  returnValue = 1;
      }
-     else
-	  std::cout << "La pieza es "<< index << " invalida.\n";
-
+     else{
+	  returnValue = 0;
+     }
+     
      delete[] buffer;
-     return 0;     
+     return returnValue;     
 }
 
 /****************************************************************************/
@@ -699,10 +677,12 @@ void Torrent::run(){
   	  (*it)->start(idHash);
      }
      
+     bool dormir = false;
      while(getEstado() == DOWNLOADING){
-	  if(peersEnEspera.size()<1){
+	  if(peersEnEspera.size()<1 || dormir){
 	       mutexPeers.unlock();
 	       requestMutex.lock();
+	       dormir=false;
 	       requestCondition.wait();
 	       requestMutex.unlock();
 	       mutexPeers.lock();
@@ -736,6 +716,7 @@ void Torrent::run(){
 			 }
 			 if(peer != NULL){
 			      //se la asigno para enviar el request
+			      ds->setPeer(peer);
 			      peer->sendRequest(ds);
 			      size--;
 			      partsRequested++;
@@ -746,19 +727,32 @@ void Torrent::run(){
 			 }
 		    }
 	       }
+	       mutexPeers.unlock();
 	       // Si no estoy realizando tantos requests como puedo
 	       if(partsRequested < MAX_REQUESTS){
 		    //pido otra pieza y agrego los download slots
 		    uint32_t index = rarestFirst();
-		    if(index != -1)
-			 DownloadSlot::agregarSlots(piezasEnProceso, index, pieceSize, REQUEST_SIZE_DEFAULT);
+		    mutexBitField.lock();
+		    bitField->setField(index,true);
+		    mutexBitField.unlock();
+		    if(index != -1){
+			 int contador = DownloadSlot::agregarSlots(piezasEnProceso, index, pieceSize, REQUEST_SIZE_DEFAULT);
+			 piezasAVerificar[index] = contador;
+		    }
 		    else{
 			 //@todo: no hay mas piezas que podamos pedir
 			 //hay que esperar
-			 sleep(10);
 			 std::cout << "Durmiendo un ratito\n";
+			 dormir = true;
+
 
 		    }
+	       }
+	       else{
+		    //@todo: no hay mas piezas que podamos pedir
+		    //hay que esperar
+		    std::cout << "Durmiendo un ratito\n";
+		    dormit = true;
 	       }
 	  }
      }
@@ -767,8 +761,8 @@ void Torrent::run(){
 /****************************************************************************/
 void Torrent::anunciarPieza(uint32_t index){
      std::list<Peer*>::iterator it;
-     Lock lock(mutexPeers);
-
+//     Lock lock(mutexPeers);
+//
      for(it=listaPeers.begin(); it != listaPeers.end(); it++){
 	  if((*it)->conectado)
 	       (*it)->have(index);
@@ -799,20 +793,66 @@ void Torrent::peerChoked(Peer* peer){
 /****************************************************************************/
 void Torrent::peerUnchoked(Peer* peer){
      Lock lock(requestMutex);
-     peersEnEspera.push(peer);
+     bool encontrado = false;
+     //Antes de agregarlo a la lista de peers, me aseguro que no este
+     //repetido
+
+     for(size_t i = 0 ; i<peersEnEspera.size()&&!encontrado;i++){
+	  Peer *aux = peersEnEspera.popFront();
+	  if(aux != peer)
+	       peersEnEspera.push(aux);
+	  else
+	       encontrado = true;
+     }
+     if(!encontrado)
+	  peersEnEspera.push(peer);
+
      std::cout << "Seal de unchoke ("<< peersEnEspera.size() <<") \n";
      requestCondition.signal();     
 }
 
 /****************************************************************************/
-void Torrent::peerTransferFinished(Peer* peer){
+void Torrent::peerTransferFinished(Peer* peer, DownloadSlot* ds){
+     //OJO, el orden del mutex es importante
+     mutexPeers.lock();
      Lock lock(downloadMutex);
      partsRequested--;
+     //Antes de agregarlo a la lista de peers, me aseguro que no este
+     //repetido
+     bool encontrado = false;
+     for(size_t i = 0 ; i<peersEnEspera.size()&&!encontrado;i++){
+	  Peer *aux = peersEnEspera.popFront();
+	  if(aux != peer)
+	       peersEnEspera.push(aux);
+	  else
+	       encontrado = true;
+     }
+     if(!encontrado)
+	  peersEnEspera.push(peer);
 
+     mutexBitField.lock();
+
+     piezasAVerificar[ds->getPieceIndex()] -= 1;
+     if(piezasAVerificar[ds->getPieceIndex()] == 0){
+	  std::cout << "\nCERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRO\n";
+	  bitField->setField(ds->getPieceIndex(),true);
+	  if(validarPieza(ds->getPieceIndex())){
+	       anunciarPieza(ds->getPieceIndex());
+	  }
+	  else{
+	       bitField->setField(ds->getPieceIndex(),false);
+	  }
+     }
+     
+     mutexBitField.unlock();
+
+     std::cout << "Termine un request ("<< peersEnEspera.size() <<") \n";
+     requestCondition.signal();     
+     mutexPeers.unlock();
 }
 
 /****************************************************************************/
-void Torrent::peerTransferCanceled(Peer* peer){
+void Torrent::peerTransferCanceled(Peer* peer, DownloadSlot* ds){
      Lock lock(downloadMutex);
      partsRequested--;
 }

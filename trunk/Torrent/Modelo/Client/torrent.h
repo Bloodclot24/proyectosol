@@ -15,178 +15,396 @@ class Peer;
 #include "bitField.h"
 #include "threads.h"
 
+#include "../../Controlador/controlador.h"
+
 #include <iostream>
 #include <limits.h>
 #include <math.h>
 #include <queue>
 
-/* Estados posibles del torrent */
+/** 
+ * Estados posibles del Torrent
+ */
 enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING, ERROR};
 
-/* El modelo de cada Torrent que maneja el cliente */
+/** 
+ * Clase que modela cada Torrent que maneja el cliente.
+ */
 class Torrent: public Thread{
 private:
-     /* El nombre del archivo .torrent */
-     std::string nombreTorrent;
+     std::string nombreTorrent; /**< El nombre del archivo .torrent */
 
-     /* La lista de archivos del torrent */
-     std::list<TorrentFile*>* archivos; 
+     std::list<TorrentFile*>* archivos; /**< La lista de archivos del
+					 * torrent */
 
-     /* URL del announce del tracker. */
-     std::string announceUrl;
+     uint32_t sizeInPieces;	/**< Cantidad de piezas total del
+				 * Torrent */
 
-     /* Lista de listas de URL's */
-     std::list<std::string> announceUrlList;
+     uint32_t pieceSize;	/**< El tamaño de cada pieza del
+				 * Torrent */
 
-     /* Fecha de creacion */
-     int creationDate;
+     std::string announceUrl;	/**< URL del announce del tracker. */
+
+     std::list<std::string> announceUrlList; /**< Lista de URL's para
+					      * realizar el announce
+					      * del Tracker. Si esta
+					      * vacia, significa que
+					      * se debe utilizar
+					      * @announceUrl. */
+
+     int creationDate;		/**< Fecha de creacion del .torrent */
      
-     /* Algun comentario */
-     std::string comment;
+     std::string comment;	/**< Comentario del .torrent */
 
-     /* Creador */
-     std::string createdBy;
+     std::string createdBy;	/**< Creador del .torrent */
 
-     /* Codificacion */
-     int encoding;
+     int encoding;		/**< Codificacion del .torrent */
 
-     std::string idHash;
+     std::string idHash;	/**< Hash que identifica al torrent
+				 * frente al tracker */
 
-     /* estado actual del torrent */
-     EstadoTorrent estado;
-     Mutex mutexEstado;
+     EstadoTorrent estado;	/**< Estado actual del Torrent. */
+     Mutex mutexEstado;		/**< Mutex utilizado para bloquear el
+				 * estado del Torrent */
 
      Socket* socket;
      ThreadReceptor *receptor;
      ThreadEmisor *emisor;
 
-     /* indica si es valido el torrent */
-     bool valido;
+     bool valido;		/**< Indica si el Torrent es
+				 * valido. Se utiliza para saber si
+				 * ocurrio algun error en el
+				 * constructor. */
      
-     /* Peers asociados a este torrent */
-     std::list<Peer*> listaPeers;
+     std::list<Peer*> listaPeers; /**< Lista de Peers actualmente
+				   * conectados o esperando establecer
+				   * la conexion. */
+     Mutex mutexPeers;		/**< Bloquea la lista de Peers */
+
+     Mutex mutexBitField;	/**< Mutex para el bitField */
+     BitField *bitField;	/**< BitField que representa las
+				 * piezas (validas) que tenemos */
+
+
+     /**< representa las piezas que estamos bajando. Como cada pieza
+      * se baja por partes, esto nos indica que partes de cada pieza
+      * tenemos y que partes nos faltan */     
+     std::queue<DownloadSlot*> piezasEnProceso;	
      
-     Mutex mutexPeers;
+     
+     std::map<int,int> piezasAVerificar; /**< Map que contiene las
+					  * piezas que todavia fueran
+					  * verificadas. Cada par es
+					  * del tipo <numero de pieza,
+					  * bloques>. Cuando recibimos
+					  * todas los bloques de esa
+					  * pieza realizamos la
+					  * verificacion de la
+					  * misma. */
 
-     BitField *bitField; // BitField que representa las piezas que tenemos
+     int partsRequested;	/**< indica la cantidad de partes que
+				 * estamos esperando en este momento */
 
-     /* representa las piezas que estamos bajando. Como cada pieza se
-      * baja por partes, esto nos indica que partes de cada pieza
-      * tenemos y que partes nos faltan */
-     std::queue<DownloadSlot*> piezasEnProceso;
+     int peersActivos;		/**< Cantidad de peers activos */
 
-     /* indica la cantidad de partes que estamos esperando */
-     int partsRequested;
+     Mutex requestMutex;	/**< Mutex para bloquear la condicion
+				 * de request. */
+     CVariable requestCondition; /**< CVariable para esperar la
+				  * condicion de request. */
 
-     /* numero de peers activos */
-     int peersActivos;
-
-     Mutex requestMutex;
-     CVariable requestCondition;
-
-     /* Cola con los peers que nos enviaron un Unchoke */
-     Deque<Peer*> peersEnEspera;
+     
+     Deque<Peer*> peersEnEspera; /**< Cola con los peers que nos
+				  * enviaron un Unchoke y estan
+				  * disponibles para realizar
+				  * requests */
 
      Mutex downloadMutex;
 
-     uint32_t sizeInPieces;
-     uint32_t pieceSize;
+     Controlador *controlador;
 
 private:
 
-     /* Devuelve el numero de pieza que esmas dificil de conseguir (de
-      * las que no tenemos) */
+     /** 
+      * Devuelve el numero de pieza que es mas dificil de conseguir
+      * (de las que no tenemos).
+      * @return El numero de la pieza.
+      */
      uint32_t rarestFirst();
 
+     /** 
+      * Armala lista de trackers. Dada una lista de listas de strings
+      * codificado en bencode, arma la lista de trackers y la almacena
+      * en @announceUrlList
+      * 
+      * @param listaLista La lista codificada.
+      *
+      * @see ParserBencode
+      */
      void armarListaDeTrackers(const std::list<BeNode*> &listaLista);
 
+     /** 
+      * Rota la lista de trackers. Cuando nos intentamos conectar a un
+      * tracker y fallamos, rotamos la lista de trackers e intentamos
+      * con el siguiente.
+      */
      void rotarTrackers();
 
 public:
+     /** 
+      * Crea un nuevo Torrent. Dado el nombre de un archivo '.torrent'
+      * y opcionalmente un BitField, crea un Torrent.
+      * 
+      * @param fileName El nombre del archivo '.torrent'
+      *
+      * @param bitfieldGuardado El BitField con la informacion de las
+      * piezas del Torrent. Si es NULL o no se especifica, se crea un
+      * nuevo BitField. En este ultimo caso, si alguno de los archivos
+      * contenidos en el '.torrent' ya existian en disco, se realiza
+      * una verificacion de cada una de las piezas.
+      */
      Torrent(const char* fileName, BitField* bitfieldGuardado= NULL);
 
-     /* Comienza el torrent */
+     /** 
+      * Comienza el procesamiento del Torrent.
+      * 
+      * @return Si tuvo exito, retorna 1, si no, 0;
+      */
      int start();
 
-     /* Devuelve el tamao total de todos los archivos contenidos en
-      * el torrent */
+     /** 
+      * Devuelve el tamaño en bytes total de todos los archivos
+      * contenidos en el torrent.
+      *
+      * @return Tamaño en bytes.
+      */
      uint64_t getTotalSize();
 
-     /* Devuelve el nombre del .torrent original*/
+     /** 
+      * Devuelve el nombre del '.torrent' original.
+      * 
+      * @return Nombre del '.torrent'
+      */
      const std::string& getName(){ return nombreTorrent; }
 
-     /* Indica si el objeto es valido o no */
+     /** 
+      * Indica si el objeto es valido o no. Se usa para saber si hubo
+      * o no algun problema en el constructor.
+      * 
+      * @return true si es valido, false en caso contrario.
+      */
      bool isValid();
 
-     /* Devuelve el bitField asociado al torrent */
+     /** 
+      * Devuelve el BitField asociado al Torrent.
+      * 
+      * @return El BitField con las piezas completas del Torrent.
+      */
      BitField* getBitField();
 
-     /* Aade un peer a la lista de peers cuidando que no este repetido */
+     /** 
+      * Agrega un Peer a la lista de Peers, cuidando de que no este
+      * repetido.
+      * 
+      * @param peer Un puntero al Peer a agregar.
+      */
      void agregarPeer(Peer* peer);
      
-     /* Elimina un peer de la lista de peers */
+     /** 
+      * Elimina un peer de la lista de peers.
+      * 
+      * @param peer El puntero al Peer a eliminar.
+      */
      void eliminarPeer(Peer* peer);
 
-     /* Rutina principal del torrent. Aqui se maneja la logica */
+     /** 
+      * Rutina principal del torrent. Aqui se maneja la logica.
+      * @see Thread
+      */
      virtual void run();
 
-     /*Dado un indice, obtiene el FileTorrent al que corresponde*/
+     /** 
+      * Dado un indice de una pieza, obtiene el FileTorrent al que
+      * corresponde.
+      * 
+      * @param index El indice de la pieza.
+      * 
+      * @return Un puntero a TorrentFile o NULL si el @index es
+      * invalido.
+      */
      TorrentFile* obtenerArchivo(uint32_t index);
 
-     /* Dado un indice devuelve el offset dentro del archivo donde cae
-      * esa pieza */
+     /** 
+      * Dado un indice devuelve el offset dentro del archivo donde cae
+      * esa pieza.
+      * 
+      * @param index El indice de la pieza.
+      * 
+      * @return El offset dentro del archivo.
+      */
      uint64_t obtenerByteOffset(uint32_t index);
 
-     /* escribe un bloque de datos en el/los archivo/archivos que corresponda/n */
+     /** 
+      * Escribe un bloque de datos en el/los archivo/archivos que
+      * corresponda.
+      * 
+      * @param data Un puntero a los datos a escribir.
+      *
+      * @param index El numero de pieza al que corresponden los datos.
+      *
+      * @param offset El offset dentro de la pieza donde se deben
+      * escribir los datos.
+      *
+      * @param size El temaño del buffer de datos.
+      * 
+      * @return Si tuvo exito devuelve 0, en caso contrario devuelve -1.
+      */
      int writeData(const char* data, uint32_t index, uint32_t offset, uint32_t size);
 
-     /* lee un bloque de datos de el/los archivo/archivos que corresponda/n */
+     /** 
+      * Lee un bloque de datos de el/los archivo/archivos que
+      * corresponda.
+      * 
+      * @param data Un buffer para almacenar los datos.
+      *
+      * @param index El indice de la pieza de la cual se leen los datos.
+      *
+      * @param offset El offset dentro de la pieza.
+      *
+      * @param size El tamaño del buffer de datos.
+      * 
+      * @return Devuelve 0 si tuvo exito o -1 en caso contrario.
+      */
      int readData(char* data, uint32_t index, uint32_t offset, uint32_t size);
 
-     /* Metodo que llaman los peers cuando se conectan exitosamente */
+     /** 
+      * Metodo que llaman los peers cuando se conectan exitosamente.
+      * 
+      * @param peer El peer que llamo al metodo.
+      */
      void peerConected(Peer *peer);
 
-     /* Metodo que llaman los peers envian 'choke' */
+     /** 
+      * Metodo que llaman los peers cuando envian 'choke'.
+      * 
+      * @param peer El Peer que nos envio el 'choke'
+      *
+      * @see ProtocoloBitTorrent
+      */
      void peerChoked(Peer* peer);
 
-     /* Metodo que llaman los peers envian 'unchoke' */
+     /** 
+      * Metodo que llaman los peers cuando envian 'unchoke'.
+      * 
+      * @param peer El Peer que nos envio el 'unchoke'
+      *
+      * @see ProtocoloBitTorrent
+      */
      void peerUnchoked(Peer* peer);
 
-     /* Avisa a todos los peers conectados que tenemos una pieza */
+     /** 
+      * Metodo que llaman los Peers cuando terminan la transferencia
+      * de un bloque.
+      * 
+      * @param peer El peer que llamo al metodo.
+      *
+      * @param ds El DownloadSlot asociado al bloque transferido.
+      */
+     void peerTransferFinished(Peer* peer, DownloadSlot *ds);
+
+     /** 
+      * Metodo que llaman los Peers cuando cancelan la transferencia
+      * de un bloque.
+      * 
+      * @param peer El peer que llamo al metodo.
+      *
+      * @param ds El DownloadSlot asociado al bloque transferido.
+      */
+     void peerTransferCanceled(Peer* peer, DownloadSlot * ds);
+
+     /** 
+      * Avisa a todos los peers conectados que tenemos una pieza.
+      * 
+      * @param index El numero de pieza a anunciar.
+      */
      void anunciarPieza(uint32_t index);
 
-     void peerTransferFinished(Peer* peer);
-
-     void peerTransferCanceled(Peer* peer);
-
-     /* Realiza un announce al tracker */
+     /** 
+      * Realiza un announce al primer tracker de la lista.
+      * 
+      * @return Si tuvo exito devuelve 0, si falla devuelve -1.
+      */
      int announce();
 
-     /* Realiza un scrape */
+     /** 
+      * Realiza un scrape al primer tracker de la lista.
+      * 
+      * @return  Si tuvo exito devuelve 0, en caso contrario -1.
+      */
      int scrape();
 
-     /* Indica si una pieza es o no valida */
+     /** 
+      * Indica si una pieza es o no valida.
+      * 
+      * @param index El numero de la pieza.
+      * 
+      * @return Si es valida, 1, si es invalida, 0. Si el numero de
+      * pieza en invalida -1 y si ocurre algun otro error, -2.
+      */
      int validarPieza(uint32_t index);
 
-	 /* Detiene la descarga del archivo */
+     /** 
+      * Detiene al Torrent. Si hay descargas o subidas en proceso, las
+      * cancela y si hay Peers conectados los desconecta.
+      * 
+      * @return 1 si tuvo exito.
+      */
      int stop();
 
-     /* Pausa la descarga del archivo */
+     /** 
+      * Pausa al Torrent. Si hay descargas o subidas en proceso, no
+      * las detiene, espera a que finalizen, pero no se aceptan nuevas
+      * descargas ni subidas.
+      * 
+      * @return 1 si tuvo exito.
+      */
      int pause();
 	
-     /* Devuelve el estado del torrent */
+     /** 
+      * Devuelve el estado del torrent.
+      * @return El estado actual del Torrent.
+      */
      EstadoTorrent getEstado() { 
 	  Lock lock(mutexEstado);
 	  return estado; 
      };
 
-	 /* Devuelve announce URL torrent */
+     /** 
+      * Devuelve el URL del primer tracker en la lista de trackers.
+      * 
+      * @return La direccion del tracker.
+      */
      const std::string getAnnounceUrl() { return announceUrl; };
 	 
-	 /* Devuelve la cantidad de peers activos */
+     /** 
+      * Devuelve la cantidad de peers activos.
+      * @return La cantidad de peers activos.
+      */
      const int getPeersActivos() { return peersActivos; };
 	 
-	 	
+     /** 
+      * Asigna un controlador al Torrent, para comunicarse con la
+      * vista.
+      * 
+      * @param controlador El controlador.
+      */
+     void setControlador(Controlador *controlador){ 
+	  this->controlador = controlador;
+     }
+          
+     /** 
+      * Destruye al Torrent y libera los recursos asociados.
+      * Llama a stop().
+      */
      ~Torrent();
 };
 
