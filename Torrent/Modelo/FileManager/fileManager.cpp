@@ -1,5 +1,6 @@
 #include "fileManager.h"
 
+/****************************************************************************/
 FileManager::FileManager(const char* filename,uint32_t tamanio) {
 
      std::cout << "CREANDO EL ARCHIVO: " << filename << "\n";
@@ -22,14 +23,21 @@ FileManager::FileManager(const char* filename,uint32_t tamanio) {
 
 }
 
+/*--------------------------------------------------------------------------*/
+FileManager::~FileManager() {
+	
+	this->file.close();
+}
+
+/*--------------------------------------------------------------------------*/
 int FileManager::getStatus(){
 	return this->status;
 }
 
-bool FileManager::agregarPieza(const char* pieza, uint32_t offset, uint32_t tamanio)
-{
+/*--------------------------------------------------------------------------*/
+bool FileManager::agregarPieza(const char* pieza, uint32_t offset, 
+                               uint32_t tamanio) {
 
-     std::cout << "Se escriben los datos: offset->" << offset << " | tamanio-> " << tamanio << " | Archivo-> " << this << std::endl;
 	bool resultado = false;
 	this->file.seekp(offset,std::ios_base::beg);
 	if(this->file.good()){
@@ -42,8 +50,9 @@ bool FileManager::agregarPieza(const char* pieza, uint32_t offset, uint32_t tama
 	return resultado;
 }
 
-bool FileManager::obtenerPieza(char* pieza, uint32_t offset, uint32_t tamanio)
-{
+/*--------------------------------------------------------------------------*/
+bool FileManager::obtenerPieza(char* pieza, uint32_t offset, 
+                               uint32_t tamanio) {
 	bool resultado = false;
 	this->file.seekg(offset,std::ios_base::beg);
 	if(this->file.good()){
@@ -56,6 +65,7 @@ bool FileManager::obtenerPieza(char* pieza, uint32_t offset, uint32_t tamanio)
 	return resultado;
 }
 		
+/*--------------------------------------------------------------------------*/
 int FileManager::crearDirectorio(const char* dirname) {
 	
 	int estado= mkdir(dirname, PERMISO);
@@ -66,6 +76,7 @@ int FileManager::crearDirectorio(const char* dirname) {
 		return 0;
 } 
 
+/*--------------------------------------------------------------------------*/
 std::string FileManager::obtenerFilename(std::string path) {
 	
 	size_t pos= path.find_last_of(COMIENZO_FILENAME, path.length());
@@ -78,7 +89,4 @@ std::string FileManager::obtenerFilename(std::string path) {
 		return path;
 }
 		
-FileManager::~FileManager() {
-	
-	this->file.close();
-}
+/****************************************************************************/
