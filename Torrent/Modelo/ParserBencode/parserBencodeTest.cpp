@@ -1,5 +1,8 @@
 #include "parserBencode.h"
 
+/****************************************************************************/
+/*PRUEBA UNITARIA PARSER BENCODE*/
+/****************************************************************************/
 /*---------*/
 void print(BeNode* beNode);
 
@@ -112,3 +115,5 @@ las piezas del archivo puede resultar molesta y muy extensa. Asi es la vida)\n";
 	
 	return 0;
 }
+
+/****************************************************************************/
