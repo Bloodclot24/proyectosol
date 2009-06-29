@@ -8,7 +8,9 @@
 #include <sstream>
 
 /****************************************************************************/
-/* Clase para parsear la respuesta HTTP */
+/* 
+ * Clase para parsear la respuesta HTTP 
+ */
 class HttpResponse{
 
 private:

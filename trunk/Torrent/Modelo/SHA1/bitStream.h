@@ -5,6 +5,9 @@
 #include <iostream>
 
 /****************************************************************************/
+/*
+ * Es un string de bits.
+ */ 
 class BitStream {
 	
 	private:

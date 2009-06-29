@@ -40,6 +40,10 @@ typedef struct BeNode {
 } BeNode;
 
 /****************************************************************************/
+/**
+ * Parser Bencode decodifica el formato bencode, que soporta los siguientes
+ * formatos: byte strings, integers, lists, and dictionaries.
+ */ 
 class ParserBencode {
 
 	private:  

@@ -22,6 +22,9 @@
 #define PATH_ALL "Vista/GUI/images/statusIcons/all.png"
 
 /****************************************************************************/
+/**
+ * Interfaz Grafica de Usuario, Vista Torrent.
+ */
 class VistaTorrent {
 	
 	private:
@@ -197,7 +200,7 @@ class VistaTorrent {
 		 */
 		void correr();
 		
-		/*Panel Descargas y Subidas*/
+		/**********Panel Descargas y Subidas**********/
 		/**
 		 * Agrega un archivo al panel de transferencias.
 		 * 
@@ -207,65 +210,243 @@ class VistaTorrent {
 		 * @param status Estado del archivo.
 		 * @param downSpeed Velocidad de bajada.
 		 * @param upSpeed Velocidad de subida.
+		 * @param time Tiempo restante para completar la descarga.
 		 */
 		void agregarArchivo(std::string file, std::string size, int done,
 							std::string status, std::string downSpeed, 
 							std::string upSpeed, std::string time);
 		
+		/**
+		 * Actualiza el porcentaje de completado del archivo pasado por
+		 * parametro en el panel de transferencias.
+		 * 
+		 * @param file Nombre del archivo.
+		 * @param done Porcentaje del archivo completado.
+		 */
 		void actualizarDone(std::string file, int done);
+
+		/**
+		 * Actualiza el estado del archivo pasado por parametro en el 
+		 * panel de transferencias.
+		 * 
+		 * @param file Nombre del archivo.
+		 * @param status Estado del archivo.
+		 */		
 		void actualizarStatus(std::string file, std::string status);
+
+		/**
+		 * Actualiza velocidad de bajada del archivo pasado por parametro
+		 * en el panel de transferencias.
+		 * 
+		 * @param file Nombre del archivo.
+		 * @param downSpeed Velocidad de bajada.
+		 */		
 		void actualizarDownSpeed(std::string file, std::string downSpeed);
+
+		/**
+		 * Actualiza velocidad de subida del archivo pasado por parametro
+		 * en el panel de transferencias.
+		 * 
+		 * @param file Nombre del archivo.
+		 * @param upSpeed Velocidad de subida.
+		 */		
 		void actualizarUpSpeed(std::string file, std::string upSpeed);
+		
+		/**
+		 * Actualiza el tiempo restante del archivo pasado por parametro
+		 * en el panel de transferencias.
+		 * 
+		 * @param file Nombre del archivo.
+		 * @param time Tiempo restante para completar la descarga.
+		 */		
 		void actualizarTime(std::string file, std::string time);
 
+		/**
+		 * Devuelve el orden del archivo pasado por parametro 
+		 * en el panel de transferencias.
+		 * 
+		 * @param file Nombre del archivo.
+		 * 
+		 * @return El orden del archivo en el panel de transferencias.
+		 */	
 		uint32_t obtenerOrden(std::string filename);
+		
+		/**
+		 * Modifica el estado del archivo pasado por parametro en el 
+		 * en el panel de transferencias a DOWNLOADING.
+		 * 
+		 * @param file Nombre del archivo.
+		 */	
 		void start(std::string filename);
+
+		/**
+		 * Modifica el estado del archivo pasado por parametro en el 
+		 * en el panel de transferencias a PAUSED.
+		 * 
+		 * @param file Nombre del archivo.
+		 */	
 		void pause(std::string filename);
+
+		/**
+		 * Modifica el estado del archivo pasado por parametro en el 
+		 * en el panel de transferencias a STOPPED.
+		 * 
+		 * @param file Nombre del archivo.
+		 */	
 		void stop(std::string filename);
 		
-		/*Panel Actividades*/
+		/**********Panel Actividades**********/
+		/**
+		 * Modifica la cantidad de archivos totales(All) en 
+		 * el panel actividades.
+		 * 
+		 * @param cantAll Cantidad de archivos totales.
+		 */	
 		void modificarCantAll(std::string cantAll);
+
+		/**
+		 * Modifica la cantidad de archivos bajando(Downloading) en 
+		 * el panel actividades.
+		 * 
+		 * @param cantDownloading Cantidad de archivos bajando.
+		 */	
 		void modificarCantDownloading(std::string cantDownloading);
+
+		/**
+		 * Modifica la cantidad de archivos completador(Completed) en 
+		 * el panel actividades.
+		 * 
+		 * @param cantCompleted Cantidad de archivos completados.
+		 */	
 		void modificarCantCompleted(std::string cantCompleted);
+
+		/**
+		 * Modifica la cantidad de archivos activos(Active) en 
+		 * el panel actividades.
+		 * 
+		 * @param cantActive Cantidad de archivos activos.
+		 */	
 		void modificarCantActive(std::string cantActive);
+
+		/**
+		 * Modifica la cantidad de archivos inactivos(Inactive) en 
+		 * el panel actividades.
+		 * 
+		 * @param cantInactive Cantidad de archivos inactivos.
+		 */	
 		void modificarCantInactive(std::string cantInactive);
 		                    
-		/*Pestania General*/
+		/**********Pestania General**********/
+		/**
+		 * Modifica el label nombre del archivo en la pestania general.
+		 * 
+		 * @param filename Nombre del archivo.
+		 */	
 		void modificarFilename(std::string filename);
+
+		/**
+		 * Modifica el label downloaded del archivo en la pestania general.
+		 * 
+		 * @param filename Nombre del archivo.
+		 */		
 		void modificarDownloaded(std::string downloaded);
+		
+		/**
+		 * Modifica el label nombre del archivo en la pestania general.
+		 * 
+		 * @param filename Nombre del archivo.
+		 */	
 		void modificarInformacion(std::string information);
 		
-		/*Pestania Trackers*/
+		/**********Pestania Trackers**********/
+		/**
+		 * Agrega un tracker en la pestania trackers.
+		 * 
+		 * @param name Nombre del tracker.
+		 * @param status Estado del tracker.
+		 * @param seed Cantidad de seed del tracker.
+		 */	
 		void agregarTracker(std::string name, std::string status,
 		                    int seed);
+		
+		/**
+		 * Modifica el estado del tracker en la pestania trackers.
+		 * 
+		 * @param name Nombre del tracker.
+		 * @param status Estado del tracker.
+		 */			
 		void modificarStatusTracker(std::string name, std::string status);
-		void agregarSeedTracker(std::string name, int seed);
+		
+		/**
+		 * Modifica el estado del tracker en la pestania trackers.
+		 * 
+		 * @param name Nombre del tracker.
+		 * @param seed Cantidad nueva de los seed del tracker.
+		 */			
+		void modificarSeedTracker(std::string name, int seed);
+
+		/**
+		 * Elimina un tracker de la pestania trackers.
+		 * 
+		 * @param name Nombre del tracker.
+		 */			
 		void eliminarTracker(std::string name);
 
-		/*Pestania Peers*/
-		void agregarCliente(std::string ip, std::string cliente);
+		/**********Pestania Peers**********/
+		/**
+		 * Agrega un cliente en la pestania peers.
+		 * 
+		 * @param ip Numero de ip del cliente.
+		 * @param status Estado del cliente.
+		 */	
+		void agregarCliente(std::string ip, std::string status);
+
+		/**
+		 * Limpia la pestania de peers.
+		 */			
 		void limpiarListaClientes();
-		                    
-		/*Pestania Pieces*/
-		void agregarPiece(int number, std::string size, int blocks, int block,
-		                  int completed);
-		void limpiarListaPieces();
 		
-		/*Pestania Message*/
+		/**********Pestania Message**********/
+		/**
+		 * Agrega un mensaje en la pestania mesanje.
+		 * 
+		 * @param message Mensaje a mostrar.
+		 */	
 		void agregarMessage(std::string message);
 		
-		/*ToolBar*/
+		/**********ToolBar**********/
+		/**
+		 * Deshabilita el boton AddUrlTorrent del toolbar.
+		 */	
 		void disableAddUrlTorrent();
-		void disableMoveUp();
-		void disableMoveDown();
 		
-		/*FileChooser*/
+		/**********FileChooser**********/
+		/**
+		 * Agrega un mensaje en el dialogo File Chooser.
+		 */	
 		void cerrarFileChooser();
+
+		/**
+		 * Agrega un mensaje en el dialogo File Chooser.
+		 * 
+		 * @param message Mensaje a mostrar.
+		 */	
 		void mostrarMensaje(std::string mensaje);
+
+		/**
+		 * Agrega un mensaje en el dialogo File Chooser.
+		 */	
 		void borrarMensaje();
 		
-		/*DelayDialog*/
+		/**********DelayDialog**********/
+		/**
+		 * Corre el dialogo esperando la generacion de archivos.
+		 */	
 		void correrDelayDialog();
+
+		/**
+		 * Cierra el dialogo esperando la generacion de archivos.
+		 */	
 		void cerrarDelayDialog();
 };
 

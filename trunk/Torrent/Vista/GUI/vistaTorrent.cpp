@@ -370,8 +370,6 @@ void VistaTorrent::on_tool_stop_clicked() {
 /*---*/
 void VistaTorrent::on_tool_move_up_clicked() {
 
-	std::cout << "Se clickeo boton MOVE UP" << std::endl;
-
 	typedef Gtk::TreeModel::Children type_children;
 	type_children::iterator iterBegin= (treeModel_transf->children()).begin();  
 		
@@ -380,31 +378,16 @@ void VistaTorrent::on_tool_move_up_clicked() {
 	Gtk::TreeModel::iterator iter= refTreeSelection->get_selected();
 	if(iter) {
   		Gtk::TreeModel::Row row= *iter;
- 
-  		std::cout << "Archivo a subir: " << row[columns_transf.col_file] << std::endl;
   		
   		if(row != *iterBegin) {
-  		
   			Gtk::TreeModel::Row destination= *(--iter);
-		
-			std::cout << "Archivo a bajar: " << destination[columns_transf.col_file] << std::endl;
- 		
  			treeModel_transf->iter_swap(row, destination);
   		}
 	}
 }
 
-void VistaTorrent::disableMoveUp() {
-	
-	Gtk::ToolButton* move_up;
-    refXml->get_widget("tool_move_up", move_up);
-	move_up->set_sensitive(false); 
-}
-
 /*---*/
 void VistaTorrent::on_tool_move_down_clicked() {
-	
-	std::cout << "Se clickeo boton MOVE DOWN" << std::endl;
 	
 	typedef Gtk::TreeModel::Children type_children;
 	type_children::iterator iterEnd= (treeModel_transf->children()).end();  
@@ -414,30 +397,13 @@ void VistaTorrent::on_tool_move_down_clicked() {
 	Gtk::TreeModel::iterator iter= refTreeSelection->get_selected();
 	if(iter) {
   		Gtk::TreeModel::Row row= *iter;
- 
-  		std::cout << "Archivo a bajar: " << row[columns_transf.col_file] << std::endl;
-  		
   		Gtk::TreeModel::Row rowEnd= *(--iterEnd);
   		
-  		std::cout << "Archivo iter End: " << rowEnd[columns_transf.col_file] << std::endl;
-  		
-  		
   		if(row != rowEnd) {
-  		
-  			Gtk::TreeModel::Row destination= *(++iter);
-		
-			std::cout << "Archivo a subir: " << destination[columns_transf.col_file] << std::endl;
- 		
+ 			Gtk::TreeModel::Row destination= *(++iter);
  			treeModel_transf->iter_swap(row, destination);
   		}
 	}
-}
-
-void VistaTorrent::disableMoveDown() {
-	
-	Gtk::ToolButton* move_down;
-    refXml->get_widget("tool_move_down", move_down);
-	move_down->set_sensitive(false); 
 }
 
 /*--------------------------------------------------------------------------*/
@@ -463,10 +429,6 @@ void VistaTorrent::agregarArchivo(std::string file, std::string size,
 void VistaTorrent::actualizarDone(std::string file, int done) {
 	
 	Gtk::TreeModel::Row row= buscarRow_transf(file);
-	
-	std::cout << "Se actualizo done de " << row[columns_transf.col_done];
-	std::cout << " a " << done << std::endl;
-	
 	row[columns_transf.col_done]= done;
 }
 
@@ -474,10 +436,6 @@ void VistaTorrent::actualizarDone(std::string file, int done) {
 void VistaTorrent::actualizarStatus(std::string file, std::string status) {
 	
 	Gtk::TreeModel::Row row= buscarRow_transf(file);
-	
-	std::cout << "Se actualizo done de " << row[columns_transf.col_status];
-	std::cout << " a " << status << std::endl;
-	
 	row[columns_transf.col_status]= status;
 	row[columns_transf.col_icon]= Gdk::Pixbuf::create_from_file(
   												 getPathStatusIcon(status));
@@ -488,10 +446,6 @@ void VistaTorrent::actualizarDownSpeed(std::string file,
                                        std::string downSpeed) {
 	
 	Gtk::TreeModel::Row row= buscarRow_transf(file);
-
-	std::cout << "Se actualizo down speed de " << row[columns_transf.col_downSpeed];
-	std::cout << " a " << downSpeed << std::endl;
-
 	row[columns_transf.col_downSpeed]= downSpeed;
 }
 
@@ -500,20 +454,12 @@ void VistaTorrent::actualizarUpSpeed(std::string file,
                                      std::string upSpeed) {
 	
 	Gtk::TreeModel::Row row= buscarRow_transf(file);
-	
-	std::cout << "Se actualizo up speed de " << row[columns_transf.col_upSpeed];
-	std::cout << " a " << upSpeed << std::endl;
-	
 	row[columns_transf.col_upSpeed]= upSpeed;
 }
 
 void VistaTorrent::actualizarTime(std::string file, std::string time) {
 
 	Gtk::TreeModel::Row row= buscarRow_transf(file);
-	
-	std::cout << "Se actualizo up speed de " << row[columns_transf.col_time];
-	std::cout << " a " << time << std::endl;
-	
 	row[columns_transf.col_time]= time;
 		
 }
@@ -698,33 +644,21 @@ void VistaTorrent::modificarStatusTracker(std::string name, std::string
                                           status) {
 
 	Gtk::TreeModel::Row row= buscarRow_trackers(name);
-
-	std::cout << "Se actualizo el status del tracker " << row[columns_tracker.col_status];
-	std::cout << " a " << status << std::endl;
-
 	row[columns_tracker.col_status]= status;
 }
 
 /*--------------------------------------------------------------------------*/
-void VistaTorrent::agregarSeedTracker(std::string name, int seed) {
+void VistaTorrent::modificarSeedTracker(std::string name, int seed) {
 	
 	Gtk::TreeModel::Row row= buscarRow_trackers(name);
-
-	std::cout << "Se actualizo el seed del tracker " << row[columns_tracker.col_seed];
-	std::cout << " a " << seed << std::endl;
-
-	row[columns_tracker.col_seed]= seed;
-	
+	row[columns_tracker.col_seed]= seed;	
 }
 
 /*--------------------------------------------------------------------------*/
 void VistaTorrent::eliminarTracker(std::string name) {
 
 	Gtk::TreeModel::Row row= buscarRow_trackers(name);
-	
 	treeModel_trackers->erase(row);
-	
-	std::cout << "Se elimino el tracker " << name << std::endl;	                    	     	
 }
 
 /*--------------------------------------------------------------------------*/
@@ -759,26 +693,6 @@ void VistaTorrent::agregarCliente(std::string ip, std::string cliente) {
 void VistaTorrent::limpiarListaClientes() {
 	
 	treeModel_peers->clear();
-}
-
-/*--------------------------------------------------------------------------*/
-/**Pestania Pieces**/
-void VistaTorrent::agregarPiece(int number, std::string size, int blocks, 
-                                int block, int completed) {
-
-	Gtk::TreeModel::Row row= *(treeModel_pieces->append());
-  
-	row[columns_pieces.col_number]= number;
-  	row[columns_pieces.col_size]= size;
-  	row[columns_pieces.col_blocks]= blocks;
-  	row[columns_pieces.col_block]= block;
-  	row[columns_pieces.col_completed]= completed;
-}
-
-/*--------------------------------------------------------------------------*/
-void VistaTorrent::limpiarListaPieces() {
-
-	treeModel_pieces->clear();	
 }
 
 /*--------------------------------------------------------------------------*/

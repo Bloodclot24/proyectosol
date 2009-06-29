@@ -199,11 +199,6 @@ void ControladorGUI::actualizarPestanias(std::string filename) {
 	vista->limpiarListaClientes();
 	//pedir lista clientes y usar
 	//vista->agregarCliente("127.0.0.4", "ReverPass");
-	
-	//Pieces
-	vista->limpiarListaPieces();
-	//pedir lista clientes y usar
-	//vista->agregarPiece(13, "12 MB", 15, 4, 4);	
 }
 
 /*--------------------------------------------------------------------------*/
@@ -301,7 +296,7 @@ void ControladorGUI::modificarStatusTracker(std::string name,
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::agregarSeedTracker(std::string name, int seed) {
 	
-	vista->agregarSeedTracker(name, seed);
+	vista->modificarSeedTracker(name, seed);
 }
 
 /*--------------------------------------------------------------------------*/
