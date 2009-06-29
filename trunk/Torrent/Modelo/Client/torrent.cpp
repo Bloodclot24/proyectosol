@@ -31,6 +31,8 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
      this->bitField= bitfieldGuardado;
 
      partsRequested = 0;
+
+     piezasVerificadas = 0;
      
      ParserBencode parser;
      /* Decodifico todo el .torrent y obtengo una lista con toda la
@@ -126,7 +128,7 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 
 	  if(valido){
 			
-	       if(bitfieldGuardado == NULL){
+	       if(bitfieldGuardado == NULL){}{
 		    pieceSize = (*(archivos->begin()))->getPieceLength();
 		    sizeInPieces = ceil(getTotalSize()/pieceSize);
 		    
@@ -135,14 +137,18 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 		    //Si alguno de los archivos y ya existia, verifico si hay datos validos
 		    if(check){
 			 for(uint32_t i=0;i<sizeInPieces;i++){
-			      if(validarPieza(i)==1)
+			      if(validarPieza(i)==1){
 				   bitField->setField(i,1);
+				   piezasVerificadas++;
+			      }
 			 }
 		    }
 	       }
-	       else{
-		    bitField = bitfieldGuardado;
-	       }
+	       // else{
+// 		    bitField = bitfieldGuardado;
+//	       for(uint32_t j = 0;j<bitField->getLength();j++)
+	       //	    piezasVerificadas += bitField->getField(j)
+	       // }
 	  }
      }
      else{
@@ -172,6 +178,7 @@ BitField* Torrent::getBitField(){
      return bitField;
 }
 
+/****************************************************************************/
 void Torrent::rotarTrackers(){
      if(announceUrlList.size() > 0){
 	  std::string tracker = announceUrlList.front();
@@ -238,7 +245,7 @@ int Torrent::announce(){
      
      req.addParam("corrupt", "0");
 
-//      req.addParam("left", getTotalSize);
+//     TODO: req.addParam("left", getTotalSize);
      req.addParam("left", "1000");
 
      req.addParam("compact", "1");
@@ -357,8 +364,12 @@ int Torrent::announce(){
 int Torrent::start(){
 
      if(estado != DOWNLOADING){
-	  estado = DOWNLOADING;
-  
+	  if(estado == PAUSED){
+	       
+	  }
+	  else{
+	       estado = DOWNLOADING;
+	  }
 	  /* Comienzo el proceso */
 	  Thread::start();	  
 	  return 1;
@@ -651,9 +662,11 @@ int Torrent::validarPieza(uint32_t index){
      std::string hashes = (*archivos->begin())->getHashes();
      if(hashes.compare(index*20,20,hash) == 0){
 	  returnValue = 1;
+	  std::cout << "La pieza "<<index<<" es valida" << std::endl;
      }
      else{
 	  returnValue = 0;
+	  std::cout << "La pieza "<<index<<" es invalida" << std::endl;
      }
      
      delete[] buffer;
@@ -666,22 +679,29 @@ void Torrent::run(){
      ProtocoloBitTorrent proto;
      
 //     while(announce() != 0);
-     Peer *peer = new
-  	  Peer("localhost",						
-  	       6881,							
-  	       this);
-     
-     agregarPeer(peer);
-     
-     mutexPeers.lock();
-     std::list<Peer*>::iterator it;
-     int i;
-     for(i=0,it=listaPeers.begin(); it!=listaPeers.end() && i<30; it++, i++){
-	  (*it)->start(idHash);
+
+    
+     mutexEstado.lock(); 
+     if(estado == DOWNLOADING){
+	  Peer *peer = new
+	       Peer("localhost",						
+		    6881,							
+		    this);
+	  
+	  agregarPeer(peer);
+	  
+	  mutexPeers.lock();
+	  std::list<Peer*>::iterator it;
+	  int i;
+	  for(i=0,it=listaPeers.begin(); it!=listaPeers.end() && i<30; it++, i++){
+	       (*it)->start(idHash);
+	  }
      }
-     
+     else{
+	  estado = DOWNLOADING;
+     }
      bool dormir = false;
-     mutexEstado.lock();
+    
      while(estado == DOWNLOADING){
 	  if(peersEnEspera.size()<1 || dormir){
 	       mutexPeers.unlock();
@@ -849,13 +869,17 @@ void Torrent::peerTransferFinished(Peer* peer, DownloadSlot* ds){
 	  std::cout << "\nCERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRO\n";
 	  bitField->setField(ds->getPieceIndex(),true);
 	  if(validarPieza(ds->getPieceIndex())){
+	       piezasVerificadas++;
 	       anunciarPieza(ds->getPieceIndex());
 	  }
 	  else{
 	       bitField->setField(ds->getPieceIndex(),false);
+	       piezasAVerificar[ds->getPieceIndex()] = -1;
 	  }
      }
-     
+
+     delete ds;
+
      mutexBitField.unlock();
 
      std::cout << "Termine un request ("<< peersEnEspera.size() <<") \n";
@@ -927,3 +951,15 @@ int Torrent::pause(){
 }
 
 /****************************************************************************/
+double getPorcentaje(){
+     return ((double)piezasVerificadas/(double)sizeInPieces)*100;
+}
+/****************************************************************************/
+uint32_t getVelocidadSubida(){
+     return 0;
+}
+/****************************************************************************/
+uint32_t getVelocidadBajada(){
+     return 0;
+}
+
