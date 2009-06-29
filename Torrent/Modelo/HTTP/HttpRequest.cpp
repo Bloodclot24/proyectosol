@@ -1,13 +1,11 @@
 #include "HttpRequest.h"
 
-/* Crea un nuevo request HTTP con la url indicada y sin parametros */
 /****************************************************************************/
 HttpRequest::HttpRequest(std::string direccion):url(direccion){
      primero=true;
 }
      
-/* Agrega un par parametro<->valor al request */
-/****************************************************************************/
+/*--------------------------------------------------------------------------*/
 void HttpRequest::addParam(std::string param, std::string value){
      if(!primero)
 	  request += '&';
@@ -17,8 +15,7 @@ void HttpRequest::addParam(std::string param, std::string value){
      request += value;
 }
 
-/* Dado un string codifica los datos en formato URL */
-/****************************************************************************/
+/*--------------------------------------------------------------------------*/
 std::string HttpRequest::UrlEncode(std::string datos){
      std::stringstream codificado;
      unsigned char byte;
@@ -32,15 +29,12 @@ std::string HttpRequest::UrlEncode(std::string datos){
      return codificado.str();
 }
 
-/* devuelve un string con todos los parametros del request */
-/****************************************************************************/
+/*--------------------------------------------------------------------------*/
 const std::string& HttpRequest::getParams(void){
      return request;
 }
 
-/* Devuelve un nuevo string con el request completo. El string
- * debe ser liberado externamente luego de ser utilizado. */
-/****************************************************************************/
+/*--------------------------------------------------------------------------*/
 std::string* HttpRequest::getRequest(void){
      std::string *paquete = new std::string();
 
@@ -70,3 +64,4 @@ std::string* HttpRequest::getRequest(void){
      return paquete;
 }
 
+/****************************************************************************/

@@ -1,6 +1,9 @@
 #include "HttpRequest.h"
 #include "HttpResponse.h"
 
+/****************************************************************************/
+/*PRUEBA HTTP*/
+/****************************************************************************/
 int main(int argc, char** argv){
 
      /* Creo un nuevo request para cierto traker */
@@ -42,3 +45,5 @@ int main(int argc, char** argv){
      std::cout << "Datos de la respuesta: " << HttpResponse::UrlDecode(resp.getContent()) << "\n";
      return 0;
 }
+
+/****************************************************************************/
