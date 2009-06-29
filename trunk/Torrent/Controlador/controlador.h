@@ -21,6 +21,9 @@ class Controlador;
 #define NAME_FILE_CONFIG "Downloads/Config/config.sun"
 
 /****************************************************************************/
+/*
+ * El controlador generico de la aplicacion Sun Torrent.
+ */
 class Controlador {
 	
 	protected:
@@ -38,69 +41,231 @@ class Controlador {
 		virtual void mostrarAnnounceUrlTorrent(Torrent* torrent)= 0;
 						
 	public:
+		/**
+		 * Crea un controlador. 
+		 */
 		Controlador();
+
+		/**
+		 * Destruye el controlador. 
+		 */
 		virtual ~Controlador();
 
+		/**
+		 * Comienza a correr la aplicacion, tanto el modelo como la vista. 
+		 */
 		virtual void correr()= 0;
 		
 		/* VISTA -> MODELO 
 		 * =============== */
-		/*Files*/
+		/********Files********/
+		/**
+		 * Muestra todos los archivos en el panel de transferencias. 
+		 */
 		virtual void mostrarFiles()= 0;
+
+		/**
+		 * Agrega una descarga a partir de un archivo .torrent.
+		 * 
+		 * @param pathTorrent Directorio del archivo .torrent. 
+		 */
 		virtual bool addTorrent(std::string pathTorrent)= 0;
+
+		/**
+		 * Agrega una descarga a partir de una URL.
+		 * 
+		 * @param pathTorrent Directorio del archivo .torrent. 
+		 */
 		virtual void addUrlTorrent()= 0;
+
+		/**
+		 * Elimina una descarga pasada por parametro.
+		 * 
+		 * @param file Nombre del archivo a eliminar. 
+		 */
 		virtual void removeFile(std::string file)= 0;
+
+		/**
+		 * Comienza una descarga pasada por parametro.
+		 * 
+		 * @param file Nombre del archivo a bajar. 
+		 */
 		virtual void startFile(std::string file)= 0;
+
+		/**
+		 * Pausa una descarga pasada por parametro.
+		 * 
+		 * @param file Nombre del archivo a pausar. 
+		 */
 		virtual void pauseFile(std::string file)= 0;
+		
+		/**
+		 * Detiene una descarga pasada por parametro.
+		 * 
+		 * @param file Nombre del archivo a detener. 
+		 */
 		virtual void stopFile(std::string file)= 0;
 		
-		/*General*/
+		/********General********/
+		/**
+		 * Muestra el estado general del numero de archivo
+		 * pasado por parametro. 
+		 * 
+		 * @param numfile Numero del archivo a mostrar. 
+		 */
 		virtual void mostrarGeneral(std::string numfile) {};
 		
-		/*Trackers*/
+		/********Trackers********/
+		/**
+		 * Muestra todos los trackers. 
+		 */
 		virtual void mostrarTrackers()= 0;
 		
-		/*Peers*/
+		/********Peers********/
+		/**
+		 * Muestra los peers del numero de archivo
+		 * pasado por parametro. 
+		 * 
+		 * @param numfile Numero del archivo a mostrar. 
+		 */
 		virtual void mostrarPeers(std::string numfile) {};
 		
-		/*Pieces*/
-		virtual void mostrarPieces(std::string numFile) {};
-		
-		/*Todas las Pestanias*/
+		/********Todas las Pestanias********/
+		/**
+		 * Muestra los peers del archivo pasado por parametro. 
+		 * 
+		 * @param filename Nombre del archivo que actualizara
+		 * con sus detalles las pestanias. 
+		 */
 		virtual void actualizarPestanias(std::string filename) {};
 
-		/*Orden*/
-		virtual uint32_t obtenerOrden(std::string filename){return 0;}
+		/********Orden********/
+		/**
+		 * Obtiene el orden del archivo pasado por parametro.
+		 * 
+		 * @param filename Nombre del archivo a buscar el orden.
+		 */ 
+		virtual uint32_t obtenerOrden(std::string filename) { return 0; };
 		
-		/* Refrescador */
+		/********Refrescador********/
+		/**
+		 * 
+		 */ 
 		virtual void refrescar() {}
 		
-		/* DialogDelay */
+		/********DialogDelay********/
+		/**
+		 * Muestra el dialogo de generacion de archivos.
+		 */ 
 		virtual void mostrarDialogDelay() {};
+
+		/**
+		 * Esconde el dialogo de generacion de archivos.
+		 */ 
 		virtual void esconderDialogDelay() {};
 		
 		/* MODELO -> VISTA 
 		 * =============== */
-		/*Files*/ 		 
+		/********Files********/ 		 
+		/**
+		 * Modifica el estado del archivo pasado por parametro en el 
+		 * en el panel de transferencias a DOWNLOADING.
+		 * 
+		 * @param file Nombre del archivo.
+		 */	
 		virtual void start(std::string filename) {};
+		
+		/**
+		 * Modifica el estado del archivo pasado por parametro en el 
+		 * en el panel de transferencias a PAUSED.
+		 * 
+		 * @param file Nombre del archivo.
+		 */	
 		virtual void pause(std::string filename) {};
+		
+		/**
+		 * Modifica el estado del archivo pasado por parametro en el 
+		 * en el panel de transferencias a STOPPED.
+		 * 
+		 * @param file Nombre del archivo.
+		 */	
 		virtual void stop(std::string filename) {};
-		virtual void actualizarDone(std::string file, int piece, int done) {};
-		virtual void actualizarStatus(std::string file, int piece, 
-		                              std::string status) {};
-		virtual void actualizarDownSpeed(std::string file, int piece, 
-		                                 std::string downSpeed) {};
-		virtual void actualizarUpSpeed(std::string file, int piece, 
-		                               std::string upSpeed) {};	
+		
+		/**
+		 * Actualiza el porcentaje de completado del archivo pasado por
+		 * parametro en el panel de transferencias.
+		 * 
+		 * @param file Nombre del archivo.
+		 * @param done Porcentaje del archivo completado.
+		 */
+		virtual void actualizarDone(std::string file, int done) {};
+		
+		/**
+		 * Actualiza el estado del archivo pasado por parametro en el 
+		 * panel de transferencias.
+		 * 
+		 * @param file Nombre del archivo.
+		 * @param status Estado del archivo.
+		 */		
+		virtual void actualizarStatus(std::string file, std::string status) {};
+		
+		/**
+		 * Actualiza velocidad de bajada del archivo pasado por parametro
+		 * en el panel de transferencias.
+		 * 
+		 * @param file Nombre del archivo.
+		 * @param downSpeed Velocidad de bajada.
+		 */		
+		virtual void actualizarDownSpeed(std::string file, std::string downSpeed) {};
+		
+		/**
+		 * Actualiza velocidad de subida del archivo pasado por parametro
+		 * en el panel de transferencias.
+		 * 
+		 * @param file Nombre del archivo.
+		 * @param upSpeed Velocidad de subida.
+		 */	
+		virtual void actualizarUpSpeed(std::string file, std::string upSpeed) {};	
+		
+		/**
+		 * Actualiza el tiempo restante del archivo pasado por parametro
+		 * en el panel de transferencias.
+		 * 
+		 * @param file Nombre del archivo.
+		 * @param time Tiempo restante para completar la descarga.
+		 */	
 		virtual void actualizarTime(std::string file, std::string time) {};	
 		
-		/*Trackers*/
+		/********Trackers********/
+		/**
+		 * Modifica el estado del tracker de la vista.
+		 * 
+		 * @param name Nombre del tracker.
+		 * @param status Estado del tracker.
+		 */ 
 		virtual void modificarStatusTracker(std::string name,
 		                                    std::string status) {};		
+		/**
+		 * Agrega seed al tracker de la vista.
+		 * 
+		 * @param name Nombre del tracker.
+		 * @param seed Nueva cantidad de seed.
+		 */ 
 		virtual void agregarSeedTracker(std::string name, int seed) {};
+
+		/**
+		 * Elimina el tracker pasado por parametro de la vista.
+		 * 
+		 * @param name Nombre del tracker.
+		 */ 
 		virtual void eliminarTracker(std::string name) {};
 							
-		/*Message*/
+		/********Message********/		
+		/**
+		 * Muestra el mensaje pasado por parametro.
+		 * 
+		 * @param message Mensaje a mostrar.
+		 */ 
 		virtual void agregarMessage(std::string message)= 0;
 };
 

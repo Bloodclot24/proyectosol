@@ -251,29 +251,28 @@ void ControladorGUI::stop(std::string filename) {
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarDone(std::string file, int piece, int done) {
+void ControladorGUI::actualizarDone(std::string file, int done) {
 
 	vista->actualizarDone(file, done);	
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarStatus(std::string file, int piece, 
-		                                               std::string status) {
+void ControladorGUI::actualizarStatus(std::string file, std::string status) {
 	
 	vista->actualizarStatus(file, status);
 	actualizarCantActividades();		                              	
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarDownSpeed(std::string file, int piece, 
+void ControladorGUI::actualizarDownSpeed(std::string file, 
 		                                             std::string downSpeed) {
 	
 	vista->actualizarDownSpeed(file, downSpeed);
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarUpSpeed(std::string file, int piece, 
-		                                 std::string upSpeed) {	
+void ControladorGUI::actualizarUpSpeed(std::string file, 
+                                       std::string upSpeed) {	
 	
 	vista->actualizarUpSpeed(file, upSpeed);
 }
