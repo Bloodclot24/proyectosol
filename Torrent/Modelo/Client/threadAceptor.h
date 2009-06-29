@@ -7,19 +7,43 @@ class  ThreadAceptor;
 #include "threads.h"
 #include "peer.h"
 
-class ThreadAceptor:Thread{
+/** 
+ * Clase que en un Thread aparte escucha conexiones del exterior y las
+ * conecta.
+ */
+class ThreadAceptor:public Thread{
 private:
-     Socket *socket;
+     Socket *socket;		/**< El socket por el cual se escuchan
+				 * las conexiones entrantes */
      
 public:
+     /** 
+      * Crea un nuevo ThreadAceptor.
+      * 
+      * @param socket El socket para escuchar conexiones.
+      */
      ThreadAceptor(Socket *socket);
 
+     /** 
+      * Comienza el thread.
+      */
      void comenzar();
 
+     /** 
+      * Finaliza el thread.
+      */
      void finish(void);
 
-     void run();
+     /** 
+      * Metodo principal del Thread.
+      *
+      * @see Thread 
+      */
+     virtual void run();
 
+     /** 
+      * Finaliza el Thread y libera los recursos asociados.
+      */
      ~ThreadAceptor();
 
 };

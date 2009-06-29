@@ -66,7 +66,7 @@ bool BitField::getField(uint32_t index) const{
 }
 
 /****************************************************************************/
-char* BitField::getData(){
+const char* BitField::getData(){
 	return data;
 }	
 

@@ -7,7 +7,9 @@
 #include <string.h>
 #include "bitStream.h"
 
-/****************************************************************************/
+/** 
+ * Clase que se utiliza para calcular el hash SHA1 de una cadena.
+ */
 class Sha1 {
 
 	private:
