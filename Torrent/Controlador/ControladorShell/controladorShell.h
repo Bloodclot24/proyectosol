@@ -33,7 +33,6 @@ class ControladorShell: public Controlador {
 		virtual void mostrarFiles();
 		virtual void mostrarGeneral(std::string numFile);	
 		virtual void mostrarPeers(std::string numFile);
-		virtual void mostrarPieces(std::string numFile);
 		virtual void removeFile(std::string numFile);
 		virtual void startFile(std::string numFile);
 		virtual void pauseFile(std::string numFile);

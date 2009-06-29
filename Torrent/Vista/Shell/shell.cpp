@@ -30,8 +30,6 @@ void mostrarHelp() {
 	std::cout << "muestra la informacion general del # archivo." << std::endl;
 	std::cout << SHOW_PEERS << " file#: "; 
 	std::cout << "muestra los peers del # archivo." << std::endl;		 
-	std::cout << SHOW_PIECES << " file#: ";
-	std::cout << "se muestra las piezas del # archivo." << std::endl;
 	std::cout << EXIT << ": ";; 
 	std::cout << "salir del programa." << std::endl;		 
 }
@@ -79,8 +77,6 @@ void Shell::correr() {
 				controlador->pauseFile(file);
 			else if(command.compare(0, finParametro, STOP) == 0)
 				controlador->stopFile(file);
-			else if(command.compare(0, finParametro, SHOW_PIECES) == 0)
-				controlador->mostrarPieces(file);
 			else if(command.compare(0, finParametro, SHOW_PEERS) == 0)
 				controlador->mostrarPeers(file);
 			else if(command.compare(0, finParametro,SHOW_GENERAL) == 0)
@@ -144,8 +140,8 @@ void Shell::mostrarArchivos() {
 	mostrarSubrayado(MAX_FILES);
 }	
 
-void Shell::mostrarArchivo(int amount, std::string file, int piece, 
-  						   std::string size, int done, std::string status,
+void Shell::mostrarArchivo(int amount, std::string file, std::string size,
+						   int done, std::string status,
   						   std::string upSpeed, std::string downSpeed) {
 	
 	if(file.length() > MAX_FILE)
@@ -157,9 +153,6 @@ void Shell::mostrarArchivo(int amount, std::string file, int piece,
 	std::cout.width(MAX_FILE);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << file;
-	std::cout.width(MAX_PIECE);
-	std::cout.fill(RELLENO);
-	std::cout << std::left << piece;
 	std::cout.width(MAX_SIZE);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << size; 
@@ -248,67 +241,18 @@ void Shell::mostrarPeers() {
 	mostrarSubrayado(MAX_PEERS);
 }
 
-void Shell::mostrarCliente(std::string ip, std::string cliente) {
+void Shell::mostrarCliente(std::string ip, std::string estado) {
 	
-	if(cliente.length() > MAX_CLIENT)
-		cliente.resize(MAX_CLIENT-1);
+	if(estado.length() > MAX_CLIENT)
+		estado.resize(MAX_CLIENT-1);
 	
 	std::cout.width(MAX_CLIENT);
-	std::cout.fill(RELLENO);
-	std::cout << std::left << cliente;
 	std::cout.width(MAX_IP);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << ip;
+	std::cout.fill(RELLENO);
+	std::cout << std::left << estado;
 	std::cout << std::endl;	
-}
-
-/*--------------------------------------------------------------------------*/
-/**Pieces**/
-void Shell::mostrarPieces() {
-
-	std::cout << std::endl;	 							  	
-	std::cout << "++ PIECES ++"<< std::endl;
-	std::cout << "============"<< std::endl;
-	
-	std::cout.width(MAX_PIECE);
-	std::cout.fill(RELLENO);
-	std::cout << std::left << "#";
-	std::cout.width(MAX_SIZE);
-	std::cout.fill(RELLENO);
-	std::cout << std::left << "Size";
-	std::cout.width(MAX_BLOCKS);
-	std::cout.fill(RELLENO);
-	std::cout << std::left << "# of Blocks";
-	std::cout.width(MAX_BLOCK);
-	std::cout.fill(RELLENO);		 
-	std::cout << std::left << "Block";
-	std::cout.width(MAX_COMPLETED);
-	std::cout.fill(RELLENO);
-	std::cout << std::left << "Completed"; 
-	std::cout << std::endl;		
-	mostrarSubrayado(MAX_PIECES);
-}
-
-void Shell::mostrarPiece(int number, std::string size, int blocks, int block,
-		                  int completed) {
-	 
-	std::cout.width(MAX_PIECE);
-	std::cout.fill(RELLENO); 
-	std::cout << std::left << number;
-	std::cout.width(MAX_SIZE);
-	std::cout.fill(RELLENO);
-	std::cout << std::left << size;
-	std::cout.width(MAX_BLOCKS);
-	std::cout.fill(RELLENO);		
-	std::cout << std::left << blocks;
-	std::cout.width(MAX_BLOCK);
-	std::cout.fill(RELLENO);		
-
-	std::cout << std::left << block;
-	std::cout.width(MAX_COMPLETED);
-	std::cout.fill(RELLENO);
-	std::cout << std::left << completed;
-	std::cout << std::endl;		                   	
 }
 
 /*--------------------------------------------------------------------------*/

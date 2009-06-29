@@ -36,6 +36,9 @@ typedef struct {
 } Message;
 
 /****************************************************************************/
+/**
+ * Protocolo de mensajes utilizados para la comunicacion entre peers.
+ */ 
 class ProtocoloBitTorrent {
 	
 	private:

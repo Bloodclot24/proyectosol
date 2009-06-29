@@ -8,7 +8,9 @@
 #include <sstream>
 
 /****************************************************************************/
-/* Clase para construir un request HTTP */
+/*
+ * Clase para construir un request HTTP 
+ */
 class HttpRequest{
 
 private:

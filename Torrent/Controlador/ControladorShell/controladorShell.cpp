@@ -94,7 +94,7 @@ void ControladorShell::mostrarFiles() {
 	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++, contador++) {
 		Torrent* torrent= *it;
 		estado= getEstadoTorrent(torrent->getEstado());
-		shell->mostrarArchivo(contador, torrent->getName(), 0, "", 0, estado, "", "");		
+		shell->mostrarArchivo(contador, torrent->getName(), "", 0, estado, "", "");		
 	}	
 }
 
@@ -120,19 +120,6 @@ void ControladorShell::mostrarPeers(std::string numFile) {
 		shell->mostrarPeers();
 		//PEDIR CLIENTES
 		shell->mostrarCliente("127.0.0.1", "home");
-	}
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorShell::mostrarPieces(std::string numFile) {
-	
-	bool valido= validarNumFile(numFile);
-	
-	if(valido) {
-		std::cout << "Valido" << std::endl;	
-		shell->mostrarPieces();
-		//PEDIR PIEZAS
-		shell->mostrarPiece(1, "200 mb", 50, 4, 2);
 	}
 }
 

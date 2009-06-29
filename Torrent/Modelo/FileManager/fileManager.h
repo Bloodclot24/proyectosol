@@ -11,6 +11,10 @@
 #define COMIENZO_FILENAME "/"
 
 /****************************************************************************/
+/*
+ * Es el administrador de archivos. Es el encargado de crear directorios, 
+ * agregar y obtener piezas de un archivo, parsear los nombres de archivos. 
+ */ 
 class FileManager {
 	
 	private:
