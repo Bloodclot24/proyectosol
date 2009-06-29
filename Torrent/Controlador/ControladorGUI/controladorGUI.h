@@ -3,7 +3,8 @@
 
 #include "../../Controlador/controlador.h"
 #include "../../Vista/GUI/vistaTorrent.h"
-
+class ControladorGUI;
+#include "../../Vista/ventanaCargando.h"
 /****************************************************************************/
 /**
  * El controlador de la vista de la aplicacion Sun Torrent.
@@ -12,7 +13,7 @@ class ControladorGUI: public Controlador {
 
 	private:
 		VistaTorrent* vista;
-		RefreshVista* refrescador;
+		VentanaCargando* ventanaCargando;
 		
 		int all;
 		int downloading;
@@ -111,24 +112,13 @@ class ControladorGUI: public Controlador {
 		 * @param filename Nombre del archivo a buscar el orden.
 		 */ 
 		virtual uint32_t obtenerOrden(std::string filename);
-		
-		/********Refrescador********/
-		/**
-		 * 
-		 */ 		
-		virtual void refrescar();
-		
+			
 		/********DialogDelay********/
 		/**
 		 * Muestra el dialogo de generacion de archivos.
 		 */ 
 		virtual void mostrarDialogDelay();
-		
-		/**
-		 * Esconde el dialogo de generacion de archivos.
-		 */
-		virtual void esconderDialogDelay();
-		
+			
 		/* MODELO -> VISTA 
 		 * =============== */		 
 		/********Files********/ 		 

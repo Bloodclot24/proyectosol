@@ -104,6 +104,9 @@ void VistaTorrent::correr() {
                                           refXml->get_object("liststore_messages");   	
 	treeModel_messages= Glib::RefPtr<Gtk::ListStore>::cast_static(obj_treeModel_messages); 
 	
+	/**/
+	refXml->get_widget("dialog_delay", this->delayDialog);
+	
 	controlador->mostrarFiles();
 	controlador->mostrarTrackers();
 
@@ -736,17 +739,19 @@ void VistaTorrent::cerrarFileChooser() {
 /*DelayDialog*/
 void VistaTorrent::correrDelayDialog() {
 	
-	Gtk::Dialog* delayDialog;
-    refXml->get_widget("dialog_delay", delayDialog);	
-    delayDialog->run();
+    this->delayDialog->run();
 }
 
 /*--------------------------------------------------------------------------*/
 void VistaTorrent::cerrarDelayDialog() {
 	
-	Gtk::Dialog* delayDialog;
-    refXml->get_widget("dialog_delay", delayDialog);
-	delayDialog->hide();	
+	this->delayDialog->hide();	
+}
+
+/*--------------------------------------------------------------------------*/
+bool VistaTorrent::isVisibleDelayDialog() {
+
+	return delayDialog->is_visible();
 }
 
 /****************************************************************************/

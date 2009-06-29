@@ -8,15 +8,15 @@ ControladorGUI::ControladorGUI() {
 	this->downloading= 0;
 	this->completed= 0;
 	this->active= 0;
-	this->refrescador= new RefreshVista(this);
-	this->refrescador->start();
+	this->ventanaCargando= new VentanaCargando(this);
+	ventanaCargando->start();
 	cargarConfig();
 }
 
 /*--------------------------------------------------------------------------*/
 ControladorGUI::~ControladorGUI() {
 
-	this->refrescador->stop();	
+	ventanaCargando->stop();	
 	guardarConfig();
 	delete vista;	
 }
@@ -87,15 +87,19 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 	bool valido= validarExtensionFile(pathTorrent);
 	
 	if(valido) {
-		//refrescador->refrescar();
+		ventanaCargando->show();
 		
 		std::string pathCopia= crearCopiaTorrent(pathTorrent);
 			
 		if(cliente->addTorrent(pathCopia.c_str())) {
-//			if(refrescador->hide())
-//				vista->cerrarDelayDialog();
-				
-			vista->cerrarFileChooser();
+			
+			while(!vista->isVisibleDelayDialog()) {
+				std::cout << "ADENTRO" << std::endl;
+			};
+
+			vista->cerrarDelayDialog();
+			vista->cerrarFileChooser();			
+
 			this->all++;
 			actualizarCantActividades();
 			std::string filename= FileManager::obtenerFilename(pathCopia);
@@ -208,23 +212,10 @@ uint32_t ControladorGUI::obtenerOrden(std::string filename) {
 }
 
 /*--------------------------------------------------------------------------*/
-/**Refrescador**/		
-void ControladorGUI::refrescar() {
-	
-	refrescador->refrescar();
-}
-
-/*--------------------------------------------------------------------------*/
 /** DialogDelay**/
 void ControladorGUI::mostrarDialogDelay() {
 	
 	vista->correrDelayDialog();
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::esconderDialogDelay() {
-
-	vista->cerrarDelayDialog();
 }
 
 /*--------------------------------------------------------------------------*/
