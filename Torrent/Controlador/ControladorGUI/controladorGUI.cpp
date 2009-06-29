@@ -74,7 +74,7 @@ void ControladorGUI::mostrarFiles() {
 		Torrent* torrent= obtenerTorrent(listaOrdenada[i]);
 		std::string estado= getEstadoTorrent(torrent->getEstado());
 		std::cout << "torrent: " << torrent->getName() << std::endl;
-		vista->agregarArchivo(torrent->getName(), 0, "", 0, estado, "", "");
+		vista->agregarArchivo(torrent->getName(), "", 0, estado, "", "", "");
   	}		
 		
 	actualizarCantActividades();					  
@@ -87,26 +87,32 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 	bool valido= validarExtensionFile(pathTorrent);
 	
 	if(valido) {
+		refrescador->refrescar();
+		
 		std::string pathCopia= crearCopiaTorrent(pathTorrent);
 			
 		if(cliente.addTorrent(pathCopia.c_str())) {
+			if(refrescador->hide())
+				vista->cerrarDelayDialog();
+				
 			vista->cerrarFileChooser();
 			this->all++;
 			actualizarCantActividades();
 			std::string filename= FileManager::obtenerFilename(pathCopia);
 			Torrent* torrent= obtenerTorrent(filename);
 			std::string estado= getEstadoTorrent(torrent->getEstado());
-			vista->agregarArchivo(filename, 0, "", 0, estado, 
-							  "", "");			
+			vista->agregarArchivo(filename, "", 0, estado, "", "", "");			
 			mostrarAnnounceUrlTorrent(torrent);
 			vista->borrarMensaje();
 			
 			return true;
 		} else {
+			vista->cerrarDelayDialog();
 			vista->mostrarMensaje("Error al cargar el archivo");
 			return false;
 		}
 	} else {
+		vista->cerrarDelayDialog();
 		vista->mostrarMensaje("Debe seleccionar un archivo .torrent");
 		return false;
 	}
@@ -214,6 +220,19 @@ void ControladorGUI::refrescar() {
 }
 
 /*--------------------------------------------------------------------------*/
+/** DialogDelay**/
+void ControladorGUI::mostrarDialogDelay() {
+	
+	vista->correrDelayDialog();
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::esconderDialogDelay() {
+
+	vista->cerrarDelayDialog();
+}
+
+/*--------------------------------------------------------------------------*/
 /* MODELO -> VISTA 
  * =============== */		 
 /*--------------------------------------------------------------------------*/
@@ -239,14 +258,14 @@ void ControladorGUI::stop(std::string filename) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarDone(std::string file, int piece, int done) {
 
-	vista->actualizarDone(file, piece, done);	
+	vista->actualizarDone(file, done);	
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarStatus(std::string file, int piece, 
 		                                               std::string status) {
 	
-	vista->actualizarStatus(file, piece, status);
+	vista->actualizarStatus(file, status);
 	actualizarCantActividades();		                              	
 }
 
@@ -254,14 +273,20 @@ void ControladorGUI::actualizarStatus(std::string file, int piece,
 void ControladorGUI::actualizarDownSpeed(std::string file, int piece, 
 		                                             std::string downSpeed) {
 	
-	vista->actualizarDownSpeed(file, piece, downSpeed);
+	vista->actualizarDownSpeed(file, downSpeed);
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarUpSpeed(std::string file, int piece, 
 		                                 std::string upSpeed) {	
 	
-	vista->actualizarUpSpeed(file, piece, upSpeed);
+	vista->actualizarUpSpeed(file, upSpeed);
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::actualizarTime(std::string file, std::string time) {
+
+	vista->actualizarTime(file, time);	
 }
 
 /*--------------------------------------------------------------------------*/

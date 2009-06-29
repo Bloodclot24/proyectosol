@@ -32,7 +32,7 @@ private:
 
 public:
 
-	Client();
+	Client(Controlador* controlador);
 	
      /* agrega un torrent */
     bool addTorrent(const char* path, BitField* bitfield= NULL);
