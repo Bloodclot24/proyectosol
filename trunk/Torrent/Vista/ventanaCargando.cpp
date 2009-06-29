@@ -1,17 +1,16 @@
-#include "refreshVista.h"
+#include "ventanaCargando.h"
 
 /****************************************************************************/
-RefreshVista::RefreshVista(Controlador* controlador): cVariable(&mutex) {
+VentanaCargando::VentanaCargando(ControladorGUI* controlador): cVariable(&mutex) {
 	
 	this->corriendo= false;
 	this->pedido= false;
 	this->controlador= controlador;
 	this->showing= true;
-	this->hid= false;
 }
 
 /*--------------------------------------------------------------------------*/
-void RefreshVista::run() {
+void VentanaCargando::run() {
 	
 	this->corriendo= true;		
 
@@ -25,11 +24,8 @@ void RefreshVista::run() {
 		}
 		if(corriendo) {
 			std::cout << "MOSTRANDO" << std::endl; 	
-			if(showing){
-				this->hid= true;
+			if(showing)
 				controlador->mostrarDialogDelay();
-			}
-			hid= false;
 			showing= true;
 		}
 		mutex.unlock();
@@ -37,7 +33,7 @@ void RefreshVista::run() {
 }
 
 /*--------------------------------------------------------------------------*/
-void RefreshVista::refrescar() {
+void VentanaCargando::show() {
 
 	mutex.lock();
 	this->pedido= true;
@@ -46,23 +42,12 @@ void RefreshVista::refrescar() {
 }
 
 /*--------------------------------------------------------------------------*/
-void RefreshVista::stop() {
+void VentanaCargando::stop() {
 
 	this->corriendo= false;
 	mutex.lock();
 	cVariable.signal();
 	mutex.unlock();	
-}
-
-/*--------------------------------------------------------------------------*/
-bool RefreshVista::hide() {
-	
-	if(!hid) {
-		mutex.lock();
-		showing= false;
-		mutex.unlock();
-	}
-	return hid;
 }
 
 /****************************************************************************/

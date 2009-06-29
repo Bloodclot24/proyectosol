@@ -10,7 +10,6 @@ class Controlador;
 #include "../Modelo/Client/client.h"
 #include "../Modelo/Client/bitField.h"
 #include "../Modelo/FileManager/fileManager.h"
-#include "../Vista/refreshVista.h"
 
 #define EXTENSION ".torrent"
 #define TAM_EXTENSION 8
@@ -73,8 +72,6 @@ class Controlador {
 
 		/**
 		 * Agrega una descarga a partir de una URL.
-		 * 
-		 * @param pathTorrent Directorio del archivo .torrent. 
 		 */
 		virtual void addUrlTorrent()= 0;
 
@@ -147,12 +144,6 @@ class Controlador {
 		 */ 
 		virtual uint32_t obtenerOrden(std::string filename) { return 0; };
 		
-		/********Refrescador********/
-		/**
-		 * 
-		 */ 
-		virtual void refrescar() {}
-		
 		/********DialogDelay********/
 		/**
 		 * Muestra el dialogo de generacion de archivos.
@@ -171,7 +162,7 @@ class Controlador {
 		 * Modifica el estado del archivo pasado por parametro en el 
 		 * en el panel de transferencias a DOWNLOADING.
 		 * 
-		 * @param file Nombre del archivo.
+		 * @param filename Nombre del archivo.
 		 */	
 		virtual void start(std::string filename) {};
 		
@@ -179,7 +170,7 @@ class Controlador {
 		 * Modifica el estado del archivo pasado por parametro en el 
 		 * en el panel de transferencias a PAUSED.
 		 * 
-		 * @param file Nombre del archivo.
+		 * @param filename Nombre del archivo.
 		 */	
 		virtual void pause(std::string filename) {};
 		
@@ -187,7 +178,7 @@ class Controlador {
 		 * Modifica el estado del archivo pasado por parametro en el 
 		 * en el panel de transferencias a STOPPED.
 		 * 
-		 * @param file Nombre del archivo.
+		 * @param filename Nombre del archivo.
 		 */	
 		virtual void stop(std::string filename) {};
 		
@@ -195,7 +186,7 @@ class Controlador {
 		 * Actualiza el porcentaje de completado del archivo pasado por
 		 * parametro en el panel de transferencias.
 		 * 
-		 * @param file Nombre del archivo.
+		 * @param filename Nombre del archivo.
 		 * @param done Porcentaje del archivo completado.
 		 */
 		virtual void actualizarDone(std::string file, int done) {};

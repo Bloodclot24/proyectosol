@@ -186,6 +186,8 @@ class VistaTorrent {
 		
 		Glib::RefPtr<Gtk::ListStore> treeModel_messages;
 		ModelColumns_messages columns_messages;
+		
+		Gtk::Dialog* delayDialog;
 						
 	public:
 		/**
@@ -448,6 +450,11 @@ class VistaTorrent {
 		 * Cierra el dialogo esperando la generacion de archivos.
 		 */	
 		void cerrarDelayDialog();
+		
+		/**
+		 * Indica si el dialogo es visible.
+		 */	
+		bool isVisibleDelayDialog();
 };
 
 /****************************************************************************/
