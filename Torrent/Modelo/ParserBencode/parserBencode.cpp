@@ -15,7 +15,7 @@ std::list<BeNode*>* ParserBencode::beDecode(const char* nombreArchivo){
      return list;
 }
 
-/****************************************************************************/
+/*--------------------------------------------------------------------------*/
 std::list<BeNode*>* ParserBencode::beDecode(const std::string& buffer){
      std::list<BeNode*> *list= new std::list<BeNode*>;
     
@@ -182,7 +182,7 @@ BeDict* ParserBencode::beDecodeDict(const std::string *stringDict,
     return(beDict);
 }
 
-/****************************************************************************/
+/*--------------------------------------------------------------------------*/
 void ParserBencode::beFree(std::list<BeNode*>* nodeList){
      std::list<BeNode*>::iterator it;
 
@@ -196,7 +196,7 @@ void ParserBencode::beFree(std::list<BeNode*>* nodeList){
 	  beFree(*it);
 }
 
-/****************************************************************************/
+/*--------------------------------------------------------------------------*/
 void ParserBencode::beFree(BeNode* beNode){
      if(beNode == NULL)
 	  return;
@@ -219,7 +219,7 @@ void ParserBencode::beFree(BeNode* beNode){
      delete beNode;
 }
 
-/****************************************************************************/
+/*--------------------------------------------------------------------------*/
 void ParserBencode::beFree(BeList* list){
      if(list == NULL)
 	  return;
@@ -232,7 +232,7 @@ void ParserBencode::beFree(BeList* list){
      delete list;
 }
 
-/****************************************************************************/
+/*--------------------------------------------------------------------------*/
 void ParserBencode::beFree(BeDict* dict){
      if(dict == NULL)
 	  return;
@@ -245,3 +245,4 @@ void ParserBencode::beFree(BeDict* dict){
      delete dict;
 }
 
+/****************************************************************************/
