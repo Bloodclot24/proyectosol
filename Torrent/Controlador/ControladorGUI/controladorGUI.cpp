@@ -211,20 +211,22 @@ void ControladorGUI::mostrarTrackers() {
 void ControladorGUI::actualizarPestanias(std::string filename) {
 	
 	Torrent* torrent= obtenerTorrent(filename);
-	
+
+	//-General-
 	double done= torrent->getPorcentaje();
 	std::string doneS= obtenerDownloaded(done);
 	std::string status= obtenerStatus(torrent->getEstado());
-	
-	//-General-
 	vista->modificarFilename(filename);
 	vista->modificarDownloaded(doneS);
 	vista->modificarInformacion(status);
 	
 	//-Peers-
 	vista->limpiarListaClientes();
-	//pedir lista clientes y usar
-	//vista->agregarCliente("127.0.0.4", "ReverPass");
+	std::list<std::string> lista= torrent->getListaPeers();
+	std::list<std::string>::iterator it;
+	for(it= lista.begin(); it != lista.end(); it++) {
+		vista->agregarCliente((*it), "");
+	}
 }
 
 /*--------------------------------------------------------------------------*/

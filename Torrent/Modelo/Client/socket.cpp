@@ -75,7 +75,7 @@ bool Socket::escuchar(void){
 /* Envia un buffer de una cierta longitud por el socket */
 /****************************************************************************/
 bool Socket::enviar(const void *buf, int longitud){
-     int retorno = send(s,buf,longitud,MSG_NOSIGNAL);
+     int retorno = send(s,buf,longitud,/*MSG_NOSIGNAL*/0);
      //MSG_NOSIGNAL, evita que se reciba SIGPIPE
      if(retorno == -1)
 	  error = errno;

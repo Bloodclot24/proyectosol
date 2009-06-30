@@ -80,7 +80,7 @@ bool Client::remove(const char* filename) {
 	if(torrent) {
 		torrent->stop();
 		torrents.remove(torrent);
-		delete torrent;
+//		delete torrent;
 		return true;
 	}
 	return false;		
