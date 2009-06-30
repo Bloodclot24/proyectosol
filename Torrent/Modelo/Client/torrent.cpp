@@ -678,17 +678,16 @@ void Torrent::run(){
      //Logica. Basicamente pido datos.
      ProtocoloBitTorrent proto;
      
-//     while(announce() != 0);
-
+     while(announce() != 0);
     
      mutexEstado.lock(); 
      if(estado == DOWNLOADING){
-	  Peer *peer = new
-	       Peer("localhost",						
-		    6881,							
-		    this);
+// 	  Peer *peer = new
+// 	       Peer("localhost",						
+// 		    6881,							
+// 		    this);
 	  
-	  agregarPeer(peer);
+// 	  agregarPeer(peer);
 	  
 	  mutexPeers.lock();
 	  std::list<Peer*>::iterator it;
@@ -786,6 +785,20 @@ void Torrent::run(){
 	       mutexEstado.lock();
 	  }
      }
+
+
+     std::cout << "SIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII\n";
+
+     while(listaPeers.size()>0){
+	  Peer* peer= listaPeers.front();
+	  listaPeers.pop_front();
+	  peer->finish();
+	  delete peer;
+     }
+     while(peersEnEspera.size() > 0){
+	  peersEnEspera.popFront();
+     }
+
      mutexEstado.unlock();
      mutexPeers.unlock();
 }
@@ -811,6 +824,7 @@ void Torrent::peerConected(Peer* peer){
 /****************************************************************************/
 void Torrent::peerChoked(Peer* peer){
      Lock lock(requestMutex);
+     Lock lock2(mutexPeers);
      for(size_t i = 0 ; i<peersEnEspera.size();i++){
 	  Peer *aux = peersEnEspera.popFront();
 	  if(aux != peer)
@@ -818,13 +832,14 @@ void Torrent::peerChoked(Peer* peer){
      }
      peer->setInterested(true);
      peer->setChoke(false);
-     std::cout << "Seal de choke ("<< peersEnEspera.size() <<") \n";
+     std::cout << "Señal de choke ("<< peersEnEspera.size() <<") \n";
      requestCondition.signal();     
 }
 
 /****************************************************************************/
 void Torrent::peerUnchoked(Peer* peer){
      Lock lock(requestMutex);
+     Lock lock2(mutexPeers);
      bool encontrado = false;
      //Antes de agregarlo a la lista de peers, me aseguro que no este
      //repetido
@@ -839,7 +854,7 @@ void Torrent::peerUnchoked(Peer* peer){
      if(!encontrado)
 	  peersEnEspera.push(peer);
 
-     std::cout << "Seal de unchoke ("<< peersEnEspera.size() <<") \n";
+     std::cout << "Señal de unchoke ("<< peersEnEspera.size() <<") \n";
      requestCondition.signal();     
 }
 
@@ -915,16 +930,6 @@ int Torrent::stop(){
      if(this->estado != STOPPED) {
 	  this->estado= STOPPED;
 	  
-	  while(listaPeers.size()>0){
-	       Peer* peer= listaPeers.front();
-	       listaPeers.pop_front();
-	       peer->finish();
-	       delete peer;
-	  }
-	  while(peersEnEspera.size() > 0){
-	       peersEnEspera.popFront();
-	  }
-	       
 	  partsRequested = 0;
 	  
 	  requestMutex.lock();
@@ -951,15 +956,15 @@ int Torrent::pause(){
 }
 
 /****************************************************************************/
-double getPorcentaje(){
+double Torrent::getPorcentaje(){
      return ((double)piezasVerificadas/(double)sizeInPieces)*100;
 }
 /****************************************************************************/
-uint32_t getVelocidadSubida(){
+uint32_t Torrent::getVelocidadSubida(){
      return 0;
 }
 /****************************************************************************/
-uint32_t getVelocidadBajada(){
+uint32_t Torrent::getVelocidadBajada(){
      return 0;
 }
 

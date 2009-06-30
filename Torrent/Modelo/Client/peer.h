@@ -28,6 +28,7 @@ private:
 
      int am_choking, am_interested; /**< Indican si estamos o no
 				     * interesados en el Peer y si le
+
 				     * enviamos o no el mensaje
 				     * 'Choke'. */
 
@@ -64,6 +65,10 @@ private:
 
      uint64_t corrupted;	/**< Cantidad de piezas corruptas que
 				 * nos envio */
+
+     Deque<char>* colaDatos;	/**< Cola de datos para invocar a
+				 * invlidar() en el destructor si no
+				 * es NULL */
 protected:
      /** 
       * Metodo principal de la clase. Toda la logica se desarrolla aca
@@ -200,6 +205,11 @@ public:
       * @see Thread
       */
      void finish();
+
+     /** 
+      * Destruye el Peer.
+      */
+     ~Peer();
 
 };
 
