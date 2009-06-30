@@ -151,6 +151,14 @@ class ControladorGUI: public Controlador {
 		virtual void stop(std::string filename);
 		
 		/**
+		 * Modifica el estado del archivo pasado por parametro en el 
+		 * en el panel de transferencias a COMPLETED.
+		 * 
+		 * @param file Nombre del archivo.
+		 */	
+		virtual void complete(std::string filename);
+		
+		/**
 		 * Actualiza el porcentaje de completado del archivo pasado por
 		 * parametro en el panel de transferencias.
 		 * 

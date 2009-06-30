@@ -8,15 +8,15 @@ ControladorGUI::ControladorGUI(): mutexMensaje() {
 	this->downloading= 0;
 	this->completed= 0;
 	this->active= 0;
-	this->ventanaCargando= new VentanaCargando(this);
-	ventanaCargando->start();
+	//this->ventanaCargando= new VentanaCargando(this);
+	//ventanaCargando->start();
 	cargarConfig();
 }
 
 /*--------------------------------------------------------------------------*/
 ControladorGUI::~ControladorGUI() {
 
-	ventanaCargando->stop();	
+	//ventanaCargando->stop();	
 	guardarConfig();
 	delete vista;	
 }
@@ -250,20 +250,38 @@ void ControladorGUI::mostrarDialogDelay() {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::start(std::string filename) {
 	
+	this->active++;	
+	this->downloading++;
+	actualizarCantActividades();
 	vista->start(filename);
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::pause(std::string filename) {
 	
+	this->active--;		
+	this->downloading--;
+	actualizarCantActividades();
 	vista->pause(filename);
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::stop(std::string filename) {
 	
+	this->active--;		
+	this->downloading--;		
+	actualizarCantActividades();
 	vista->stop(filename);
 }
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::complete(std::string filename) {
+
+	this->downloading--;		
+	this->completed++;		
+	actualizarCantActividades();
+	vista->complete(filename);	
+}	
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarDone(std::string file, int done) {

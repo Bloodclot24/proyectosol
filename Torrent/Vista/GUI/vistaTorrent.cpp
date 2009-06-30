@@ -120,26 +120,16 @@ std::string getPathStatusIcon(std::string status) {
 	
 	std::string path;
 	
-	if(status == "Downloading fail")
-		path= PATH_DOWN_FAIL;
-	else if(status == "Downloading")
+	if(status == "Downloading")
 		path= PATH_DOWN_OK;
-	else if(status == "Downloading queued")
-		path= PATH_DOWN_QUEUED;
-	else if(status == "Seeding fail")
-		path= PATH_SEED_FAIL;
 	else if(status == "Seeding")
 		path= PATH_SEED_OK;
-	else if(status == "Seeding queued")
-		path= PATH_SEED_QUEUED;
 	else if(status == "Complete" || status == "Completed")
 		path= PATH_COMPLETE;
 	else if(status == "Paused")
 		path= PATH_PAUSED;
 	else if(status == "Stopped" || status == "Inactive")
 		path= PATH_STOPPED;
-	else if(status == "Error")
-		path= PATH_ERROR;
 	else if(status == "Active")
 		path= PATH_ACTIVE;
 	else if(status == "All")
@@ -528,6 +518,18 @@ void VistaTorrent::stop(std::string filename) {
   	row[columns_transf.col_downSpeed]= "";
 }
 
+/*--------------------------------------------------------------------------*/
+void VistaTorrent::complete(std::string filename) {
+	
+	Gtk::TreeModel::Row row= buscarRow_transf(filename);
+	
+	row[columns_transf.col_status]= "Completed";
+ 	row[columns_transf.col_icon]= Gdk::Pixbuf::create_from_file(
+  										getPathStatusIcon("Completed"));
+	row[columns_transf.col_upSpeed]= "";
+  	row[columns_transf.col_downSpeed]= "";	
+}
+	
 /*--------------------------------------------------------------------------*/
 Gtk::TreeModel::Row VistaTorrent::buscarRow_transf(std::string file) {
 	

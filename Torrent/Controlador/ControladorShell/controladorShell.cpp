@@ -108,7 +108,7 @@ void ControladorShell::mostrarFiles() {
 		std::string ETA= obtenerETA(3600*24+1);
 				
 		estado= obtenerStatus(torrent->getEstado());
-		shell->mostrarArchivo(contador, name, size, 4, status, downSpeed, 
+		shell->mostrarArchivo(contador, name, size, done, status, downSpeed, 
 		                      upSpeed, ETA);		
 	}	
 }
