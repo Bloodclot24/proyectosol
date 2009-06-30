@@ -423,6 +423,11 @@ class VistaTorrent {
 		 */	
 		void disableAddUrlTorrent();
 		
+		/**
+		 * Deshabilita el boton Pause del toolbar.
+		 */	
+		void disablePause();
+		
 		/**********FileChooser**********/
 		/**
 		 * Agrega un mensaje en el dialogo File Chooser.
