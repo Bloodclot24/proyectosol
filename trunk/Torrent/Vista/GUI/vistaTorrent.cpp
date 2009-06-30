@@ -106,6 +106,8 @@ void VistaTorrent::correr() {
 	
 	/**/
 	refXml->get_widget("dialog_delay", this->delayDialog);
+    refXml->get_widget("fileChooserDialog", this->fileChooserDialog);
+	
 	
 	controlador->mostrarFiles();
 	controlador->mostrarTrackers();
@@ -267,9 +269,6 @@ void VistaTorrent::load_toolBar() {
 /*---*/
 void VistaTorrent::on_tool_add_torrent_clicked() {
 
-	Gtk::FileChooserDialog* fileChooserDialog;
-    refXml->get_widget("fileChooserDialog", fileChooserDialog);
-  	
   	bool fin= false;
   	int result;
   	while(!fin) {
@@ -703,11 +702,7 @@ void VistaTorrent::limpiarListaClientes() {
 void VistaTorrent::agregarMessage(std::string message) {
 	
 	Gtk::TreeModel::Row row= *(treeModel_messages->append());
-  
 	row[columns_messages.col_message]= message;
-	
-	std::cout << message << std::endl;
-	std::cout << row[columns_messages.col_message] << std::endl;	
 }
 
 /*--------------------------------------------------------------------------*/
@@ -730,8 +725,6 @@ void VistaTorrent::borrarMensaje() {
 /*--------------------------------------------------------------------------*/
 void VistaTorrent::cerrarFileChooser() {
 	
-	Gtk::FileChooserDialog* fileChooserDialog;
-    refXml->get_widget("fileChooserDialog", fileChooserDialog);
     fileChooserDialog->hide();
 }
 

@@ -15,7 +15,6 @@ class VentanaCargando: public Thread {
 		ControladorGUI* controlador;
 		bool corriendo;
 		bool pedido;
-		bool showing;
 		Mutex mutex;
 		CVariable cVariable;
 	

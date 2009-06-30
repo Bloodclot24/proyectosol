@@ -36,20 +36,20 @@ bool Client::start(const char* filename){
 //     EstadoTorrent estado= torrent->getEstadoTorrent(); 
 //     if(torrent && (estado ==  PAUSED || estado ==  STOPPED)) {
 //	  /* por ahora, nada mas para probar comienza solo el primer torrent */
-	  Torrent* torrent = torrents.front(); 
-//	  //Torrent* torrent= buscarTorrent(filename);
+////	  Torrent* torrent = torrents.front(); 
+	  Torrent* torrent= buscarTorrent(filename);
 //	return 0;  
 	
 		//COMENTE ASI NO CORRE
 		
 
-	 return torrent->start();
-//    if(torrent) {
-//		torrent->start();
-//		return true;
-//	} else
-//		return false;	
-//	}
+//	 return torrent->start();
+    if(torrent) {
+		torrent->start();
+		return true;
+	} else
+		return false;	
+	}
 }
 
 /*--------------------------------------------------------------------------*/
@@ -107,13 +107,6 @@ Torrent* Client::buscarTorrent(const char* filename) {
 }
 
 /*--------------------------------------------------------------------------*/
-//void Client::setBitFieldTorrent(const char* filename, char* data) {
-//	
-//	Torrent* torrent= buscarTorrent(filename);
-//	torrent->getBitField()->setData(data);
-//}
-
-/*--------------------------------------------------------------------------*/
 const std::list<Torrent*>* Client::getListaTorrents(){
 	return &torrents;
 }
@@ -136,6 +129,24 @@ uint32_t Client::getNumPeersForTorrent(){
 /*--------------------------------------------------------------------------*/
 void Client::setNumPeersForTorrent(uint32_t numeroDePeers){
 	this->cantidadDePeers =  numeroDePeers;
+}
+
+/*--------------------------------------------------------------------------*/
+bool Client::existeTorrent(const char* filename){
+	
+	bool encontrado= false;
+	std::list<Torrent*>::iterator it;
+	
+	for(it= torrents.begin(); it!= torrents.end() && !encontrado; it++) {     	
+		if(strcmp(filename, (*it)->getName().c_str()) == 0){
+	    	encontrado = true;
+		    break;
+	  	}
+   	}
+   
+	if(encontrado)
+		return true;
+	return false;
 }
 
 /*--------------------------------------------------------------------------*/
