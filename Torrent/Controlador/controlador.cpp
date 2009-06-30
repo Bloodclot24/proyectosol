@@ -56,7 +56,6 @@ bool Controlador::guardarConfig() {
 	uint32_t contador = 0;
 	std::string snumero;
 	uint32_t auxiliar;	
-	std::stringstream cvz;
 	const std::list<Torrent*>* listaTorrents  = this->cliente->getListaTorrents();
 	std::list<Torrent*>::const_iterator it;
 	config.open(NAME_FILE_CONFIG , std::fstream::out);
@@ -68,7 +67,7 @@ bool Controlador::guardarConfig() {
 		config.write((const char*)&auxiliar,sizeof(uint32_t));	
 		
 	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++,contador++){
-		
+		std::stringstream cvz;
 		BitField* bitfield = (*it)->getBitField();
    		cvz <<  contador;
    		snumero = cvz.str();
@@ -106,7 +105,7 @@ bool Controlador::guardarConfig() {
 		auxiliar= this->obtenerOrden((*it)->getName());
 		std::cout << "Se va a escribir orden en config "<<auxiliar<<"\n";
 		config.write((const char*)&auxiliar, sizeof(uint32_t));
-		}
+	}
 	config.close();		
 	
 	std::cout << "----------- TERMINANDO CONFIG -------------" << std::endl;
@@ -253,31 +252,6 @@ bool Controlador::cargarConfig() {
 }
 
 /*--------------------------------------------------------------------------*/
-std::string Controlador::getEstadoTorrent(EstadoTorrent estado) {
-	
-	std::string sEstado;
-	
-	switch(estado) {
-		case STOPPED: 
-			sEstado= "Stopped";
-		break;
-		case PAUSED:
-			sEstado= "Paused";
-		break;	
-		case DOWNLOADING:
-			sEstado= "Downloading";
-		break;
-		case SEEDING:
-			sEstado= "Seeding";
-		break;
-		case ERROR:
-		break;	
-	}
-	
-	return sEstado;			
-}
-
-/*--------------------------------------------------------------------------*/
 Torrent* Controlador::obtenerTorrent(std::string filename) {
 	
 	const std::list<Torrent*>* listaTorrents= this->cliente->getListaTorrents();
@@ -295,6 +269,157 @@ Torrent* Controlador::obtenerTorrent(std::string filename) {
 	if(encontrado)
 	     return *(it);
 	return NULL;
+}
+
+/*--------------------------------------------------------------------------*/
+/***Preparar Datos para mostrar en la vista****/
+/*--------------------------------------------------------------------------*/
+std::string intToString(uint32_t num) {
+	
+	std::string numS;
+	std::stringstream cvz;
+	cvz.width();
+	cvz << num;
+	numS= cvz.str();		
+	
+	return numS;
+}
+
+/*--------------------------------------------------------------------------*/
+std::string Controlador::obtenerSize(uint64_t size) {
+	
+	int contador= 0;
+	while((size/1024) > 0) {
+		size= size/1024;
+		contador++;
+	}
+	
+	std::string sizeS;
+	std::stringstream cvz;
+	cvz.width();
+	cvz << size;
+	sizeS= cvz.str();
+	
+	switch(contador) {
+		case 0: 	
+			sizeS+= " b";
+			break;
+		case 1: 	
+			sizeS+= " kb";
+			break;
+		case 2: 	
+			sizeS+= " mb";
+			break;
+		case 3: 	
+			sizeS+= " gb";
+			break;		
+		case 4:
+			sizeS+= " tb";
+			break;		
+		default:
+			break;					
+	}
+	
+	return(sizeS);
+}
+
+/*--------------------------------------------------------------------------*/
+std::string Controlador::obtenerDownloaded(double done) {
+	
+	std::string doneS;
+	std::stringstream cvz;
+	cvz.width();
+	cvz << trunc(done);
+	doneS= cvz.str();
+	doneS+= " %";
+	
+	return(doneS);	
+}
+
+/*--------------------------------------------------------------------------*/
+std::string Controlador::obtenerVelocidad(uint32_t length) {
+	
+	int contador= 0;
+	while((length/1024) > 0) {
+		length= length/1024;
+		contador++;
+	}
+	
+	std::string lengthS= intToString(length);
+	
+	switch(contador) {
+		case 0: 	
+			lengthS+= " b/s";
+			break;
+		case 1: 	
+			lengthS+= " kb/s";
+			break;
+		case 2: 	
+			lengthS+= " mb/s";
+			break;
+		default:
+			break;					
+	}	
+
+	return(lengthS);	
+}
+
+/*--------------------------------------------------------------------------*/
+std::string Controlador::obtenerETA(uint32_t time) {
+	
+	int segs= time%60;
+	int mins= (time/60)%60;
+	int hrs= (time/3600)%24;
+	int dias= (time/3600)/24;
+	
+	std::string timeS;
+	
+	if(dias > 0) {
+		timeS+= intToString(dias);
+		timeS+= "d ";
+	}
+	
+	if(hrs > 0) {
+		timeS+= intToString(hrs);
+		timeS+= "h ";
+	}
+	
+	if(mins > 0) {
+		timeS+= intToString(mins);
+		timeS+= "m ";
+	}
+
+	if(segs > 0) {
+		timeS+= intToString(segs);
+		timeS+= "s ";
+	}
+	
+	return(timeS);		
+}
+
+/*--------------------------------------------------------------------------*/
+std::string Controlador::obtenerStatus(EstadoTorrent status) {
+	
+	std::string sStatus;
+	
+	switch(status) {
+		case STOPPED: 
+			sStatus= "Stopped";
+		break;
+		case PAUSED:
+			sStatus= "Paused";
+		break;	
+		case DOWNLOADING:
+			sStatus= "Downloading";
+		break;
+		case SEEDING:
+			sStatus= "Seeding";
+		break;
+		case ERROR:
+		break;	
+	}
+	
+	return sStatus;			
 }
 
 /****************************************************************************/

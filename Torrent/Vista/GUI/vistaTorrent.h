@@ -188,6 +188,7 @@ class VistaTorrent {
 		ModelColumns_messages columns_messages;
 		
 		Gtk::Dialog* delayDialog;
+		Gtk::FileChooserDialog* fileChooserDialog;
 						
 	public:
 		/**

@@ -1,7 +1,7 @@
 #include "controladorGUI.h"
 
 /****************************************************************************/
-ControladorGUI::ControladorGUI() {
+ControladorGUI::ControladorGUI(): mutexMensaje() {
 	
 	this->vista= new VistaTorrent(this);
 	this->all= 0;
@@ -24,7 +24,7 @@ ControladorGUI::~ControladorGUI() {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::correr() {
 	
-	//provisoriamente estos botones no estaran habilitados
+	//provisoriamente este boton no estaran habilitado
 	vista->disableAddUrlTorrent();
 	vista->correr();
 }
@@ -55,7 +55,8 @@ void ControladorGUI::mostrarAnnounceUrlTorrent(Torrent* torrent) {
 		const std::list<std::string>* listaUrl= torrent->getAnnounceUrlList();
 		std::list<std::string>::const_iterator it;
 		for(it = listaUrl->begin(); it != listaUrl->end(); it++)
-			vista->agregarTracker((*it), "Disponible", torrent->getPeersActivos());
+			vista->agregarTracker((*it), "Disponible", 
+			                      torrent->getPeersActivos());
 	}
 }
 
@@ -65,16 +66,33 @@ void ControladorGUI::mostrarAnnounceUrlTorrent(Torrent* torrent) {
 /*--------------------------------------------------------------------------*/
 /**Files**/
 /*--------------------------------------------------------------------------*/
+void ControladorGUI::mostrarFile(Torrent* torrent) {
+
+	std::string size= obtenerSize(torrent->getTotalSize());
+	double done= torrent->getPorcentaje();
+	std::string status= obtenerStatus(torrent->getEstado());
+	std::string downSpeed= obtenerVelocidad(torrent->getVelocidadBajada());
+	std::string upSpeed= obtenerVelocidad(torrent->getVelocidadSubida());
+	
+	/*HARDCODEADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*/
+	std::string ETA= obtenerETA(3600*24+1);
+	
+	std::cout << "hola" << torrent->getPorcentaje() << std::endl;
+		
+	vista->agregarArchivo(torrent->getName(), size, done, status, 
+		                      downSpeed, upSpeed, ETA);	
+}
+
+/*--------------------------------------------------------------------------*/
 void ControladorGUI::mostrarFiles() {
 	
 	std::cout << "---MOSTRANDO LISTA---" << std::endl;
 
   	for(uint32_t i= 0; i < listaOrdenada.size(); i++) {
+		
 		this->all++;
 		Torrent* torrent= obtenerTorrent(listaOrdenada[i]);
-		std::string estado= getEstadoTorrent(torrent->getEstado());
-		std::cout << "torrent: " << torrent->getName() << std::endl;
-		vista->agregarArchivo(torrent->getName(), "", 0, estado, "", "", "");
+		mostrarFile(torrent);
   	}		
 		
 	actualizarCantActividades();					  
@@ -85,27 +103,35 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 
 	//checkeo que sea un .torrent
 	bool valido= validarExtensionFile(pathTorrent);
+	std::string filename= FileManager::obtenerFilename(pathTorrent);
+	bool existe= cliente->existeTorrent(filename.c_str());
 	
-	if(valido) {
-		ventanaCargando->show();
+	if(valido && !existe) {
+//		ventanaCargando->show();
 		
 		std::string pathCopia= crearCopiaTorrent(pathTorrent);
 			
 		if(cliente->addTorrent(pathCopia.c_str())) {
 			
-			while(!vista->isVisibleDelayDialog()) {
-				std::cout << "ADENTRO" << std::endl;
-			};
-
-			vista->cerrarDelayDialog();
+//			std::cout << "ANTES" << vista->isVisibleDelayDialog() << std::endl;
+//			
+//			
+//			while(!vista->isVisibleDelayDialog()) {
+//				std::cout << "ADENTRO" << std::endl;
+//			};
+//
+//			std::cout << "DESPUES" << vista->isVisibleDelayDialog() << std::endl;
+//
+//
+//			vista->cerrarDelayDialog();
 			vista->cerrarFileChooser();			
 
 			this->all++;
 			actualizarCantActividades();
-			std::string filename= FileManager::obtenerFilename(pathCopia);
+			
+			filename= FileManager::obtenerFilename(pathCopia);
 			Torrent* torrent= obtenerTorrent(filename);
-			std::string estado= getEstadoTorrent(torrent->getEstado());
-			vista->agregarArchivo(filename, "", 0, estado, "", "", "");			
+			mostrarFile(torrent);
 			mostrarAnnounceUrlTorrent(torrent);
 			vista->borrarMensaje();
 			
@@ -115,11 +141,14 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 			vista->mostrarMensaje("Error al cargar el archivo");
 			return false;
 		}
-	} else {
-		vista->cerrarDelayDialog();
-		vista->mostrarMensaje("Debe seleccionar un archivo .torrent");
-		return false;
 	}
+	
+	vista->cerrarDelayDialog();
+	if(!valido)
+		vista->mostrarMensaje("Debe seleccionar un archivo .torrent");
+	else
+		vista->mostrarMensaje("El archivo seleccionado ya existe");
+	return false;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -192,14 +221,18 @@ void ControladorGUI::mostrarTrackers() {
 /**Todas las Pestanias**/
 void ControladorGUI::actualizarPestanias(std::string filename) {
 	
-	//General
-	vista->modificarFilename(filename);
-	//pedir completado
-	vista->modificarDownloaded("4%");
-	//pedir estado del archivo 
-	//vista->modificarInformacion("Waiting...");
+	Torrent* torrent= obtenerTorrent(filename);
 	
-	//Peers
+	double done= torrent->getPorcentaje();
+	std::string doneS= obtenerDownloaded(done);
+	std::string status= obtenerStatus(torrent->getEstado());
+	
+	//-General-
+	vista->modificarFilename(filename);
+	vista->modificarDownloaded(doneS);
+	vista->modificarInformacion(status);
+	
+	//-Peers-
 	vista->limpiarListaClientes();
 	//pedir lista clientes y usar
 	//vista->agregarCliente("127.0.0.4", "ReverPass");
@@ -300,9 +333,13 @@ void ControladorGUI::eliminarTracker(std::string name) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::agregarMessage(std::string message) {
 	
-	std::cout << "MENSAJE: --------> " << message << std::endl;
+	mutexMensaje.lock();
 	
+	sleep(5);
+	
+	std::cout << "MENSAJE VISTA: --------> " << message << std::endl;
 	vista->agregarMessage(message);
+	mutexMensaje.unlock();
 }
 
 /****************************************************************************/

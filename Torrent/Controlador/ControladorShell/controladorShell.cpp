@@ -93,7 +93,7 @@ void ControladorShell::mostrarFiles() {
 	std::string estado;
 	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++, contador++) {
 		Torrent* torrent= *it;
-		estado= getEstadoTorrent(torrent->getEstado());
+		estado= obtenerStatus(torrent->getEstado());
 		shell->mostrarArchivo(contador, torrent->getName(), "", 0, estado, "", "");		
 	}	
 }
@@ -105,7 +105,7 @@ void ControladorShell::mostrarGeneral(std::string numFile) {
 	
 	if(valido) {
 		Torrent* torrent= obtenerTorrent(obtenerFilename(numFile));
-		std::string estado= getEstadoTorrent(torrent->getEstado());
+		std::string estado= obtenerStatus(torrent->getEstado());
 		shell->mostrarGeneral(obtenerFilename(numFile), "", estado);
 	}
 }

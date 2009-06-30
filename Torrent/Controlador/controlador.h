@@ -30,7 +30,6 @@ class Controlador {
 		std::vector<std::string> listaOrdenada; 
 		
 		bool validarExtensionFile(std::string path);
-		std::string getEstadoTorrent(EstadoTorrent estado);
 		Torrent* obtenerTorrent(std::string filename);
 				
 		/*Persistencia*/
@@ -38,7 +37,14 @@ class Controlador {
 		bool cargarConfig();
 		std::string crearCopiaTorrent(std::string pathTorrent);
 		virtual void mostrarAnnounceUrlTorrent(Torrent* torrent)= 0;
-						
+
+		/*Preparar Datos para mostrar en la vista*/
+		std::string obtenerSize(uint64_t size);
+		std::string obtenerDownloaded(double done);
+		std::string obtenerVelocidad(uint32_t length);
+		std::string obtenerETA(uint32_t time);		
+		std::string obtenerStatus(EstadoTorrent status);
+								
 	public:
 		/**
 		 * Crea un controlador. 

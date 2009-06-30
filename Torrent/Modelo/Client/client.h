@@ -51,10 +51,6 @@ public:
 	/* borra la descarga de un torrent */
     bool remove(const char* filename);
 
-	//TODO: murio esto :p
-//	/* modifica el bitfield del torrent */
-//	void setBitFieldTorrent(const char* filename, char* data);
-
 	/* obtiene la lista de torrents */
 	const std::list<Torrent*>* getListaTorrents();
 	
@@ -69,6 +65,9 @@ public:
 	
 	/* modifica el numero de peers para un torrent */
 	void setNumPeersForTorrent(uint32_t numeroDePeers);
+
+	/* informa si el .torrent ya esta descargando */
+	bool existeTorrent(const char* filename);
 	
     /* destruye el cliente y libera todos los torrents */
     ~Client();

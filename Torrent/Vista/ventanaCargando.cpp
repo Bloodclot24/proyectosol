@@ -6,7 +6,6 @@ VentanaCargando::VentanaCargando(ControladorGUI* controlador): cVariable(&mutex)
 	this->corriendo= false;
 	this->pedido= false;
 	this->controlador= controlador;
-	this->showing= true;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -24,9 +23,7 @@ void VentanaCargando::run() {
 		}
 		if(corriendo) {
 			std::cout << "MOSTRANDO" << std::endl; 	
-			if(showing)
-				controlador->mostrarDialogDelay();
-			showing= true;
+			controlador->mostrarDialogDelay();
 		}
 		mutex.unlock();
 	}

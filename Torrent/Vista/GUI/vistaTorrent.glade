@@ -661,6 +661,7 @@
                     <property name="headers_clickable">False</property>
                     <child>
                       <object class="GtkTreeViewColumn" id="treeviewcolumn_message">
+                        <property name="resizable">True</property>
                         <child>
                           <object class="GtkCellRendererText" id="cellrenderertext_message"/>
                           <attributes>
