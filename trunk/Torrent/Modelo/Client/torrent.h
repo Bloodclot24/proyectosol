@@ -276,9 +276,10 @@ public:
       *
       * @param size El tamao del buffer de datos.
       * 
-      * @return Devuelve 0 si tuvo exito o -1 en caso contrario.
+      * @return Devuelve la cantidad de bytes leidos si tuvo exito o
+      * -1 en caso contrario.
       */
-     int readData(char* data, uint32_t index, uint32_t offset, uint32_t size);
+     uint32_t readData(char* data, uint32_t index, uint32_t offset, uint32_t size);
 
      /** 
       * Metodo que llaman los peers cuando se conectan exitosamente.

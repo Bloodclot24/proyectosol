@@ -311,7 +311,7 @@ void Peer::run(){
 		    std::cout << "Recibo el piece" << respuesta->index << " de tamanio " << respuesta->length << std::endl;
 		    std::cout << "Se escribe en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
 			 ". Que corresponde al indice: " << respuesta->index << std::endl;
-		    torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, respuesta->length);
+		    torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, bloque.length());
 		    
 		    requests.hold();
 		    int size = requests.size();
@@ -330,9 +330,13 @@ void Peer::run(){
 			 }
 		    }
 		    requests.release();
-		    downloaded += respuesta->length;
-		    if(ds != NULL)
-			 torrent->peerTransferFinished(this,ds);
+		    if(ds != NULL){
+			 downloaded += respuesta->length;
+			 if(bloque.length() == respuesta->length)
+			      torrent->peerTransferFinished(this,ds);
+			 else
+			      torrent->peerTransferCanceled(this,ds);
+		    }
 		    else stop();
 		    break;
 	       }
@@ -373,6 +377,8 @@ void Peer::run(){
 
 void Peer::finish(){
      Thread::finish();
+     if(colaDatos)
+	  colaDatos->invalidate();
 }
 
 Peer::~Peer(){
