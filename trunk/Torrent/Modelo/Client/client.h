@@ -17,7 +17,9 @@ class Client;
 #define PEERS_NUM_WANT 50
 #define MAX_REQUESTS   10
 
-/* Modelo del cliente torrent */
+/**
+ * Modelo del cliente torrent
+ */
 class Client {
 private:
      std::string nickUsuario;
@@ -36,40 +38,93 @@ public:
 
 	Client(Controlador* controlador);
 	
-     /* agrega un torrent */
+     /**
+      * Agrega un torrent.
+      * 
+      * @param path Ruta del archivo .torrent.
+      * @param bitfieldGuardado El BitField con la informacion de las
+      * piezas del Torrent. Si es NULL o no se especifica, se crea un
+      * nuevo BitField. En este ultimo caso, si alguno de los archivos
+      * contenidos en el '.torrent' ya existian en disco, se realiza
+      * una verificacion de cada una de las piezas.
+      */
     bool addTorrent(const char* path, BitField* bitfield= NULL);
 
-     /* comienza a descargar un torrent */
+     /**
+      * Comienza a descargar un torrent.
+      * 
+      * @param filename Nombre del archivo torrent.  
+      */
     bool start(const char* filename);
 
-	/* detiene la descarga de un torrent */
+	/**
+	 * Detiene la descarga de un torrent. 
+	 *
+     * @param filename Nombre del archivo torrent.  
+	 */
     bool stop(const char* filename);
      
-	/* suspende la descarga de un torrent */
+	/**
+	 * Suspende la descarga de un torrent.
+	 * 
+     * @param filename Nombre del archivo torrent.  
+	 */
     bool pause(const char* filename);
 
-	/* borra la descarga de un torrent */
+	/**
+	 * Borra la descarga de un torrent. 
+	 * 
+     * @param filename Nombre del archivo torrent.  
+	 */
     bool remove(const char* filename);
 
-	/* obtiene la lista de torrents */
+	/**
+	 * Obtiene la lista de torrents. 
+	 * 
+     * @return La lista de torrent.  
+	 */
 	const std::list<Torrent*>* getListaTorrents();
 	
-	/* obtiene el puerto de conexion por defecto */
+	/**
+	 * Obtiene el puerto de conexion por defecto. 
+	 * 
+	 * @return El puerto de conexion por defecto.
+	 */
 	uint32_t  getPortDefault();
 	
-	/* modifica el puerto de conexion por defecto */
+	/**
+	 * Modifica el puerto de conexion por defecto. 
+	 * 
+	 * @param puerto El puerto de conexion por defecto a setear.
+	 */
 	void setPortDefault(uint32_t puerto);
 	
-	/* obtiene el numero de peers para un torrent */
+	/**
+	 * Obtiene el numero de peers para un torrent. 
+	 * 
+	 * @return El numero de peers para un torrent.
+	 */
 	uint32_t getNumPeersForTorrent();
 	
-	/* modifica el numero de peers para un torrent */
+	/**
+	 * Modifica el numero de peers para un torrent.
+	 * 
+	 * @param numeroDePeers El numero de peers para un torrent a setear.
+	 */
 	void setNumPeersForTorrent(uint32_t numeroDePeers);
 
-	/* informa si el .torrent ya esta descargando */
+	/**
+	 * Informa si el .torrent ya esta descargando.
+	 * 
+     * @param filename Nombre del archivo torrent.
+     *
+     * @return Devuelve true si el archivo ya existe, false caso contrario.  
+	 */
 	bool existeTorrent(const char* filename);
 	
-    /* destruye el cliente y libera todos los torrents */
+    /**
+     * Destruye el cliente y libera todos los torrents. 
+     */
     ~Client();
 };
 

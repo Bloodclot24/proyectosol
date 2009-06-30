@@ -12,10 +12,10 @@
 #define RELLENO ' '
 
 #define MAX_AMOUNT 3
-#define MAX_FILE 45
+#define MAX_FILE 30
 #define MAX_PIECE 7
 #define MAX_SIZE 10
-#define MAX_DONE 7
+#define MAX_DONE 10
 #define MAX_STATUS 15
 #define MAX_SPEED 15
 #define MAX_NAME 50
@@ -25,10 +25,10 @@
 #define MAX_COMPLETED 12
 #define MAX_BLOCKS 15
 #define MAX_BLOCK 7
-#define MAX_FILES 107
+#define MAX_FILES 113
 #define MAX_TRACKERS 72
 #define MAX_PEERS 35
-#define MAX_PIECES 51
+#define MAX_TIME 15
 #define MAX_KEY 51
 #define MAX_DIC 51
 
@@ -45,7 +45,6 @@
 #define START "start"
 #define PAUSE "pause"
 #define STOP "stop"
-#define SHOW_GENERAL "general"
 #define SHOW_PEERS "peers"
 
 /*General Keys*/
@@ -106,7 +105,7 @@ class Shell {
 		 */
 		void mostrarArchivo(int amount, std::string file, std::string size,
 		                    int done, std::string status, std::string upSpeed,
-		                    std::string downSpeed);
+		                    std::string downSpeed, std::string ETA);
 				                    
 		/*General*/
 		/**

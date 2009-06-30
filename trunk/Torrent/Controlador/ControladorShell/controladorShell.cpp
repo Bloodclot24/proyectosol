@@ -4,7 +4,6 @@
 ControladorShell::ControladorShell() {
 
 	this->shell= new Shell(this);	
-	this->cantFiles= 0;
 	this->contadorOrden= 0;
 	cargarConfig();
 }
@@ -43,8 +42,10 @@ void ControladorShell::mostrarAnnounceUrlTorrent(Torrent* torrent) {
 bool ControladorShell::addTorrent(std::string pathTorrent) {
 	
 	bool valido= validarExtensionFile(pathTorrent);
+	std::string filename= FileManager::obtenerFilename(pathTorrent);
+	bool existe= cliente->existeTorrent(filename.c_str());
 	
-	if(valido) {
+	if(valido && !existe) {
 		std::string pathCopia= crearCopiaTorrent(pathTorrent);
 		
 		if(pathCopia.length() == 0) {
@@ -52,17 +53,20 @@ bool ControladorShell::addTorrent(std::string pathTorrent) {
 			return false;
 		}
 		
-		if(cliente->addTorrent(pathCopia.c_str())) {
-			this->cantFiles++;
+		if(cliente->addTorrent(pathCopia.c_str()))
 			return true;
-		} else {
+		 else {
 			shell->mostrarMessage("Error al cargar el archivo");
 			return false;
 		}
-	} else {
+	} 
+	
+	if(!valido)
 		shell->mostrarMessage("Debe seleccionar un archivo .torrent");
-		return false;
-	}
+	else
+		shell->mostrarMessage("El archivo seleccionado ya existe");
+	
+	return false;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -93,21 +97,20 @@ void ControladorShell::mostrarFiles() {
 	std::string estado;
 	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++, contador++) {
 		Torrent* torrent= *it;
+		
+		std::string name= torrent->getName();		
+		std::string size= obtenerSize(torrent->getTotalSize());
+		double done= torrent->getPorcentaje();
+		std::string status= obtenerStatus(torrent->getEstado());
+		std::string downSpeed= obtenerVelocidad(torrent->getVelocidadBajada());
+		std::string upSpeed= obtenerVelocidad(torrent->getVelocidadSubida());
+		/*HARDCODEADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*/
+		std::string ETA= obtenerETA(3600*24+1);
+				
 		estado= obtenerStatus(torrent->getEstado());
-		shell->mostrarArchivo(contador, torrent->getName(), "", 0, estado, "", "");		
+		shell->mostrarArchivo(contador, name, size, 4, status, downSpeed, 
+		                      upSpeed, ETA);		
 	}	
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorShell::mostrarGeneral(std::string numFile) {
-
-	bool valido= validarNumFile(numFile);
-	
-	if(valido) {
-		Torrent* torrent= obtenerTorrent(obtenerFilename(numFile));
-		std::string estado= obtenerStatus(torrent->getEstado());
-		shell->mostrarGeneral(obtenerFilename(numFile), "", estado);
-	}
 }
 
 /*--------------------------------------------------------------------------*/
@@ -174,9 +177,9 @@ void ControladorShell::stopFile(std::string numFile) {
 /*--------------------------------------------------------------------------*/
 bool ControladorShell::validarNumFile(std::string numFile) {
 	
-	int num= atoi(numFile.c_str());
+	unsigned int num= atoi(numFile.c_str());
 	
-	if(num > 0 && num <= cantFiles)
+	if(num > 0 && num <= cliente->getListaTorrents()->size())
 		return true;
 	else
 		return false;
@@ -198,7 +201,8 @@ const char* ControladorShell::obtenerFilename(std::string numFile) {
 	bool encontrado= false;
 	std::string filename;
 
-	for(it= listaTorrents->begin(); it != listaTorrents->end() && !encontrado; it++, contador++) {
+	for(it= listaTorrents->begin(); it != listaTorrents->end() && !encontrado; 
+	    it++, contador++) {
 
 		if(contador ==  buscado) {
 			encontrado= true;

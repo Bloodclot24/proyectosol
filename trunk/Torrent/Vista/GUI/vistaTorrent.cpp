@@ -737,7 +737,7 @@ void VistaTorrent::correrDelayDialog() {
 
 /*--------------------------------------------------------------------------*/
 void VistaTorrent::cerrarDelayDialog() {
-	
+	sleep(1);
 	this->delayDialog->hide();	
 }
 

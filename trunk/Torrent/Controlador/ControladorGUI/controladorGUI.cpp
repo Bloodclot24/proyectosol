@@ -68,6 +68,7 @@ void ControladorGUI::mostrarAnnounceUrlTorrent(Torrent* torrent) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::mostrarFile(Torrent* torrent) {
 
+	std::string name= torrent->getName();
 	std::string size= obtenerSize(torrent->getTotalSize());
 	double done= torrent->getPorcentaje();
 	std::string status= obtenerStatus(torrent->getEstado());
@@ -79,8 +80,7 @@ void ControladorGUI::mostrarFile(Torrent* torrent) {
 	
 	std::cout << "hola" << torrent->getPorcentaje() << std::endl;
 		
-	vista->agregarArchivo(torrent->getName(), size, done, status, 
-		                      downSpeed, upSpeed, ETA);	
+	vista->agregarArchivo(name, size, /*done*/4, status, downSpeed, upSpeed, ETA);	
 }
 
 /*--------------------------------------------------------------------------*/
@@ -107,7 +107,7 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 	bool existe= cliente->existeTorrent(filename.c_str());
 	
 	if(valido && !existe) {
-//		ventanaCargando->show();
+		ventanaCargando->show();
 		
 		std::string pathCopia= crearCopiaTorrent(pathTorrent);
 			
@@ -116,15 +116,16 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 //			std::cout << "ANTES" << vista->isVisibleDelayDialog() << std::endl;
 //			
 //			
-//			while(!vista->isVisibleDelayDialog()) {
-//				std::cout << "ADENTRO" << std::endl;
-//			};
+			while(!vista->isVisibleDelayDialog()) {
+				std::cout << "ADENTRO" << std::endl;
+			};
 //
 //			std::cout << "DESPUES" << vista->isVisibleDelayDialog() << std::endl;
 //
 //
-//			vista->cerrarDelayDialog();
-			vista->cerrarFileChooser();			
+			vista->cerrarDelayDialog();	
+			vista->cerrarFileChooser();
+			
 
 			this->all++;
 			actualizarCantActividades();
@@ -334,9 +335,6 @@ void ControladorGUI::eliminarTracker(std::string name) {
 void ControladorGUI::agregarMessage(std::string message) {
 	
 	mutexMensaje.lock();
-	
-	sleep(5);
-	
 	std::cout << "MENSAJE VISTA: --------> " << message << std::endl;
 	vista->agregarMessage(message);
 	mutexMensaje.unlock();

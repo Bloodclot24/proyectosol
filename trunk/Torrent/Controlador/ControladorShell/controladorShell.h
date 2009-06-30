@@ -16,9 +16,8 @@ class ControladorShell: public Controlador {
 		
 		bool validarNumFile(std::string numFile);
 		uint32_t contadorOrden;
-		int cantFiles;
 		const char* obtenerFilename(std::string numFile);
-	
+		
 	protected:
 		virtual void mostrarAnnounceUrlTorrent(Torrent* torrent);
 		
@@ -63,14 +62,6 @@ class ControladorShell: public Controlador {
 		 * Muestra todos los archivos en el panel de transferencias. 
 		 */
 		virtual void mostrarFiles();
-		
-		/**
-		 * Muestra el estado general del numero de archivo
-		 * pasado por parametro. 
-		 * 
-		 * @param numfile Numero del archivo a mostrar. 
-		 */
-		virtual void mostrarGeneral(std::string numFile);	
 		
 		/**
 		 * Muestra los peers del numero de archivo
