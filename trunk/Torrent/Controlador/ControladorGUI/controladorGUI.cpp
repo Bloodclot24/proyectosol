@@ -24,8 +24,9 @@ ControladorGUI::~ControladorGUI() {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::correr() {
 	
-	//provisoriamente este boton no estaran habilitado
+	//estos botones no esta habilitados
 	vista->disableAddUrlTorrent();
+	vista->disablePause();
 	vista->correr();
 }
 
@@ -77,17 +78,13 @@ void ControladorGUI::mostrarFile(Torrent* torrent) {
 	
 	/*HARDCODEADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*/
 	std::string ETA= obtenerETA(3600*24+1);
-	
-	std::cout << "hola" << torrent->getPorcentaje() << std::endl;
 		
-	vista->agregarArchivo(name, size, /*done*/4, status, downSpeed, upSpeed, ETA);	
+	vista->agregarArchivo(name, size, done, status, downSpeed, upSpeed, ETA);	
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::mostrarFiles() {
 	
-	std::cout << "---MOSTRANDO LISTA---" << std::endl;
-
   	for(uint32_t i= 0; i < listaOrdenada.size(); i++) {
 		
 		this->all++;
@@ -113,19 +110,10 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 			
 		if(cliente->addTorrent(pathCopia.c_str())) {
 			
-//			std::cout << "ANTES" << vista->isVisibleDelayDialog() << std::endl;
-//			
-//			
-			while(!vista->isVisibleDelayDialog()) {
-				std::cout << "ADENTRO" << std::endl;
-			};
-//
-//			std::cout << "DESPUES" << vista->isVisibleDelayDialog() << std::endl;
-//
-//
+			while(!vista->isVisibleDelayDialog());
+
 			vista->cerrarDelayDialog();	
 			vista->cerrarFileChooser();
-			
 
 			this->all++;
 			actualizarCantActividades();
@@ -278,34 +266,41 @@ void ControladorGUI::stop(std::string filename) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarDone(std::string file, int done) {
 
-	vista->actualizarDone(file, done);	
+	vista->actualizarDone(file, done);
+	std::string doneS;
+	std::stringstream cvz;
+	cvz.width();
+	cvz << trunc(done);
+	doneS= cvz.str();
+	vista->modificarDownloaded(doneS);
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarStatus(std::string file, std::string status) {
 	
 	vista->actualizarStatus(file, status);
+	vista->modificarInformacion(status);
 	actualizarCantActividades();		                              	
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarDownSpeed(std::string file, 
-		                                             std::string downSpeed) {
+		                                             uint32_t downSpeed) {
 	
-	vista->actualizarDownSpeed(file, downSpeed);
+	vista->actualizarDownSpeed(file, obtenerVelocidad(downSpeed));
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarUpSpeed(std::string file, 
-                                       std::string upSpeed) {	
+                                       uint32_t upSpeed) {	
 	
-	vista->actualizarUpSpeed(file, upSpeed);
+	vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarTime(std::string file, std::string time) {
+void ControladorGUI::actualizarTime(std::string file, int time) {
 
-	vista->actualizarTime(file, time);	
+	vista->actualizarTime(file, obtenerETA(time));	
 }
 
 /*--------------------------------------------------------------------------*/

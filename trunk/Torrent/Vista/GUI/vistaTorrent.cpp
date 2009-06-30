@@ -303,6 +303,13 @@ void VistaTorrent::disableAddUrlTorrent() {
 	add_url_torrent->set_sensitive(false); 
 }
 
+void VistaTorrent::disablePause() {
+	
+	Gtk::ToolButton* pause;
+    refXml->get_widget("tool_pause", pause);
+	pause->set_sensitive(false); 
+}
+
 /*---*/
 void VistaTorrent::on_tool_remove_clicked() {
 

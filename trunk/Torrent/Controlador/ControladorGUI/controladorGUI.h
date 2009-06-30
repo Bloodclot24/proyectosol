@@ -175,7 +175,7 @@ class ControladorGUI: public Controlador {
 		 * @param file Nombre del archivo.
 		 * @param downSpeed Velocidad de bajada.
 		 */		
-		virtual void actualizarDownSpeed(std::string file, std::string downSpeed);
+		virtual void actualizarDownSpeed(std::string file, uint32_t downSpeed);
 		
 		/**
 		 * Actualiza velocidad de subida del archivo pasado por parametro
@@ -184,7 +184,7 @@ class ControladorGUI: public Controlador {
 		 * @param file Nombre del archivo.
 		 * @param upSpeed Velocidad de subida.
 		 */	
-		virtual void actualizarUpSpeed(std::string file, std::string upSpeed);	
+		virtual void actualizarUpSpeed(std::string file, uint32_t upSpeed);	
 		
 		/**
 		 * Actualiza el tiempo restante del archivo pasado por parametro
@@ -193,7 +193,7 @@ class ControladorGUI: public Controlador {
 		 * @param file Nombre del archivo.
 		 * @param time Tiempo restante para completar la descarga.
 		 */	
-		virtual void actualizarTime(std::string file, std::string time);	
+		virtual void actualizarTime(std::string file, int time);	
 
 		
 		/********Trackers********/

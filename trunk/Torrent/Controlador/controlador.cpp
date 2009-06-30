@@ -59,11 +59,8 @@ bool Controlador::guardarConfig() {
 	const std::list<Torrent*>* listaTorrents  = this->cliente->getListaTorrents();
 	std::list<Torrent*>::const_iterator it;
 	config.open(NAME_FILE_CONFIG , std::fstream::out);
-	std::cout << "----------- CREANDO CONFIG -------------" << std::endl;
 	if(!bitfieldFile.is_open()) resultado = false;
-		
 		auxiliar= listaTorrents->size();
-		std::cout << "Cantidad de elementos lista torrent: "<< auxiliar << std::endl;
 		config.write((const char*)&auxiliar,sizeof(uint32_t));	
 		
 	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++,contador++){
@@ -79,45 +76,29 @@ bool Controlador::guardarConfig() {
 		bitfieldFile.open(ruta.c_str(), std::fstream::out);
 		
 		if(bitfieldFile.is_open()) {
+
 			auxiliar= bitfield->getLength();
 			bitfieldFile.write((const char*)&auxiliar,sizeof(uint32_t));
-			
-			std::cout << "Length: "<< auxiliar << std::endl;
-						
 			bitfieldFile.write(bitfield->getData(), bitfield->getBytesLength());		
-			
-			std::cout << "Data: "<< bitfield->getData() << std::endl;
-			
-			
 			bitfieldFile.close();
 			resultado= true;
 		}
 		auxiliar= (*it)->getName().length();
-		std::cout << "Se va a escribir long torrent en config "<<auxiliar<<"\n";
 		config.write((const char*)&auxiliar,sizeof(uint32_t));
-		std::cout << "Se va a escribir nombre torrent en config "<<(*it)->getName().c_str()<<"\n";
 		config.write((*it)->getName().c_str(), auxiliar);
 		auxiliar= ruta.length();
-		std::cout << "Se va a escribir long ruta en config "<<auxiliar<<"\n";
 		config.write((const char*)&auxiliar,sizeof(uint32_t));
-		std::cout << "Se va a escribir ruta en config "<<ruta.c_str()<<"\n";
 		config.write(ruta.c_str(), auxiliar);
 		auxiliar= this->obtenerOrden((*it)->getName());
-		std::cout << "Se va a escribir orden en config "<<auxiliar<<"\n";
 		config.write((const char*)&auxiliar, sizeof(uint32_t));
 	}
 	config.close();		
-	
-	std::cout << "----------- TERMINANDO CONFIG -------------" << std::endl;
-	std::cout << std::endl;
-	
+
 	return resultado;
 }
 
 /*--------------------------------------------------------------------------*/
 bool Controlador::cargarConfig() {
-	
-	std::cout << "----------- CARGANDO CONFIG -------------" << std::endl;
 	
 	bool resultado= false;
 	std::fstream config;
@@ -131,49 +112,32 @@ bool Controlador::cargarConfig() {
 	config.seekg(0, std::fstream::beg);
 		
 	if(config.is_open()) {
-		std::cout << "Se abrio el config\n";
 		resultado=true;
 		char* cantTorrents= new char[sizeof(uint32_t)];
 		config.read(cantTorrents, sizeof(uint32_t));
 		uint32_t cantListaTorrents= *cantTorrents;
 		
-		for(uint32_t i= 0; i <= cantListaTorrents; i++) {
+		for(uint32_t i= 0; i < cantListaTorrents; i++) {
 			listaOrdenada.push_back("-");
 		}
 
-		std::cout << "Tamanio lista: "<< listaOrdenada.size() << std::endl;
-		
-		
 		while(last != config.tellg()){
-			
-			std::cout << "Se leyo del config\n";
 			
 			char* longNombreTorrent= new char[sizeof(uint32_t)];
 			config.read(longNombreTorrent, sizeof(uint32_t));
 			uint32_t longitudNombre= *longNombreTorrent;
-			
-			std::cout << "long del nombre torrent: "<<longitudNombre<<"\n";
-			
-			
-			std::cout << "long del nombre torrent: "<<longNombreTorrent<<"\n";
+
 			char* nombreTorrent= new char[longitudNombre+1];
 			config.read(nombreTorrent,longitudNombre);
 			nombreTorrent[longitudNombre] = '\0';
-			
-			std::cout << "nombre torrent: "<< nombreTorrent <<"\n";
-			
 			
 			char* longRuta= new char[sizeof(uint32_t)];
 			config.read(longRuta, sizeof(uint32_t));
 			uint32_t longitudRuta= *longRuta;
 			
-			std::cout << "long de la ruta : "<<longitudRuta<<"\n";
-			
 			char* ruta= new char[longitudRuta+1];
 			config.read(ruta,longitudRuta);
 			ruta[longitudRuta] = '\0';
-			std::cout << "ruta torrent: "<< ruta <<"\n";
-
 
 			bitFieldFile.open(ruta,std::fstream::in);
 			if(bitFieldFile.is_open()){
@@ -182,35 +146,19 @@ bool Controlador::cargarConfig() {
 				pathTorrent += nombreTorrent;
 				pathTorrent += "\0";
 				
-				std::cout << "Ruta Torrent: "<< ruta <<"\n";
-				
-				std::cout<<"Esperando addTorrent: \n";
-				std::cout<<"Se realizo addTorrent: \n";
-				
-				/**********/				
  				char* lengthBitField= new char[sizeof(uint32_t)];
  				bitFieldFile.read(lengthBitField, sizeof(uint32_t));
  				uint32_t length= *((uint32_t*)lengthBitField);
 				
-				std::cout<< "Length: " << length << std::endl;
-				
 				BitField* bitField= new BitField(length);
-				
 				uint32_t lengthBytes = bitField->getBytesLength();
  				
- 				std::cout<< "lengthBytes: " << bitField->getBytesLength() << std::endl;
-				 				
  				char* dataBitField = new char[bitField->getBytesLength()+1];
  				bitFieldFile.read(dataBitField, lengthBytes);
  				dataBitField[lengthBytes] = '\0';
-				
-				std::cout<< "Data: " << dataBitField << std::endl;
-				
 								
 				bitField->setData(dataBitField);
-				
 				cliente->addTorrent(pathTorrent.c_str(), bitField);
-				/**********/
 				
 				resultado = true;
 				delete[] lengthBitField;
@@ -225,29 +173,12 @@ bool Controlador::cargarConfig() {
 			config.read(orden,sizeof(uint32_t));
 			uint32_t ordenVista = *orden;
 			
-			//std::string filename(nombreTorrent,longitudNombre);
-		
-			std::cout << "orden: "<< ordenVista <<"\n";
-			
 			std::string filename= nombreTorrent;
 			listaOrdenada[ordenVista]= nombreTorrent;
-			std::cout << "AGREGE: " << listaOrdenada[ordenVista] << "\n";
-		
-		
-			
-			//delete[] nombreTorrent;
-			
-			
-			std::cout << "-------------------------" <<"\n";
-						
 		}
 	} 		
 	
 	config.close();
-	
-	std::cout << "----------- TERMINANDO CONFIG -------------" << std::endl;
-	std::cout << std::endl;
-
 	return resultado;
 }
 

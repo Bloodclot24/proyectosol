@@ -16,15 +16,12 @@ void VentanaCargando::run() {
 	while(corriendo) {
 
 		mutex.lock();
-		std::cout << "ESPERANDO Refresh!!" << std::endl; 
 		if(!pedido) {
 			cVariable.wait();
 			pedido= false;
 		}
-		if(corriendo) {
-			std::cout << "MOSTRANDO" << std::endl; 	
+		if(corriendo)
 			controlador->mostrarDialogDelay();
-		}
 		mutex.unlock();
 	}
 }
