@@ -106,6 +106,7 @@ public:
      static int agregarSlots(std::queue<DownloadSlot*> &cola, uint32_t index, uint32_t pieceSize, uint32_t partSize){
 	  DownloadSlot *ds;
 	  int contador = 0;
+
 	  for(uint32_t i=0;i<pieceSize;){
 	       uint32_t length;
 	       if(pieceSize-i >= partSize)
