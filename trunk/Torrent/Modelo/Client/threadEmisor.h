@@ -91,10 +91,11 @@ private:
 	  colaDeEspera.hold();
 	  while(isRunning()){
 	       Mensaje *mensaje = colaDeEspera.popFront();
-	       if(colaDeEspera.isValid())
+	       if(colaDeEspera.isValid()){
 		    socket->enviar(mensaje->getDatos(), mensaje->getTamanio());
+		    delete mensaje;
+	       }
 	       else stop();
-	       //delete mensaje;
 	  }
 	  colaDeEspera.release();
      }

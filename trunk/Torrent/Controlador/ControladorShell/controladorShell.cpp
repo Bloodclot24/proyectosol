@@ -101,15 +101,15 @@ void ControladorShell::mostrarFiles() {
 		std::string name= torrent->getName();		
 		std::string size= obtenerSize(torrent->getTotalSize());
 		double done= torrent->getPorcentaje();
-		std::string status= obtenerStatus(torrent->getEstado());
+		std::string status= obtenerStatus(torrent->getState());
 		std::string downSpeed= obtenerVelocidad(torrent->getVelocidadBajada());
 		std::string upSpeed= obtenerVelocidad(torrent->getVelocidadSubida());
-		/*HARDCODEADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*/
-		std::string ETA= obtenerETA(3600*24+1);
+		
+		//	std::string ETA= obtenerETA(3600*24+1);
 				
-		estado= obtenerStatus(torrent->getEstado());
+		estado= obtenerStatus(torrent->getState());
 		shell->mostrarArchivo(contador, name, size, done, status, downSpeed, 
-		                      upSpeed, ETA);		
+		                      upSpeed, "");		
 	}	
 }
 

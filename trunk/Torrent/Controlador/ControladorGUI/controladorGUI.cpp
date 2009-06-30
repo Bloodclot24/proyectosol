@@ -72,14 +72,14 @@ void ControladorGUI::mostrarFile(Torrent* torrent) {
 	std::string name= torrent->getName();
 	std::string size= obtenerSize(torrent->getTotalSize());
 	double done= torrent->getPorcentaje();
-	std::string status= obtenerStatus(torrent->getEstado());
+	std::string status= obtenerStatus(torrent->getState());
 	std::string downSpeed= obtenerVelocidad(torrent->getVelocidadBajada());
 	std::string upSpeed= obtenerVelocidad(torrent->getVelocidadSubida());
 	
-	/*HARDCODEADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*/
-	std::string ETA= obtenerETA(3600*24+1);
+	
+//	std::string ETA= obtenerETA(3600*24+1);
 		
-	vista->agregarArchivo(name, size, done, status, downSpeed, upSpeed, ETA);	
+	vista->agregarArchivo(name, size, done, status, downSpeed, upSpeed, "");	
 }
 
 /*--------------------------------------------------------------------------*/
@@ -215,7 +215,7 @@ void ControladorGUI::actualizarPestanias(std::string filename) {
 	//-General-
 	double done= torrent->getPorcentaje();
 	std::string doneS= obtenerDownloaded(done);
-	std::string status= obtenerStatus(torrent->getEstado());
+	std::string status= obtenerStatus(torrent->getState());
 	vista->modificarFilename(filename);
 	vista->modificarDownloaded(doneS);
 	vista->modificarInformacion(status);
@@ -351,7 +351,6 @@ void ControladorGUI::eliminarTracker(std::string name) {
 void ControladorGUI::agregarMessage(std::string message) {
 	
 	mutexMensaje.lock();
-	std::cout << "MENSAJE VISTA: --------> " << message << std::endl;
 	vista->agregarMessage(message);
 	mutexMensaje.unlock();
 }

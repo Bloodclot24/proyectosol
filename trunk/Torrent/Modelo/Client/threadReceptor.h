@@ -66,8 +66,7 @@ public:
       * Elimina el Thread.
       */
      ~ThreadReceptor(){
-	  std::cerr << "chau receptorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr" << &colaDeDatos <<"\n";
-	  finish();
+	 finish();
      };
 		     
 protected:

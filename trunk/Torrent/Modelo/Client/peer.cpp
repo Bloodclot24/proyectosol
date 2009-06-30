@@ -116,7 +116,6 @@ void Peer::sendRequest(uint32_t index, uint32_t offset,		\
      std::string msg = proto.request(index, offset, size);
      mensaje->copiarDatos(msg.c_str(), msg.length());
      emisor->enviarMensaje(mensaje);
-     std::cout << "Request de: " << index << " tama�o: " << size << " offset: " << offset << std::endl;
 }
 /****************************************************************************/
 void Peer::sendRequest(DownloadSlot* ds){
@@ -126,9 +125,6 @@ void Peer::sendRequest(DownloadSlot* ds){
      mensaje->copiarDatos(msg.c_str(), msg.length());
      requests.push(ds);
      emisor->enviarMensaje(mensaje);
-     std::cout << "Request de: " <<  ds->getPieceIndex() << " tamao: " \
-	       << ds->getOffset() << " offset: " << ds->getLength()	\
-	       << std::endl;
 }
 
 
@@ -151,14 +147,13 @@ void Peer::run(){
 	  socket->conectar();
 	  if(!socket->esValido()){
 	       stop();
-	       std::cout << "ERROR DEL SOCKET: " << socket->obtenerError() << std::endl;
+	       // "ERROR DEL SOCKET: " << socket->obtenerError() 
 	       conectado = false;
 	       torrent->eliminarPeer(this);
 	       return;
 	  }
 
-	  std::cout << "CONECTADO EXITOSAMENTE ------------<<<<" << std::endl;
-
+	  // "CONECTADO EXITOSAMENTE 
 	  receptor->comenzar();
 	  emisor->comenzar();
 
@@ -278,7 +273,7 @@ void Peer::run(){
 		    }
 		    else{
 			 //Cerrar conexion y salir
-			 std::cout << "Bitfield de longitud erronea recibido \n";
+			 // "Bitfield de longitud erronea recibido"
 			 stop();
 		    }
 		    break;
@@ -291,8 +286,7 @@ void Peer::run(){
 			 mensaje->copiarDatos(aux.c_str(), aux.length());
 			 emisor->enviarMensaje(mensaje);
 
-			 std::cout << "Me piden el piece" << respuesta->index << " offset "<< respuesta->begin << " de tamanio " << respuesta->length << std::endl;
-		    
+			 		    
 			 char *bloque = new char[respuesta->length];
 			 torrent->readData(bloque, respuesta->index, respuesta->begin, respuesta->length);
 			 mensaje = new Mensaje();
@@ -308,9 +302,7 @@ void Peer::run(){
 		    while(bloque.length() < respuesta->length && datos->isValid()){
 			 bloque += datos->popFront();
 		    }
-		    std::cout << "Recibo el piece" << respuesta->index << " de tamanio " << respuesta->length << std::endl;
-		    std::cout << "Se escribe en el offset: " << respuesta->begin+torrent->obtenerByteOffset(respuesta->index) << \
-			 ". Que corresponde al indice: " << respuesta->index << std::endl;
+
 		    torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, bloque.length());
 		    
 		    requests.hold();
@@ -351,14 +343,11 @@ void Peer::run(){
 		    break;
 
 	       default:
-		    std::cout << "Lucia, deja de mandar mensajes sin sentido!!! @ " << socket << "\n";
-		    stop();
+		     stop();
 		    break;
 	       }
 	  }
      }
-
-     std::cout << "FUERA PEER\n";
 
      conectado = false;
      colaDatos=NULL;

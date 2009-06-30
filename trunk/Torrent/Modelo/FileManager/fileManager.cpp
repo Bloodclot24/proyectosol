@@ -3,7 +3,6 @@
 /****************************************************************************/
 FileManager::FileManager(const char* filename,uint32_t tamanio) {
 
-     std::cout << "CREANDO EL ARCHIVO: " << filename << "\n";
 	this->file.open(filename,std::fstream::in);
 	if(!this->file.is_open()){
 		this->file.clear();
@@ -14,6 +13,7 @@ FileManager::FileManager(const char* filename,uint32_t tamanio) {
 				this->file.put('\0');
 			}
 			this->status = 0;
+			this->file.close();
 		}
 	}else{
 		this->file.close();
@@ -44,6 +44,7 @@ bool FileManager::agregarPieza(const char* pieza, uint32_t offset,
 		this->file.write(pieza,tamanio);
 		if(this->file.good()){
 			resultado = true;
+			this->file.flush();
 		}
 	}
 	this->file.clear();

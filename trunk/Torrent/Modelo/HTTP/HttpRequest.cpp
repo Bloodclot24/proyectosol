@@ -59,7 +59,6 @@ std::string* HttpRequest::getRequest(void){
      *paquete += host;
      *paquete += "\r\nAccept: */*\r\n";
      *paquete += "Accept-Encoding: text/plain\r\n\r\n";
-     //deflate, gzip\r\n\r\n";
 
      return paquete;
 }

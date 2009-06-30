@@ -23,7 +23,7 @@ Socket::Socket(std::string direccion, int puerto){
 	  }
 	  else hostName = direccion;
 
-	  std::cout << "DIRECCION->>>>>>>>>>>>>>>>>>> " << hostName << "\n";
+	  // "DIRECCION->>>>>>>>>>>>>>>>>>> " << hostName 
 
 	  host=gethostbyname(hostName.c_str());
 	       
@@ -75,7 +75,7 @@ bool Socket::escuchar(void){
 /* Envia un buffer de una cierta longitud por el socket */
 /****************************************************************************/
 bool Socket::enviar(const void *buf, int longitud){
-     int retorno = send(s,buf,longitud,/*MSG_NOSIGNAL*/0);
+     int retorno = send(s,buf,longitud,MSG_NOSIGNAL);
      //MSG_NOSIGNAL, evita que se reciba SIGPIPE
      if(retorno == -1)
 	  error = errno;
@@ -85,12 +85,9 @@ bool Socket::enviar(const void *buf, int longitud){
 /* Recibe la cantidad de bytes pedidos en el buffer */
 /****************************************************************************/
 int Socket::recibir(void *buf, int cuanto){
-     if(this != NULL)
-	  return recv(s, buf, cuanto, MSG_WAITALL);
-     else{
-	  fprintf(stderr, "OOOOOOOOOOOOOLE this es NULL <><><><><><><><>\n");
-     }
-     return -1;
+  
+     return recv(s, buf, cuanto, MSG_WAITALL);
+    
 }
      
 

@@ -23,7 +23,7 @@ void BitStream::appendBit(int bit) {
 		}
 	}
 	 else{
-	       std::cout << "ERROR\n";
+	      //No es posible la operacion de alta
 	}
 }
 

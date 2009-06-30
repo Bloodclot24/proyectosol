@@ -12,7 +12,7 @@
 class Client;
 #include "../../Controlador/controlador.h"
 
-#define CLIENT_ID      "-TR010-abcdefghijklm"
+#define CLIENT_ID      "-SN010-abcdefghijklm"
 #define PORT_IN        12345
 #define PEERS_NUM_WANT 50
 #define MAX_REQUESTS   25
