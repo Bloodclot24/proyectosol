@@ -190,28 +190,22 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
      uint32_t* longitudMsj = (uint32_t*)aux;
      uint32_t longMsj = ntohl(*longitudMsj);
 
-//     std::cout << "LONGITUD===============" << longMsj << "\n"; 
 
      if(longMsj != 0) {
 	  //Obtengo el id, para lo cual, leo el proximo byte
 	  bytes = 0;
 	  aux[bytes] = deque.popFront();
 	  int id= aux[0];
-	  //  std::cout << "ID=================" << id << "\n";
 	  if(id == ID_CHOKE) {
-	       std::cout << "choke" << std::endl;
 	       message->id= CHOKE;
 
 	  } else if(id == ID_UNCHOKE) {
-	       std::cout << "unchoke" << std::endl;
 	       message->id= UNCHOKE;
 	
 	  } else if(id == ID_INTERESTED) {
-	       std::cout << "interested" << std::endl;
 	       message->id= INTERESTED;
 	
 	  } else if(id == ID_NOT_INTERESTED) {
-	       std::cout << "not interested" << std::endl;
 	       message->id= NOT_INTERESTED;
 
 	  } else if(id == ID_HAVE) {
@@ -228,7 +222,6 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 	       message->length = longMsj-1;
 
 	  } else if(id == ID_REQUEST) {
-	       std::cout << "request" << std::endl;
 	       message->id= REQUEST;
 	       bytes = 0;
 	       while(bytes < 4){
@@ -251,7 +244,6 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 	       message->length = ntohl(*(uint32_t*)aux);
 
 	  } else if(id == ID_PIECE) {
-	       std::cout << "piece" << std::endl;
 	       message->id= PIECE;
 	       bytes = 0;
 	       while(bytes < 4){
@@ -269,7 +261,6 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 	       message->length = longMsj-9;
 	
 	  } else if(id == ID_CANCEL) {
-	       std::cout << "cancel" << std::endl;
 	       message->id = CANCEL;
 	       bytes = 0;
 	       while(bytes < 4){
@@ -295,7 +286,6 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 	       message->length = ntohl(*(uint32_t*)aux);
 
 	  } else if(id == ID_PORT) {
-	       std::cout << "port" << std::endl;
 	       message->id= PORT;
 	       bytes = 0;
 	       while(bytes < 4){
@@ -306,9 +296,8 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
 	  }
      } else {
 	  message->id= KEEP_ALIVE;
-	  std::cout << "keepAlive\n";
      }
-     
+
      return message;
 }
 

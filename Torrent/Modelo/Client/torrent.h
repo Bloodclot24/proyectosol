@@ -166,6 +166,15 @@ private:
       */
      void rotarTrackers();
 
+     /** 
+      * Devuelve el estado del torrent.
+      * @return El estado actual del Torrent.
+      */
+     EstadoTorrent getEstado() { 
+	  Lock lock(mutexEstado);
+	  return estado; 
+     };
+
 public:
      /** 
       * Crea un nuevo Torrent. Dado el nombre de un archivo '.torrent'
@@ -387,14 +396,6 @@ public:
       */
      int pause();
 	
-     /** 
-      * Devuelve el estado del torrent.
-      * @return El estado actual del Torrent.
-      */
-     EstadoTorrent getEstado() { 
-	  Lock lock(mutexEstado);
-	  return estado; 
-     };
 
      /** 
       * Devuelve el URL del primer tracker en la lista de trackers.
@@ -464,6 +465,15 @@ public:
      uint32_t getLastPieceSize(){
 	  return getTotalSize()%getPieceSize();
      }
+
+     /** 
+      * Devuelve el estado del torrent.
+      * @return El estado actual del Torrent.
+      */
+     EstadoTorrent getState() { 
+	  return estado; 
+     };
+
 
      /** 
       * Devuelve una lista con las ips de los peers

@@ -42,9 +42,8 @@ std::string Controlador::crearCopiaTorrent(std::string pathTorrent) {
 	  	fileCopia.write(buffer, last); 
 	  	file.close();
 	  	fileCopia.close();
-	  	delete[] buffer;
+		delete[] buffer;
 	}
-	
   	return ruta;
 }
 

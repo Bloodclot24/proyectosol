@@ -2,7 +2,6 @@
 
 /****************************************************************************/
 VentanaCargando::VentanaCargando(ControladorGUI* controlador): cVariable(&mutex) {
-	
 	this->corriendo= false;
 	this->pedido= false;
 	this->controlador= controlador;

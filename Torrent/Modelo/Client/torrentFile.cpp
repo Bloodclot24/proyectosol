@@ -44,7 +44,6 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 	       newFile->isPrivate = elemento->beInt;
 	  else newFile->isPrivate = 0;
 
-	  std::cout << "Primer archivo "<< newFile;
 	  fileList->push_back(newFile);
 
 	  elemento = dict[INFO_FILES];
@@ -89,7 +88,6 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 			 }
 			 newFile->path = (*it)->beStr;
 			 newFile->manager = new FileManager((ruta+newFile->path).c_str(), newFile->length);
-			 std::cout << "Creado el archivo " << newFile << "con " << newFile->manager << "\n";
 			 newFile->pieceLength = pieceLength;
 			 fileList->push_back(newFile);
 			 
@@ -111,8 +109,6 @@ std::list<TorrentFile*>* TorrentFile::Parse(BeNode* node){
 	  }
 	       
      }
-
-     std::cout << "Lista original: " << fileList << "\n";
 
      return fileList;
 }

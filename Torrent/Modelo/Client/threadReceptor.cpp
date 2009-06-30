@@ -112,8 +112,7 @@ void ThreadReceptor::run(){
 	       if(socket->recibir(&c, 1)>0)
 		    colaDeDatos.push(c);
 	       else{
-		    std::cerr << "Se cerro el socket inesperadamente."	\
-			      << socket << std::endl;
+		    // "Se cerro el socket inesperadamente.
 		    stop(); //para que salga del hilo
 	       }
 	  }

@@ -437,7 +437,7 @@ void VistaTorrent::actualizarStatus(std::string file, std::string status) {
 	Gtk::TreeModel::Row row= buscarRow_transf(file);
 	row[columns_transf.col_status]= status;
 	row[columns_transf.col_icon]= Gdk::Pixbuf::create_from_file(
-  												 getPathStatusIcon(status));
+	     getPathStatusIcon(status));
 }
 
 /*--------------------------------------------------------------------------*/
@@ -490,7 +490,7 @@ void VistaTorrent::start(std::string filename) {
 	
 	row[columns_transf.col_status]= "Downloading";
 	row[columns_transf.col_icon]= Gdk::Pixbuf::create_from_file(
-  											 getPathStatusIcon("Downloading"));
+	     getPathStatusIcon("Downloading"));
 	row[columns_transf.col_upSpeed]= "";
 	row[columns_transf.col_downSpeed]= "";
 }
@@ -501,7 +501,7 @@ void VistaTorrent::pause(std::string filename) {
 	
 	row[columns_transf.col_status]= "Paused";
 	row[columns_transf.col_icon]= Gdk::Pixbuf::create_from_file(
-  											 getPathStatusIcon("Paused"));
+	     getPathStatusIcon("Paused"));
 	row[columns_transf.col_upSpeed]= "";
 	row[columns_transf.col_downSpeed]= "";
 }
@@ -513,7 +513,7 @@ void VistaTorrent::stop(std::string filename) {
 	
 	row[columns_transf.col_status]= "Stopped";
  	row[columns_transf.col_icon]= Gdk::Pixbuf::create_from_file(
-  										getPathStatusIcon("Stopped"));
+	     getPathStatusIcon("Stopped"));
 	row[columns_transf.col_upSpeed]= "";
   	row[columns_transf.col_downSpeed]= "";
 }
@@ -539,7 +539,7 @@ Gtk::TreeModel::Row VistaTorrent::buscarRow_transf(std::string file) {
 	bool found= false;
 	for(type_children::iterator iter= children.begin(); !found&&  
 	    iter != children.end(); ++iter) {
-  	
+	     
   		row= *iter;
   		if(row[columns_transf.col_file] == file)
   		   found= true;

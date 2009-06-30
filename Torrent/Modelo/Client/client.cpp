@@ -29,21 +29,12 @@ bool Client::addTorrent(const char* path, BitField* bitfield){
 /*--------------------------------------------------------------------------*/
 bool Client::start(const char* filename){
 	
-	 // comienzo a recibir conexiones de peers entrantes
-//	 this->threadAceptor->comenzar();
+     // comienzo a recibir conexiones de peers entrantes
+     //	 this->threadAceptor->comenzar();
 	 
-//     Torrent* torrent= buscarTorrent(filename);
-//     EstadoTorrent estado= torrent->getEstadoTorrent(); 
-//     if(torrent && (estado ==  PAUSED || estado ==  STOPPED)) {
-//	  /* por ahora, nada mas para probar comienza solo el primer torrent */
-////	  Torrent* torrent = torrents.front(); 
      Torrent* torrent= buscarTorrent(filename);
-//	return 0;  
-	
-     //COMENTE ASI NO CORRE
-		
 
-//	 return torrent->start();
+	
      if(torrent) {
 	  return torrent->start();
      } else
@@ -54,7 +45,7 @@ bool Client::start(const char* filename){
 /*--------------------------------------------------------------------------*/
 bool Client::stop(const char* filename) {
 	
-	Torrent* torrent= buscarTorrent(filename);
+     Torrent* torrent= buscarTorrent(filename);
 	if(torrent) {
 		if(torrent->stop())
 			return true;

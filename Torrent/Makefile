@@ -39,10 +39,10 @@ gtkmm = si
 # Opciones para el compilador C/C++ en modo ansi.
 #CFLAGS = -Wall -pedantic -pedantic-errors
 
-CFLAGS += -O3 -DNDEBUG
+#CFLAGS += -O3 -DNDEBUG
 
 # Para valgrind o debug
-#CFLAGS += -ggdb -DDEBUG -fno-inline
+CFLAGS += -ggdb -DDEBUG -fno-inline
 
 # Opciones del enlazador.
 #LDFLAGS =
