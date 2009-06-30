@@ -1,6 +1,5 @@
 #include "socket.h"
 
-
 /* Crea un nuevo socket con la direccion de destino y puerto dados */
 /****************************************************************************/
 Socket::Socket(std::string direccion, int puerto){
@@ -76,7 +75,8 @@ bool Socket::escuchar(void){
 /* Envia un buffer de una cierta longitud por el socket */
 /****************************************************************************/
 bool Socket::enviar(const void *buf, int longitud){
-     int retorno = send(s,buf,longitud,0);
+     int retorno = send(s,buf,longitud,MSG_NOSIGNAL);
+     //MSG_NOSIGNAL, evita que se reciba SIGPIPE
      if(retorno == -1)
 	  error = errno;
      return esValido();
@@ -85,15 +85,6 @@ bool Socket::enviar(const void *buf, int longitud){
 /* Recibe la cantidad de bytes pedidos en el buffer */
 /****************************************************************************/
 int Socket::recibir(void *buf, int cuanto){
-//      int retorno, acumulado = 0;
-//      do{ //recv puede leer menos datos que los pedidos
-// 	  retorno = recv(s, (void*)((int)buf+acumulado), cuanto-acumulado, MSG_WAITALL);
-// 	  acumulado += retorno;
-//      }while((acumulado < cuanto) && (retorno > 0));
-
-//      if(retorno == -1)
-// 	  error = errno;
-//      return esValido();
      if(this != NULL)
 	  return recv(s, buf, cuanto, MSG_WAITALL);
      else{
