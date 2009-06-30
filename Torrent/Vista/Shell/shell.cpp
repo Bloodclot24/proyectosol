@@ -26,8 +26,6 @@ void mostrarHelp() {
 	std::cout << "se pausa la bajada del # archivo." << std::endl;
 	std::cout << STOP << " file#: "; 
 	std::cout << "se detiene la bajada del # archivo." << std::endl;
-	std::cout << SHOW_GENERAL << " file#: ";
-	std::cout << "muestra la informacion general del # archivo." << std::endl;
 	std::cout << SHOW_PEERS << " file#: "; 
 	std::cout << "muestra los peers del # archivo." << std::endl;		 
 	std::cout << EXIT << ": ";; 
@@ -79,8 +77,6 @@ void Shell::correr() {
 				controlador->stopFile(file);
 			else if(command.compare(0, finParametro, SHOW_PEERS) == 0)
 				controlador->mostrarPeers(file);
-			else if(command.compare(0, finParametro,SHOW_GENERAL) == 0)
-				controlador->mostrarGeneral(file);	
 			else if(command.compare(0, finParametro, ADD_TORRENT) == 0)
 				controlador->addTorrent(file);
 	//		else if(command.compare(0, finParametro, ADD_URL_TORRENT) == 0)
@@ -118,15 +114,12 @@ void Shell::mostrarArchivos() {
 	std::cout.width(MAX_FILE);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << "File";
-	std::cout.width(MAX_PIECE);
-	std::cout.fill(RELLENO);
-	std::cout << std::left << "Piece"; 
 	std::cout.width(MAX_SIZE);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << "Size";
 	std::cout.width(MAX_DONE);
 	std::cout.fill(RELLENO);
-	std::cout << std::left << "Done";
+	std::cout << std::left << "Done(%)";
 	std::cout.width(MAX_STATUS);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << "Status";
@@ -135,14 +128,18 @@ void Shell::mostrarArchivos() {
 	std::cout << std::left << "Up Speed";
 	std::cout.width(MAX_SPEED);
 	std::cout.fill(RELLENO);
-	std::cout << std::left << "Down Speed"; 
+	std::cout << std::left << "Down Speed";
+	std::cout.width(MAX_TIME);
+	std::cout.fill(RELLENO);
+	std::cout << std::left << "ETA";  
 	std::cout << std::endl;
 	mostrarSubrayado(MAX_FILES);
 }	
 
 void Shell::mostrarArchivo(int amount, std::string file, std::string size,
 						   int done, std::string status,
-  						   std::string upSpeed, std::string downSpeed) {
+  						   std::string upSpeed, std::string downSpeed, 
+  						   std::string ETA) {
 	
 	if(file.length() > MAX_FILE)
 		file.resize(MAX_FILE-1);
@@ -168,22 +165,25 @@ void Shell::mostrarArchivo(int amount, std::string file, std::string size,
 	std::cout.width(MAX_SPEED);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << downSpeed;
+	std::cout.width(MAX_TIME);
+	std::cout.fill(RELLENO);
+	std::cout << std::left << ETA;  
 	std::cout << std::endl;
 }
 
-/*--------------------------------------------------------------------------*/
-/**General**/
-void Shell::mostrarGeneral(std::string file, std::string downloaded,
-						   std::string information) {
-
-	std::cout << std::endl;	 							  	
-	std::cout << "++ GENERAL ++"<< std::endl;
-	std::cout << "============="<< std::endl;
-	
-	std::cout << "File: " << file << std::endl;
-	std::cout << "Downloaded: " << downloaded << std::endl;
-	std::cout << "Information: " << information << std::endl;		
-}
+///*--------------------------------------------------------------------------*/
+///**General**/
+//void Shell::mostrarGeneral(std::string file, std::string downloaded,
+//						   std::string information) {
+//
+//	std::cout << std::endl;	 							  	
+//	std::cout << "++ GENERAL ++"<< std::endl;
+//	std::cout << "============="<< std::endl;
+//	
+//	std::cout << "File: " << file << std::endl;
+//	std::cout << "Downloaded: " << downloaded << std::endl;
+//	std::cout << "Information: " << information << std::endl;		
+//}
 
 /*--------------------------------------------------------------------------*/
 /**Trackers**/
@@ -230,13 +230,13 @@ void Shell::mostrarPeers() {
 	std::cout << std::endl;	 							  	
 	std::cout << "++ PEERS ++"<< std::endl;
 	std::cout << "==========="<< std::endl;
-		
-	std::cout.width(MAX_CLIENT);
-	std::cout.fill(RELLENO);
-	std::cout << std::left << "Cliente";
+
 	std::cout.width(MAX_IP);
 	std::cout.fill(RELLENO);
-	std::cout << std::left << "IP";
+	std::cout << std::left << "IP";		
+	std::cout.width(MAX_CLIENT);
+	std::cout.fill(RELLENO);
+	std::cout << std::left << "Status";
 	std::cout << std::endl;	
 	mostrarSubrayado(MAX_PEERS);
 }
