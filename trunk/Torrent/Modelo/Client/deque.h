@@ -147,6 +147,12 @@ public:
 	  mutex.unlock();
 	  return state;
      }
+     
+     void invalidate(){
+	  Lock lock(mutex);
+	  valida=false;
+	  condition.signal();
+     }
 
      /** 
       * Destruye la cola. En caso de haber usuarios todavia

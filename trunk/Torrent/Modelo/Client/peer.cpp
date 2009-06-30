@@ -19,6 +19,7 @@ Peer::Peer(const std::string& host, int puerto , Torrent* torrent){
      downloaded = 0;
      uploaded = 0;
      corrupted = 0;
+     colaDatos = NULL;
 }
 
 /****************************************************************************/
@@ -177,7 +178,7 @@ void Peer::run(){
 	  emisor->enviarMensaje(mensaje);
 
 	  /* Recibo el handshake del peer */
-	  datos = receptor->getColaDeDatos();
+	  colaDatos = datos = receptor->getColaDeDatos();
 	  if(datos->hold()){
 	       for(int i = 0; i <49+19;i++)
 		    datos->popFront();
@@ -199,7 +200,7 @@ void Peer::run(){
 	  bool primerByte = true;
 
 	  /* Recibo el handshake del peer */
-	  datos = receptor->getColaDeDatos();
+	  colaDatos = datos = receptor->getColaDeDatos();
 	  if(datos->hold()){
 	       for(int i = 0; i <49+19;i++){
 		    data = datos->popFront();
@@ -356,6 +357,7 @@ void Peer::run(){
      std::cout << "FUERA PEER\n";
 
      conectado = false;
+     colaDatos=NULL;
      datos->release();
      receptor->finish();
      emisor->finish();
@@ -373,3 +375,7 @@ void Peer::finish(){
      Thread::finish();
 }
 
+Peer::~Peer(){
+     if(colaDatos)
+	  colaDatos->invalidate();
+}
