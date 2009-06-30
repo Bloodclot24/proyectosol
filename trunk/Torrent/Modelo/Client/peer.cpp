@@ -366,10 +366,6 @@ void Peer::run(){
      receptor->finish();
      emisor->finish();
      socket->cerrar();
-     delete receptor;
-     delete emisor;
-     delete socket;
-
      /* Le aviso al torrent que finalizo este peer */
      torrent->eliminarPeer(this);
 }
@@ -384,4 +380,11 @@ void Peer::finish(){
 Peer::~Peer(){
      if(colaDatos)
 	  colaDatos->invalidate();
+     if(receptor)
+	  delete receptor;
+     if(emisor)
+	  delete emisor;
+     if(socket)
+	  delete socket;
+
 }
