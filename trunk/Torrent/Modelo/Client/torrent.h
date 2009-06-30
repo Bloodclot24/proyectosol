@@ -452,10 +452,10 @@ public:
      }
 
      /** 
-      * Devuelve el tamaño de cada pieza del torrent, excepto por la
+      * Devuelve el tamao de cada pieza del torrent, excepto por la
       * ultima.
       * 
-      * @return Tamaño de las piezas.
+      * @return Tamao de las piezas.
       */
      uint32_t getPieceSize(){
 	  return pieceSize;
@@ -466,10 +466,11 @@ public:
      }
 
      /** 
-      * Devuelve una lista
+      * Devuelve una lista con las ips de los peers
+      * con los que el torrent esta conectado.
       * 
       * 
-      * @return 
+      * @return La lista de ip de peers.
       */
      std::list<std::string> getListaPeers();     
      

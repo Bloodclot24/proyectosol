@@ -118,11 +118,16 @@ void ControladorShell::mostrarPeers(std::string numFile) {
 
 	bool valido= validarNumFile(numFile);
 	
+	std::string filename= obtenerFilename(numFile);
+	
 	if(valido) {
+		Torrent* torrent= obtenerTorrent(filename);
 		std::cout << "Valido" << std::endl;	
 		shell->mostrarPeers();
-		//PEDIR CLIENTES
-		shell->mostrarCliente("127.0.0.1", "home");
+		std::list<std::string> lista= torrent->getListaPeers();
+		std::list<std::string>::iterator it;
+		for(it= lista.begin(); it != lista.end(); it++)
+			shell->mostrarCliente(*it, "");
 	}
 }
 
