@@ -8,6 +8,7 @@
 class Controlador;
 
 #include "../Modelo/Client/client.h"
+#include "../Modelo/Client/torrent.h"
 #include "../Modelo/Client/bitField.h"
 #include "../Modelo/FileManager/fileManager.h"
 

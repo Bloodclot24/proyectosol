@@ -2,24 +2,30 @@
 #define TORRENT_H_INCLUDED
 
 class Peer;
-
-#include "socket.h"
-#include "threads.h"
-#include "threadEmisor.h"
-#include "threadReceptor.h"
-#include "downloadSlot.h"
-
-#include "torrentFile.h"
-#include "../ParserBencode/parserBencode.h"
-#include "peer.h"
-#include "bitField.h"
-#include "threads.h"
-
 /** 
  * Estados posibles del Torrent
  */
 enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING, ERROR};
 class Torrent;
+
+#include "socket.h"
+#include "threads.h"
+#include "threadEmisor.h"
+#include "threadReceptor.h"
+#include "bitField.h"
+#include "downloadSlot.h"
+
+#include "../ParserBencode/parserBencode.h"
+#include "../HTTP/HttpRequest.h"
+#include "../HTTP/HttpResponse.h"
+#include "../SHA1/sha1.h"
+#include "mensaje.h"
+#include "client.h"
+
+#include "torrentFile.h"
+#include "peer.h"
+#include "threads.h"
+
 #include "../../Controlador/controlador.h"
 
 #include <iostream>
@@ -125,6 +131,13 @@ private:
 
      uint32_t piezasVerificadas; /**< Cantidad de piezas verificadas
 				  * y validas. */
+
+     std::list<std::string> listaDireccionesPeers; /**< Lista que se le
+						  * entrega al
+						  * controlador para
+						  * que muestre en la
+						  * vista */
+     Mutex mutexListaDireccionsPeers;
 
 private:
 
@@ -428,6 +441,37 @@ public:
       * @return La velocidad de bajada.
       */
      uint32_t getVelocidadBajada();
+
+     /** 
+      * Devuelve la cantidad de piezas que conforman al torrent.
+      * 
+      * @return Cantidad totales de piezas.
+      */
+     uint32_t getSizeInPieces(){
+	  return sizeInPieces;
+     }
+
+     /** 
+      * Devuelve el tamaño de cada pieza del torrent, excepto por la
+      * ultima.
+      * 
+      * @return Tamaño de las piezas.
+      */
+     uint32_t getPieceSize(){
+	  return pieceSize;
+     }
+
+     uint32_t getLastPieceSize(){
+	  return getTotalSize()%getPieceSize();
+     }
+
+     /** 
+      * Devuelve una lista
+      * 
+      * 
+      * @return 
+      */
+     std::list<std::string> getListaPeers();     
      
      /** 
       * Destruye al Torrent y libera los recursos asociados.

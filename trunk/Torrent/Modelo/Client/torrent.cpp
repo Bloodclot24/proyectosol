@@ -1,10 +1,4 @@
-#include "../ParserBencode/parserBencode.h"
-#include "../HTTP/HttpRequest.h"
-#include "../HTTP/HttpResponse.h"
-#include "../SHA1/sha1.h"
 #include "torrent.h"
-#include "mensaje.h"
-#include "client.h"
 
 /* Claves del .torrent */
 #define DICT_TRACKER    "announce"
@@ -392,8 +386,12 @@ void Torrent::agregarPeer(Peer* peer){
 	  }
      }
 
-     if(!encontrado)
+     if(!encontrado){
 	  listaPeers.push_back(peer); // agrego al peer la lista	  
+	  mutexListaDireccionsPeers.lock();
+	  listaDireccionesPeers.push_back(peer->getName());
+	  mutexListaDireccionsPeers.unlock();
+     }
 }
 
 /****************************************************************************/
@@ -785,7 +783,13 @@ void Torrent::run(){
 			 bitField->setField(index,true);
 			 mutexBitField.unlock();
 			 if(index != (uint32_t)-1){
-			      int contador = DownloadSlot::agregarSlots(piezasEnProceso, index, pieceSize, REQUEST_SIZE_DEFAULT);
+			      uint32_t tamanio = pieceSize;
+			      if(index == getSizeInPieces()-1){
+				   std::cout << "CCCCCUIDADOOOOOOOOOOOOOOOOOOOOOO \n";
+				   tamanio = getLastPieceSize();
+			      }
+
+			      int contador = DownloadSlot::agregarSlots(piezasEnProceso, index, tamanio, REQUEST_SIZE_DEFAULT);
 			      piezasAVerificar[index] = contador;
 			 }
 			 else{
@@ -1013,8 +1017,16 @@ double Torrent::getPorcentaje(){
 uint32_t Torrent::getVelocidadSubida(){
      return 0;
 }
+
 /****************************************************************************/
 uint32_t Torrent::getVelocidadBajada(){
      return 0;
 }
 
+/****************************************************************************/
+std::list<std::string> Torrent::getListaPeers(){
+     mutexListaDireccionsPeers.lock();
+     std::list<std::string> copia =listaDireccionesPeers;
+     mutexListaDireccionsPeers.unlock();
+     return copia;
+}
