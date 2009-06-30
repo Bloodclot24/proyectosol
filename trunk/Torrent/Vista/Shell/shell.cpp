@@ -39,7 +39,6 @@ void commandNoEncontrado() {
 
 void Shell::correr() {
 	
-	system("clear");	
 	std::cout << std::endl;
 	this->command= "";
 	std::string file= "";
@@ -59,9 +58,6 @@ void Shell::correr() {
 		else if(command.compare(HELP) == 0)
 			mostrarHelp();
 			
-		else if(command.compare(CLEAR) == 0)
-			system("clear");		
-		
 		else if(finParametro != std::string::npos) {
 			
 			file.assign(command, finParametro+1, 
