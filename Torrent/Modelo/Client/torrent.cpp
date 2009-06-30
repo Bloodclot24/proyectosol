@@ -121,10 +121,11 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 	  delete info;
 
 	  if(valido){
+
+	       pieceSize = (*(archivos->begin()))->getPieceLength();
+	       sizeInPieces = ceil((double)getTotalSize()/(double)pieceSize);
 			
-	       if(bitfieldGuardado == NULL){}{
-		    pieceSize = (*(archivos->begin()))->getPieceLength();
-		    sizeInPieces = ceil((double)getTotalSize()/(double)pieceSize);
+	       if(bitfieldGuardado == NULL){
 		    
 		    this->bitField = new BitField(sizeInPieces);
 		    
@@ -138,11 +139,11 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 			 }
 		    }
 	       }
-	       // else{
-// 		    bitField = bitfieldGuardado;
-//	       for(uint32_t j = 0;j<bitField->getLength();j++)
-	       //	    piezasVerificadas += bitField->getField(j)
-	       // }
+	       else{
+		    bitField = bitfieldGuardado;
+		    for(uint32_t j = 0;j<bitField->getLength();j++)
+			 piezasVerificadas += bitField->getField(j);
+	       }
 	  }
      }
      else{
@@ -697,7 +698,7 @@ void Torrent::run(){
 	  mutexEstado.unlock();
      }
      else{
-	  mutexEstado.lock(); 
+     	  mutexEstado.lock(); 
 	  if(estado == DOWNLOADING){
 // 	  Peer *peer = new
 // 	       Peer("localhost",						
