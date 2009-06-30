@@ -8,16 +8,11 @@
 #define PATH_VISTA "Vista/GUI/vistaTorrent.glade"
 
 /*Iconos status*/
-#define PATH_DOWN_FAIL "Vista/GUI/images/statusIcons/down_fail.png"
 #define PATH_DOWN_OK "Vista/GUI/images/statusIcons/down_ok.png"
-#define PATH_DOWN_QUEUED "Vista/GUI/images/statusIcons/down_queued.png"
-#define PATH_SEED_FAIL "Vista/GUI/images/statusIcons/seed_fail.png"
 #define PATH_SEED_OK "Vista/GUI/images/statusIcons/seed_ok.png"
-#define PATH_SEED_QUEUED "Vista/GUI/images/statusIcons/seed_queued.png"
 #define PATH_COMPLETE "Vista/GUI/images/statusIcons/complete.png"
 #define PATH_PAUSED "Vista/GUI/images/statusIcons/paused.png"
 #define PATH_STOPPED "Vista/GUI/images/statusIcons/stopped.png"
-#define PATH_ERROR "Vista/GUI/images/statusIcons/error.png"
 #define PATH_ACTIVE "Vista/GUI/images/statusIcons/active.png"
 #define PATH_ALL "Vista/GUI/images/statusIcons/all.png"
 
@@ -297,6 +292,14 @@ class VistaTorrent {
 		 * @param file Nombre del archivo.
 		 */	
 		void stop(std::string filename);
+		
+		/**
+		 * Modifica el estado del archivo pasado por parametro en el 
+		 * en el panel de transferencias a COMPLETED.
+		 * 
+		 * @param file Nombre del archivo.
+		 */	
+		void complete(std::string filename);
 		
 		/**********Panel Actividades**********/
 		/**
