@@ -8,7 +8,10 @@ std::list<BeNode*>* ParserBencode::beDecode(const char* nombreArchivo){
      
      archTorrent >> &buf;
 
-     std::list<BeNode*> *list = beDecode(buf.str());
+	 std::list<BeNode*> *list= NULL;		
+		 
+	 if(buf.str().size() != 0)
+     	list = beDecode(buf.str());
      
      archTorrent.close();
 
