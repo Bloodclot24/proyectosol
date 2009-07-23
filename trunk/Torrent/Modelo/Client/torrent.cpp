@@ -41,6 +41,7 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
      estado = STOPPED;
      
      if(info != NULL){
+	  
 	  // "Torrent Valido"
 	  valido = true;
 
@@ -51,7 +52,6 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 		    primero->beDict->elements;
 	       
 	       BeNode* elemento;
-	       BeNode* elemento2;
 	       
 	       /* Extraigo todos los elementos que necesito */
 	       elemento = dict[DICT_TRACKER];

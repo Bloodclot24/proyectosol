@@ -21,7 +21,8 @@ bool Client::addTorrent(const char* path, BitField* bitfield){
 	  return true;
      }
      else {
-	  delete torrent;
+	  //TODO: pincha con los torrents vacios
+	  //delete torrent;
 	  return false;
      }
 }
