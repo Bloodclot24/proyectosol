@@ -102,12 +102,17 @@ class ControladorGUI: public Controlador {
 		
 		/********Todas las Pestanias********/
 		/**
-		 * Muestra los peers del archivo pasado por parametro. 
+		 * Actualiza las pestanias teniendo en cuenta la fila seleccionada. 
 		 * 
-		 * @param filename Nombre del archivo que actualizara
+		 * @param filename Nombre del archivo de la fila seleccionada.
 		 * con sus detalles las pestanias. 
 		 */
 		virtual void actualizarPestanias(std::string filename);
+		
+		/**
+		 * Limpia las pestania peers y general. 
+		 */
+		virtual void limpiarPestanias();
 		
 		/********Orden********/
 		/**
@@ -202,7 +207,6 @@ class ControladorGUI: public Controlador {
 		 * @param time Tiempo restante para completar la descarga.
 		 */	
 		virtual void actualizarTime(std::string file, int time);	
-
 		
 		/********Trackers********/
 		/**
@@ -235,6 +239,8 @@ class ControladorGUI: public Controlador {
 		 * @param message Mensaje a mostrar.
 		 */ 
 		virtual void agregarMessage(std::string message);
+		
+		
 };
 
 /****************************************************************************/

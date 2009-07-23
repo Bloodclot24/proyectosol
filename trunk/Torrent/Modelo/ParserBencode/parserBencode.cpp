@@ -103,9 +103,14 @@ std::string ParserBencode::beDecodeStr(const std::string *stringStr,
 	  }
 	  if(ok){
 	       std::string lenghtStr;
-	       lenghtStr.assign(*stringStr, startPosition, startStr);
+	       lenghtStr.clear();
+	       lenghtStr.assign(*stringStr, startPosition, startStr-startPosition);
+	       
 	       auxiliar.assign(*stringStr, startStr+1, atoi(lenghtStr.c_str()));
-	       endPosition= startStr+atoi(lenghtStr.c_str());
+	       if(atoi(lenghtStr.c_str()) == 0)
+	       		auxiliar+= '\0';
+	       
+	       endPosition= startStr+atoi(lenghtStr.c_str());       
 	  }
      }
      return(auxiliar);			

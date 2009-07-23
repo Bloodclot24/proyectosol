@@ -8,6 +8,7 @@
 #define DICT_CREATOR    "created by"
 #define DICT_ENCODING   "encoding"
 #define DICT_INFO       "info"
+#define DICT_INFOA      "azureus_properties"
 
 /* Claves del response del tracker */
 #define DICT_WARNING    "warning message"
@@ -46,10 +47,11 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 	  BeNode* primero = info->front();
 	  
 	  if(primero->typeNode == BE_DICT){
-	       std::map<std::string, BeNode*> &dict =	\
+	       std::map<std::string, BeNode*> dict =	\
 		    primero->beDict->elements;
 	       
 	       BeNode* elemento;
+	       BeNode* elemento2;
 	       
 	       /* Extraigo todos los elementos que necesito */
 	       elemento = dict[DICT_TRACKER];
@@ -80,7 +82,16 @@ Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondit
 	       else this->encoding = 0;
 	       
 	       /* Informacion de todos los archivos */
-	       elemento = dict[DICT_INFO];
+//	       elemento2 = dict[DICT_INFOA];
+//	       if(elemento2 != NULL){
+//	       	if(elemento2->typeNode == BE_DICT){
+//	       		dict= (elemento2->beDict->elements);
+//	       	}else{
+//	       		std::cout << "TORRENT INVALIDOOOOOOOOOOOOOO" << std::endl;
+//	       	}
+//	       }
+//	       
+	       elemento = dict[DICT_INFO];    
 	       if(elemento != NULL){
 		    Sha1 hasher;
 		    idHash = hasher.ejecutarSha1(			\

@@ -42,7 +42,10 @@ void ControladorGUI::actualizarCantActividades() {
 	vista->modificarCantCompleted(sAux);
 	sprintf(sAux, "%d", active);
 	vista->modificarCantActive(sAux);
-	sprintf(sAux, "%d", all-active);
+	if(all-active > 0)
+		sprintf(sAux, "%d", all-active);
+	else
+		sprintf(sAux, "%d", all);		
 	vista->modificarCantInactive(sAux);	
 }
 
@@ -151,7 +154,13 @@ void ControladorGUI::removeFile(std::string file) {
 	
 	if(cliente->remove(file.c_str())) { 
 		this->all--;
-		actualizarCantActividades();	
+		if((vista->getEstadoFile(file).compare("Downloading")) == 0) {
+			this->downloading--;
+			this->active--;
+		}
+		actualizarCantActividades();
+		if(all == 0) 
+			limpiarPestanias();
 	} else 
 		vista->agregarMessage("ERROR: No se pudo borrar el archivo" + file);
 }
@@ -164,6 +173,7 @@ void ControladorGUI::startFile(std::string file) {
 		this->active++;	
 		this->downloading++;
 		actualizarCantActividades();
+		actualizarPestanias(file);
 	} else 
 		vista->agregarMessage("ERROR: No se pudo INICIAR la descarga de " 
 		                      + file);
@@ -177,6 +187,7 @@ void ControladorGUI::pauseFile(std::string file) {
 		this->active--;		
 		this->downloading--;
 		actualizarCantActividades();
+		actualizarPestanias(file);
 	} else 
 		vista->agregarMessage("ERROR: No se pudo PAUSAR la descarga de "
 			                  + file);
@@ -190,6 +201,7 @@ void ControladorGUI::stopFile(std::string file) {
 		this->active--;		
 		this->downloading--;		
 		actualizarCantActividades();
+		actualizarPestanias(file);
 	} else 
 		vista->agregarMessage("ERROR: No se pudo DETENER la descarga de "
 			                  + file);
@@ -221,12 +233,24 @@ void ControladorGUI::actualizarPestanias(std::string filename) {
 	vista->modificarInformacion(status);
 	
 	//-Peers-
-	vista->limpiarListaClientes();
+	//vista->limpiarListaClientes();
 	std::list<std::string> lista= torrent->getListaPeers();
 	std::list<std::string>::iterator it;
 	for(it= lista.begin(); it != lista.end(); it++) {
 		vista->agregarCliente((*it), "");
 	}
+}
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::limpiarPestanias() {
+	
+	//-General-
+	vista->modificarFilename("");
+	vista->modificarDownloaded("");
+	vista->modificarInformacion("");
+	
+	//-Peers-
+	vista->limpiarListaClientes();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -253,6 +277,7 @@ void ControladorGUI::start(std::string filename) {
 	this->active++;	
 	this->downloading++;
 	actualizarCantActividades();
+	actualizarPestanias(filename);
 	vista->start(filename);
 }
 
@@ -262,6 +287,7 @@ void ControladorGUI::pause(std::string filename) {
 	this->active--;		
 	this->downloading--;
 	actualizarCantActividades();
+	actualizarPestanias(filename);
 	vista->pause(filename);
 }
 
@@ -271,6 +297,7 @@ void ControladorGUI::stop(std::string filename) {
 	this->active--;		
 	this->downloading--;		
 	actualizarCantActividades();
+	actualizarPestanias(filename);
 	vista->stop(filename);
 }
 
@@ -280,6 +307,7 @@ void ControladorGUI::complete(std::string filename) {
 	this->downloading--;		
 	this->completed++;		
 	actualizarCantActividades();
+	actualizarPestanias(filename);
 	vista->complete(filename);	
 }	
 
@@ -294,6 +322,7 @@ void ControladorGUI::actualizarDone(std::string file, int done) {
 	doneS= cvz.str();
 	doneS += " %";
 	vista->modificarDownloaded(doneS);
+	actualizarPestanias(file);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -301,7 +330,8 @@ void ControladorGUI::actualizarStatus(std::string file, std::string status) {
 	
 	vista->actualizarStatus(file, status);
 	vista->modificarInformacion(status);
-	actualizarCantActividades();		                              	
+	actualizarCantActividades();
+	actualizarPestanias(file);		                              	
 }
 
 /*--------------------------------------------------------------------------*/
@@ -309,6 +339,7 @@ void ControladorGUI::actualizarDownSpeed(std::string file,
 		                                             uint32_t downSpeed) {
 	
 	vista->actualizarDownSpeed(file, obtenerVelocidad(downSpeed));
+	actualizarPestanias(file);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -316,12 +347,14 @@ void ControladorGUI::actualizarUpSpeed(std::string file,
                                        uint32_t upSpeed) {	
 	
 	vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
+	actualizarPestanias(file);
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarTime(std::string file, int time) {
 
-	vista->actualizarTime(file, obtenerETA(time));	
+	vista->actualizarTime(file, obtenerETA(time));
+	actualizarPestanias(file);	
 }
 
 /*--------------------------------------------------------------------------*/

@@ -276,7 +276,6 @@
                 <property name="model">liststore_tranferences</property>
                 <child>
                   <object class="GtkTreeViewColumn" id="column_file">
-                    <property name="resizable">True</property>
                     <property name="sizing">fixed</property>
                     <property name="fixed_width">350</property>
                     <property name="title">File</property>

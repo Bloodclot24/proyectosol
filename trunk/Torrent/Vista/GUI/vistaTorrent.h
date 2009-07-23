@@ -301,6 +301,14 @@ class VistaTorrent {
 		 */	
 		void complete(std::string filename);
 		
+		/**
+		 * Devuelve el estado del archivo pasado por parametro.
+		 * 
+		 * @param filename Nombre del archivo.
+		 * @return El estado del archivo.
+		 */ 
+		std::string getEstadoFile(std::string filename);	
+		
 		/**********Panel Actividades**********/
 		/**
 		 * Modifica la cantidad de archivos totales(All) en 
