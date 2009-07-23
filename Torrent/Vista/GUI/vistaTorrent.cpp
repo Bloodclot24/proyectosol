@@ -456,6 +456,7 @@ void VistaTorrent::actualizarUpSpeed(std::string file,
 	row[columns_transf.col_upSpeed]= upSpeed;
 }
 
+/*--------------------------------------------------------------------------*/
 void VistaTorrent::actualizarTime(std::string file, std::string time) {
 
 	Gtk::TreeModel::Row row= buscarRow_transf(file);
@@ -493,6 +494,10 @@ void VistaTorrent::start(std::string filename) {
 	     getPathStatusIcon("Downloading"));
 	row[columns_transf.col_upSpeed]= "";
 	row[columns_transf.col_downSpeed]= "";
+	
+//	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection= treeView_transf->get_selection();
+//	refTreeSelection->select(row);
+	
 }
 /*--------------------------------------------------------------------------*/
 void VistaTorrent::pause(std::string filename) {
@@ -529,6 +534,16 @@ void VistaTorrent::complete(std::string filename) {
 	row[columns_transf.col_upSpeed]= "";
   	row[columns_transf.col_downSpeed]= "";	
 }
+
+/*--------------------------------------------------------------------------*/
+std::string VistaTorrent::getEstadoFile(std::string filename) {
+	
+	Gtk::TreeModel::Row row= buscarRow_transf(filename);
+	Glib::ustring estado= row[columns_transf.col_status];
+	std::string status(estado.c_str());
+	
+	return status;	
+}		
 	
 /*--------------------------------------------------------------------------*/
 Gtk::TreeModel::Row VistaTorrent::buscarRow_transf(std::string file) {

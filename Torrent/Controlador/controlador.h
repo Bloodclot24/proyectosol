@@ -142,6 +142,11 @@ class Controlador {
 		 * con sus detalles las pestanias. 
 		 */
 		virtual void actualizarPestanias(std::string filename) {};
+		
+		/**
+		 * Limpia las pestania peers y general. 
+		 */
+		virtual void limpiarPestanias() {};
 
 		/********Orden********/
 		/**
@@ -273,6 +278,7 @@ class Controlador {
 		 * @param message Mensaje a mostrar.
 		 */ 
 		virtual void agregarMessage(std::string message)= 0;
+		
 };
 
 /****************************************************************************/
