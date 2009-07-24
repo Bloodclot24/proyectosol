@@ -57,8 +57,8 @@ class VistaTorrent {
 			  		add(col_size);
 			  		add(col_done);
 			  		add(col_status);	
-			  		add(col_downSpeed);
 			  		add(col_upSpeed);
+			  		add(col_downSpeed);
 			  		add(col_time);
 				}
 		
@@ -111,12 +111,10 @@ class VistaTorrent {
 				ModelColumns_tracker() {
 			  		add(col_name);
 			  		add(col_status);
-			  		add(col_seed);
 				}
 		
 		    	Gtk::TreeModelColumn<Glib::ustring> col_name;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_status;
-		    	Gtk::TreeModelColumn<int> col_seed;
 		};
 		
 		Glib::RefPtr<Gtk::ListStore> treeModel_trackers;

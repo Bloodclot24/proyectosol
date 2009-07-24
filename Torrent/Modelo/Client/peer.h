@@ -206,6 +206,21 @@ public:
       */
      void finish();
 
+	/** 
+      * Devuelve la velocidad de bajada.
+      * 
+      * @return La velocidad de bajada.
+      */
+      uint32_t getVelBajada();
+	
+	/** 
+      * Devuelve la velocidad de subida.
+      * 
+      * @return La velocidad de bajada.
+      */
+      uint32_t getVelSubida();
+
+
      /** 
       * Destruye el Peer.
       */

@@ -896,7 +896,10 @@ void Torrent::peerTransferFinished(Peer* peer, DownloadSlot* ds){
 	  peersEnEspera.push(peer);
 
      mutexBitField.lock();
-
+	
+	 /* Esto hay que agregar en la version */	
+	 controlador->actualizarDownSpeed(nombreTorrent, peer->getVelBajada());	
+		
      piezasAVerificar[ds->getPieceIndex()] -= 1;
      if(piezasAVerificar[ds->getPieceIndex()] == 0){
 	  bitField->setField(ds->getPieceIndex(),true);
@@ -907,7 +910,7 @@ void Torrent::peerTransferFinished(Peer* peer, DownloadSlot* ds){
 	       if(piezasVerificadas >= sizeInPieces){
 		    mutexEstado.lock();
 		    estado = SEEDING;
-		    //////controlador->complete(nombreTorrent);
+		    controlador->complete(nombreTorrent);
 		    mutexEstado.unlock();
 	       }
 	  }
@@ -1001,15 +1004,15 @@ int Torrent::pause(){
 double Torrent::getPorcentaje(){
      return ((double)piezasVerificadas/(double)sizeInPieces)*100;
 }
-/****************************************************************************/
-uint32_t Torrent::getVelocidadSubida(){
-     return 0;
-}
-
-/****************************************************************************/
-uint32_t Torrent::getVelocidadBajada(){
-     return 0;
-}
+///****************************************************************************/
+//uint32_t Torrent::getVelocidadSubida(){
+//     return 0;
+//}
+//
+///****************************************************************************/
+//uint32_t Torrent::getVelocidadBajada(){
+//     return 0;
+//}
 
 /****************************************************************************/
 std::list<std::string> Torrent::getListaPeers(){
