@@ -2,16 +2,6 @@
 <interface>
   <requires lib="gtk+" version="2.14"/>
   <!-- interface-naming-policy project-wide -->
-  <object class="GtkListStore" id="liststore_trackers">
-    <columns>
-      <!-- column-name Name -->
-      <column type="gchararray"/>
-      <!-- column-name Status -->
-      <column type="gchararray"/>
-      <!-- column-name Seed -->
-      <column type="gint"/>
-    </columns>
-  </object>
   <object class="GtkListStore" id="liststore_pieces">
     <columns>
       <!-- column-name # -->
@@ -67,6 +57,14 @@
       <!-- column-name IP -->
       <column type="gchararray"/>
       <!-- column-name Estado -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
+  <object class="GtkListStore" id="liststore_trackers">
+    <columns>
+      <!-- column-name Name -->
+      <column type="gchararray"/>
+      <!-- column-name Status -->
       <column type="gchararray"/>
     </columns>
   </object>
@@ -323,23 +321,23 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkTreeViewColumn" id="column_up_speed">
-                    <property name="title">Up Speed</property>
+                  <object class="GtkTreeViewColumn" id="column_down_speed3">
+                    <property name="title">Down Speed</property>
                     <child>
-                      <object class="GtkCellRendererText" id="cell_up"/>
+                      <object class="GtkCellRendererText" id="cell_down4"/>
                       <attributes>
-                        <attribute name="text">5</attribute>
+                        <attribute name="text">6</attribute>
                       </attributes>
                     </child>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkTreeViewColumn" id="column_down_speed">
-                    <property name="title">Down Speed</property>
+                  <object class="GtkTreeViewColumn" id="column_up_speed1">
+                    <property name="title">Up Speed</property>
                     <child>
-                      <object class="GtkCellRendererText" id="cell_down"/>
+                      <object class="GtkCellRendererText" id="cell_up2"/>
                       <attributes>
-                        <attribute name="text">6</attribute>
+                        <attribute name="text">5</attribute>
                       </attributes>
                     </child>
                   </object>
@@ -533,17 +531,6 @@
                         </child>
                       </object>
                     </child>
-                    <child>
-                      <object class="GtkTreeViewColumn" id="trackers_seed">
-                        <property name="title">Seed</property>
-                        <child>
-                          <object class="GtkCellRendererText" id="cell_trackers_seed"/>
-                          <attributes>
-                            <attribute name="text">2</attribute>
-                          </attributes>
-                        </child>
-                      </object>
-                    </child>
                   </object>
                 </child>
               </object>
@@ -714,7 +701,6 @@
         <child>
           <object class="GtkVBox" id="vbox_menubar">
             <property name="visible">True</property>
-            <property name="orientation">vertical</property>
             <child>
               <placeholder/>
             </child>
@@ -789,7 +775,6 @@ Ygounet Guido</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
           <placeholder/>
@@ -815,9 +800,8 @@ Ygounet Guido</property>
     <property name="type_hint">normal</property>
     <property name="has_separator">False</property>
     <child internal-child="vbox">
-      <object class="GtkVBox" id="dialog-vbox">
+      <object class="GtkVBox" id="dialog-vbox3">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
           <object class="GtkLabel" id="message">
@@ -895,9 +879,8 @@ Ygounet Guido</property>
     <property name="deletable">False</property>
     <property name="has_separator">False</property>
     <child internal-child="vbox">
-      <object class="GtkVBox" id="dialog-vbox3">
+      <object class="GtkVBox" id="dialog-vbox5">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
           <object class="GtkHBox" id="hbox1">

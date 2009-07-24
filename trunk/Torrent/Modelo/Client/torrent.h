@@ -429,19 +429,19 @@ public:
       */
      double getPorcentaje();
  
-     /** 
-      * Devuelve la velocidad de subida en bytes/s.
-      * 
-      * @return La velocidad de subida.
-      */
-     uint32_t getVelocidadSubida();
-
-     /** 
-      * Devuelve la velocidad de bajada en bytes/s.
-      * 
-      * @return La velocidad de bajada.
-      */
-     uint32_t getVelocidadBajada();
+//     /** 
+//      * Devuelve la velocidad de subida en bytes/s.
+//      * 
+//      * @return La velocidad de subida.
+//      */
+//     uint32_t getVelocidadSubida();
+//
+//     /** 
+//      * Devuelve la velocidad de bajada en bytes/s.
+//      * 
+//      * @return La velocidad de bajada.
+//      */
+//     uint32_t getVelocidadBajada();
 
      /** 
       * Devuelve la cantidad de piezas que conforman al torrent.

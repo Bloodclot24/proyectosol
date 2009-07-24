@@ -41,6 +41,12 @@ Socket::Socket(std::string direccion, int puerto){
 	  bzero(&(direccionDestino.sin_zero), 8); 
 	  /* pone en cero el resto */
      }
+     /* inicializo las velocidades */
+     velocidades.velBajada = 0;
+     velocidades.velSubida = 0;
+     cantVeces = 0;
+     tiempoAcumulado = 0;
+     bytesAcumulados = 0;
 }
 
 /* Hace que el socket escuche conexiones en su puerto */
@@ -85,9 +91,42 @@ bool Socket::enviar(const void *buf, int longitud){
 /* Recibe la cantidad de bytes pedidos en el buffer */
 /****************************************************************************/
 int Socket::recibir(void *buf, int cuanto){
-  
-     return recv(s, buf, cuanto, MSG_WAITALL);
-    
+  	 struct timeval tiempo;
+  	 int errorAntes = 0;
+  	 int errorRecv = 0;
+  	 int errorDespues = 0;
+  	 double tiempoAntes = 0;
+  	 double tiempoDespues = 0;
+  	 double tiempoAntesUseg = 0;
+  	 double difTiempos = 0;
+  	 error = gettimeofday(&tiempo,NULL);
+  	 if(!errorAntes){
+  	 	 tiempoAntes = (double)tiempo.tv_sec + ((double)tiempo.tv_usec/1000000);
+  	 	 tiempoAntesUseg = tiempo.tv_usec;
+  	 }
+//     std::cout << "Tiempo antes: " << tiempoAntes << " tiempo en seg: " << tiempo.tv_sec << " tiempo en useg: "<<tiempo.tv_usec << std::endl;
+     errorRecv = recv(s, buf, cuanto, MSG_WAITALL);
+     
+     error = gettimeofday(&tiempo,NULL);
+  	 if((!errorAntes) && (!errorDespues) && (errorRecv > 0)){
+  	 	 tiempoDespues = (double)tiempo.tv_sec + ((double)tiempo.tv_usec/1000000);
+//     	 std::cout << "Tiempo despues: " << tiempoDespues << " tiempo en seg: " << tiempo.tv_sec << " tiempo en useg: "<<tiempo.tv_usec << std::endl;
+     	 difTiempos = tiempoDespues - tiempoAntes;
+     	 if(difTiempos == 0) difTiempos = tiempo.tv_usec - tiempoAntesUseg;
+     	 tiempoAcumulado += difTiempos;
+     	 cantVeces ++;
+     	 bytesAcumulados += errorRecv;
+     	 if(cantVeces == CANT_PROMEDIO){
+     	 	velocidades.velBajada = (double)((bytesAcumulados / tiempoAcumulado) / (double)CANT_PROMEDIO);
+     	 	cantVeces = 0;
+     	 	tiempoAcumulado = 0;
+     	 	bytesAcumulados = 0;
+     	 }
+//     	velocidades.velBajada = (double)errorRecv / difTiempos;
+     	 	 	
+ 	 }else velocidades.velBajada = 0;  
+     
+     return errorRecv;
 }
      
 
@@ -148,7 +187,21 @@ const std::string& Socket::obtenerError(void){
      return ultimoError;
 }
 
-/* cierra y libera el socket */
+/* Devuelve la velocidad de bajada */
+/****************************************************************************/
+uint32_t Socket::getVelBajada(void) {
+	
+	return velocidades.velBajada;
+}
+	
+/* Devuelve la velocidad de subida */
+/****************************************************************************/
+uint32_t Socket::getVelSubida(void) {
+	
+	return velocidades.velSubida;
+}
+
+/* Cierra y libera el socket */
 /****************************************************************************/
 Socket::~Socket(){
      cerrar();

@@ -366,6 +366,17 @@ void Peer::finish(){
 	  colaDatos->invalidate();
 }
 
+
+uint32_t Peer::getVelBajada(){
+	
+	return socket->getVelBajada();
+}
+	
+uint32_t Peer::getVelSubida(){
+
+	return socket->getVelSubida();	
+}
+
 Peer::~Peer(){
      if(colaDatos)
 	  colaDatos->invalidate();

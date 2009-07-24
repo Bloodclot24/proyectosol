@@ -8,6 +8,10 @@
 #include <strings.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/time.h>
+#include <time.h>
+
+#define CANT_PROMEDIO 100
 
 /** 
  * Encapsulacion de sockets.
@@ -48,6 +52,19 @@ private:
       * @param socket El socket a copiar.
       */
      Socket operator=(const Socket& socket){ return socket; }
+     
+     /* Tiempo y Velocidades */
+     struct Velocidades{
+     	uint32_t velSubida;
+     	uint32_t velBajada;
+     };
+     
+     struct Velocidades velocidades;
+     
+     int cantVeces;
+     double tiempoAcumulado;
+     double bytesAcumulados;
+     
 public:
 
      /** 
@@ -146,6 +163,21 @@ public:
       * @return El string con la descripcion del ultimo error.
       */
      const std::string& obtenerError(void);
+ 	
+	/** 
+      * Devuelve la velocidad de bajada.
+      * 
+      * @return La velocidad de bajada.
+      */
+      uint32_t getVelBajada(void);
+	
+	/** 
+      * Devuelve la velocidad de subida.
+      * 
+      * @return La velocidad de bajada.
+      */
+      uint32_t getVelSubida(void);
+	
 
      /** 
       * cierra y libera el socket.

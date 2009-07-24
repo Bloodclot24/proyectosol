@@ -534,6 +534,7 @@ void VistaTorrent::complete(std::string filename) {
   										getPathStatusIcon("Completed"));
 	row[columns_transf.col_upSpeed]= "";
   	row[columns_transf.col_downSpeed]= "";	
+  	row[columns_transf.col_time]= "";   
 }
 
 /*--------------------------------------------------------------------------*/
@@ -663,7 +664,6 @@ void VistaTorrent::agregarTracker(std::string name, std::string status,
   
 	row[columns_tracker.col_name]= name;
   	row[columns_tracker.col_status]= status;
-  	row[columns_tracker.col_seed]= seed;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -677,8 +677,8 @@ void VistaTorrent::modificarStatusTracker(std::string name, std::string
 /*--------------------------------------------------------------------------*/
 void VistaTorrent::modificarSeedTracker(std::string name, int seed) {
 	
-	Gtk::TreeModel::Row row= buscarRow_trackers(name);
-	row[columns_tracker.col_seed]= seed;	
+//	Gtk::TreeModel::Row row= buscarRow_trackers(name);
+//	row[columns_tracker.col_seed]= seed;	
 }
 
 /*--------------------------------------------------------------------------*/
