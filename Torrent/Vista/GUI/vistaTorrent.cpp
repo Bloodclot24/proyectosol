@@ -421,7 +421,10 @@ void VistaTorrent::agregarArchivo(std::string file, std::string size,
   	row[columns_transf.col_status]= status;
   	row[columns_transf.col_downSpeed]= downSpeed;
   	row[columns_transf.col_upSpeed]= upSpeed;
-  	row[columns_transf.col_time]= time;                                   	
+  	row[columns_transf.col_time]= time;          
+  	
+  	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection= treeView_transf->get_selection();
+  	refTreeSelection->select(row);    	
 }
 
 /*--------------------------------------------------------------------------*/
@@ -495,10 +498,8 @@ void VistaTorrent::start(std::string filename) {
 	row[columns_transf.col_upSpeed]= "";
 	row[columns_transf.col_downSpeed]= "";
 	
-//	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection= treeView_transf->get_selection();
-//	refTreeSelection->select(row);
-	
 }
+
 /*--------------------------------------------------------------------------*/
 void VistaTorrent::pause(std::string filename) {
 	
