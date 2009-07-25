@@ -81,10 +81,40 @@ bool Socket::escuchar(void){
 /* Envia un buffer de una cierta longitud por el socket */
 /****************************************************************************/
 bool Socket::enviar(const void *buf, int longitud){
+     struct timeval tiempo;
+  	 int errorAntes = 0;
+  	 int errorDespues = 0;
+  	 double tiempoAntes = 0;
+  	 double tiempoDespues = 0;
+  	 double tiempoAntesUseg = 0;
+  	 double difTiempos = 0;
+  	 errorAntes = gettimeofday(&tiempo,NULL);
+  	 if(!errorAntes){
+  	 	 tiempoAntes = (double)tiempo.tv_sec + ((double)tiempo.tv_usec/1000000);
+  	 	 tiempoAntesUseg = tiempo.tv_usec;
+  	 }
      int retorno = send(s,buf,longitud,MSG_NOSIGNAL);
      //MSG_NOSIGNAL, evita que se reciba SIGPIPE
      if(retorno == -1)
 	  error = errno;
+	 errorDespues = gettimeofday(&tiempo,NULL);
+  	 if((!errorAntes) && (!errorDespues) && (retorno > 0)){
+  	 	 tiempoDespues = (double)tiempo.tv_sec + ((double)tiempo.tv_usec/1000000);
+//     	 std::cout << "Tiempo despues: " << tiempoDespues << " tiempo en seg: " << tiempo.tv_sec << " tiempo en useg: "<<tiempo.tv_usec << std::endl;
+     	 difTiempos = tiempoDespues - tiempoAntes;
+     	 if(difTiempos == 0) difTiempos = tiempo.tv_usec - tiempoAntesUseg;
+     	 tiempoAcumulado += difTiempos;
+     	 cantVeces ++;
+     	 bytesAcumulados += errorRecv;
+     	 if(cantVeces == CANT_PROMEDIO){
+     	 	velocidades.velSubida = (double)((bytesAcumulados / tiempoAcumulado) / (double)CANT_PROMEDIO);
+     	 	cantVeces = 0;
+     	 	tiempoAcumulado = 0;
+     	 	bytesAcumulados = 0;
+     	 }
+	 
+	 }else velocidades.velSubida = 0;  
+      
      return esValido();
 }
      
@@ -99,7 +129,7 @@ int Socket::recibir(void *buf, int cuanto){
   	 double tiempoDespues = 0;
   	 double tiempoAntesUseg = 0;
   	 double difTiempos = 0;
-  	 error = gettimeofday(&tiempo,NULL);
+  	 errorAntes = gettimeofday(&tiempo,NULL);
   	 if(!errorAntes){
   	 	 tiempoAntes = (double)tiempo.tv_sec + ((double)tiempo.tv_usec/1000000);
   	 	 tiempoAntesUseg = tiempo.tv_usec;
@@ -107,7 +137,7 @@ int Socket::recibir(void *buf, int cuanto){
 //     std::cout << "Tiempo antes: " << tiempoAntes << " tiempo en seg: " << tiempo.tv_sec << " tiempo en useg: "<<tiempo.tv_usec << std::endl;
      errorRecv = recv(s, buf, cuanto, MSG_WAITALL);
      
-     error = gettimeofday(&tiempo,NULL);
+     errorDespues = gettimeofday(&tiempo,NULL);
   	 if((!errorAntes) && (!errorDespues) && (errorRecv > 0)){
   	 	 tiempoDespues = (double)tiempo.tv_sec + ((double)tiempo.tv_usec/1000000);
 //     	 std::cout << "Tiempo despues: " << tiempoDespues << " tiempo en seg: " << tiempo.tv_sec << " tiempo en useg: "<<tiempo.tv_usec << std::endl;
