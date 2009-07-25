@@ -290,8 +290,8 @@ std::string Controlador::obtenerVelocidad(uint32_t length) {
 			break;
 		default:
 			break;					
-	}	
-
+	}
+	
 	return(lengthS);	
 }
 

@@ -21,7 +21,8 @@
 #define DICT_PEERS      "peers"
 
 /****************************************************************************/
-Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondition(&requestMutex){
+Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondition(&requestMutex), 
+mutexActualizar() {
      
      this->bitField= bitfieldGuardado;
 
@@ -897,20 +898,31 @@ void Torrent::peerTransferFinished(Peer* peer, DownloadSlot* ds){
 
      mutexBitField.lock();
 	
-	 /* Esto hay que agregar en la version */	
+	 mutexActualizar.lock();
 	 controlador->actualizarDownSpeed(nombreTorrent, peer->getVelBajada());	
+	 mutexActualizar.unlock();
+	 	
 		
      piezasAVerificar[ds->getPieceIndex()] -= 1;
      if(piezasAVerificar[ds->getPieceIndex()] == 0){
 	  bitField->setField(ds->getPieceIndex(),true);
 	  if(validarPieza(ds->getPieceIndex())){
 	       piezasVerificadas++;
+	       
+	       mutexActualizar.lock();
 	       controlador->actualizarDone(nombreTorrent, getPorcentaje());
+	 	   mutexActualizar.unlock();
+	 	       
 	       anunciarPieza(ds->getPieceIndex());
 	       if(piezasVerificadas >= sizeInPieces){
 		    mutexEstado.lock();
+		    
 		    estado = SEEDING;
-		    controlador->complete(nombreTorrent);
+		    
+	        mutexActualizar.lock();
+		    controlador->seed(nombreTorrent);
+	 	    mutexActualizar.unlock();
+	 		    
 		    mutexEstado.unlock();
 	       }
 	  }

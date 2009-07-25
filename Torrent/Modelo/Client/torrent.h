@@ -138,6 +138,8 @@ private:
 						  * que muestre en la
 						  * vista */
      Mutex mutexListaDireccionsPeers;
+     
+     Mutex mutexActualizar;
 
 private:
 

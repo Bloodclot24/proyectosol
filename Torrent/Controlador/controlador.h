@@ -203,6 +203,16 @@ class Controlador {
 		virtual void complete(std::string filename) {};
 		
 		/**
+		 * Modifica el estado del archivo pasado por parametro en el 
+		 * en el panel de transferencias a SEED.
+		 * 
+		 * @param file Nombre del archivo.
+		 */	
+		virtual void seed(std::string filename) {};
+		
+
+			
+		/**
 		 * Actualiza el porcentaje de completado del archivo pasado por
 		 * parametro en el panel de transferencias.
 		 * 
