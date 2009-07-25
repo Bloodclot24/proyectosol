@@ -32,6 +32,8 @@ private:
      uint32_t puertoPorDefecto;
      uint32_t cantidadDePeers;
      
+     std::map<std::string,std::string> trackersIds; /**< Lista Ids de los trackers.*/
+     
      Torrent* buscarTorrent(const char* filename);
 
 public:
@@ -121,6 +123,40 @@ public:
      * @return Devuelve true si el archivo ya existe, false caso contrario.  
 	 */
 	bool existeTorrent(const char* filename);
+	
+	/**
+	 * Informa si el ya se ha establecido una conexion con el tracker.
+	 * 
+     * @param tracker Nombre del tracker.
+     *
+     * @return Devuelve true si el tracker ya existe, false caso contrario.  
+	 */
+	bool existeTracker(const std::string tracker);
+
+	/**
+	 * Informa si el ya se ha establecido una conexion con el tracker.
+	 * 
+     * @param tracker Nombre del tracker.
+     *
+     * @return Devuelve la id del tracker.  
+	 */
+	const std::string trackerId(const std::string tracker);
+	
+	/**
+	 * Agrega un tracker con su respectiva id.
+	 * 
+     * @param tracker Nombre del tracker.
+     * @param id Id del tracker.
+	 */
+	void addTracker(const std::string tracker, const std::string id);
+	
+	/**
+	 * Modifica la id del tracker.
+	 * 
+     * @param tracker Nombre del tracker.
+     * @param id Id del tracker.
+	 */
+	void modificarIdTracker(const std::string tracker, const std::string id);				
 	
     /**
      * Destruye el cliente y libera todos los torrents. 

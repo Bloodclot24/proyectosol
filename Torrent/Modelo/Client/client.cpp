@@ -1,7 +1,7 @@
 #include "client.h"
 
 /****************************************************************************/
-Client::Client(Controlador* controlador) {
+Client::Client(Controlador* controlador): trackersIds() {
 	
 	this->controlador= controlador;
 	this->puertoPorDefecto = PORT_IN;
@@ -13,7 +13,7 @@ Client::Client(Controlador* controlador) {
 /*--------------------------------------------------------------------------*/
 bool Client::addTorrent(const char* path, BitField* bitfield){
 	
-     Torrent *torrent = new Torrent(path, bitfield);
+     Torrent *torrent = new Torrent(path, this, bitfield);
 	
      if(torrent->isValid()){
 	  torrent->setControlador(controlador);
@@ -139,6 +139,33 @@ bool Client::existeTorrent(const char* filename){
 		return true;
 	return false;
 }
+
+/*--------------------------------------------------------------------------*/
+bool Client::existeTracker(const std::string tracker) {
+	
+	 std::string trackerMap= trackersIds[tracker];
+     if((trackerMap.compare("")) != 0)
+     	return true;
+     return false;
+}
+
+/*--------------------------------------------------------------------------*/
+const std::string Client::trackerId(const std::string tracker) {
+	
+	return trackersIds[tracker];
+}
+	
+/*--------------------------------------------------------------------------*/
+void Client::addTracker(const std::string tracker, const std::string id) {
+	
+	trackersIds.insert(std::pair<std::string,std::string>(tracker, id));
+}	
+
+/*--------------------------------------------------------------------------*/
+void Client::modificarIdTracker(const std::string tracker, const std::string id) {
+	
+	trackersIds[tracker]= id;
+}	
 
 /*--------------------------------------------------------------------------*/
 Client::~Client(){
