@@ -105,7 +105,7 @@ bool Socket::enviar(const void *buf, int longitud){
      	 if(difTiempos == 0) difTiempos = tiempo.tv_usec - tiempoAntesUseg;
      	 tiempoAcumulado += difTiempos;
      	 cantVeces ++;
-     	 bytesAcumulados += errorRecv;
+     	 bytesAcumulados += retorno;
      	 if(cantVeces == CANT_PROMEDIO){
      	 	velocidades.velSubida = (double)((bytesAcumulados / tiempoAcumulado) / (double)CANT_PROMEDIO);
      	 	cantVeces = 0;

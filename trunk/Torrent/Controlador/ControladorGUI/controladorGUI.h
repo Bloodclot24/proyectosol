@@ -19,12 +19,20 @@ class ControladorGUI: public Controlador {
 		int downloading;
 		int completed;
 		int active;
+		
+		Mutex mutexActividades;
 		void actualizarCantActividades();
 		
 		Mutex mutexMensaje;
 		
 		void mostrarFile(Torrent* torrent);
-	
+		
+		Mutex mutexGeneral;
+		void modificarGeneral(Torrent* torrent);
+		
+		Mutex mutexPeers;
+		void modificarPeers(Torrent* torrent);
+			
 	protected:
 		virtual void mostrarAnnounceUrlTorrent(Torrent* torrent);
 		
@@ -164,6 +172,14 @@ class ControladorGUI: public Controlador {
 		virtual void complete(std::string filename);
 		
 		/**
+		 * Modifica el estado del archivo pasado por parametro en el 
+		 * en el panel de transferencias a SEED.
+		 * 
+		 * @param file Nombre del archivo.
+		 */	
+		virtual void seed(std::string filename);
+		
+		/**
 		 * Actualiza el porcentaje de completado del archivo pasado por
 		 * parametro en el panel de transferencias.
 		 * 
@@ -217,20 +233,6 @@ class ControladorGUI: public Controlador {
 		 */ 
 		virtual void modificarStatusTracker(std::string name, 
 		                                    std::string status);		
-		/**
-		 * Agrega seed al tracker de la vista.
-		 * 
-		 * @param name Nombre del tracker.
-		 * @param seed Nueva cantidad de seed.
-		 */ 
-		virtual void agregarSeedTracker(std::string name, int seed);
-		
-		/**
-		 * Elimina el tracker pasado por parametro de la vista.
-		 * 
-		 * @param name Nombre del tracker.
-		 */ 
-		virtual void eliminarTracker(std::string name);
 		
 		/********Message********/		
 		/**
@@ -238,9 +240,7 @@ class ControladorGUI: public Controlador {
 		 * 
 		 * @param message Mensaje a mostrar.
 		 */ 
-		virtual void agregarMessage(std::string message);
-		
-		
+		virtual void agregarMessage(std::string message);	
 };
 
 /****************************************************************************/

@@ -57,8 +57,8 @@ class VistaTorrent {
 			  		add(col_size);
 			  		add(col_done);
 			  		add(col_status);	
-			  		add(col_upSpeed);
 			  		add(col_downSpeed);
+			  		add(col_upSpeed);
 			  		add(col_time);
 				}
 		
@@ -300,12 +300,30 @@ class VistaTorrent {
 		void complete(std::string filename);
 		
 		/**
+		 * Modifica el estado del archivo pasado por parametro en el 
+		 * en el panel de transferencias a SEED.
+		 * 
+		 * @param file Nombre del archivo.
+		 */	
+		void seed(std::string filename);
+		
+		/**
 		 * Devuelve el estado del archivo pasado por parametro.
 		 * 
 		 * @param filename Nombre del archivo.
 		 * @return El estado del archivo.
 		 */ 
 		std::string getEstadoFile(std::string filename);	
+		
+		/**
+		 * Indica si la fila del archivo pasada por parametro
+		 * es la seleccionada.
+		 * 
+		 * @param filename Nombre del archivo.
+		 * @return TRUE si el archivo es el de la fila actual 
+		 * seleccionada.
+		 */ 
+		bool archivoSeleccionado(std::string filename);
 		
 		/**********Panel Actividades**********/
 		/**
@@ -376,10 +394,8 @@ class VistaTorrent {
 		 * 
 		 * @param name Nombre del tracker.
 		 * @param status Estado del tracker.
-		 * @param seed Cantidad de seed del tracker.
 		 */	
-		void agregarTracker(std::string name, std::string status,
-		                    int seed);
+		void agregarTracker(std::string name, std::string status);
 		
 		/**
 		 * Modifica el estado del tracker en la pestania trackers.
@@ -390,19 +406,11 @@ class VistaTorrent {
 		void modificarStatusTracker(std::string name, std::string status);
 		
 		/**
-		 * Modifica el estado del tracker en la pestania trackers.
-		 * 
-		 * @param name Nombre del tracker.
-		 * @param seed Cantidad nueva de los seed del tracker.
-		 */			
-		void modificarSeedTracker(std::string name, int seed);
-
-		/**
 		 * Elimina un tracker de la pestania trackers.
 		 * 
 		 * @param name Nombre del tracker.
 		 */			
-		void eliminarTracker(std::string name);
+		void limpiarListaTrackers();
 
 		/**********Pestania Peers**********/
 		/**
@@ -425,6 +433,11 @@ class VistaTorrent {
 		 * @param message Mensaje a mostrar.
 		 */	
 		void agregarMessage(std::string message);
+		
+		/**
+		 * Limpia la pestania de peers.
+		 */	
+		void limpiarMessages(); 
 		
 		/**********ToolBar**********/
 		/**

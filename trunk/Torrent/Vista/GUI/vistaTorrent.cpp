@@ -447,8 +447,16 @@ void VistaTorrent::actualizarStatus(std::string file, std::string status) {
 void VistaTorrent::actualizarDownSpeed(std::string file, 
                                        std::string downSpeed) {
 	
+	std::cout << "ESTOY POR BUSCAR" << std::endl;
+	
 	Gtk::TreeModel::Row row= buscarRow_transf(file);
+	
+	std::cout << "ESTOY YA BUSQUE" << std::endl;
+
 	row[columns_transf.col_downSpeed]= downSpeed;
+	
+	std::cout << "MODIFIQUE" << std::endl;
+	
 }
 
 /*--------------------------------------------------------------------------*/
@@ -538,6 +546,19 @@ void VistaTorrent::complete(std::string filename) {
 }
 
 /*--------------------------------------------------------------------------*/
+void VistaTorrent::seed(std::string filename) {
+	
+	Gtk::TreeModel::Row row= buscarRow_transf(filename);
+	
+	row[columns_transf.col_status]= "Seeding";
+ 	row[columns_transf.col_icon]= Gdk::Pixbuf::create_from_file(
+  										getPathStatusIcon("Seeding"));
+	row[columns_transf.col_upSpeed]= "";
+  	row[columns_transf.col_downSpeed]= "";	
+  	row[columns_transf.col_time]= "";   	
+}
+
+/*--------------------------------------------------------------------------*/
 std::string VistaTorrent::getEstadoFile(std::string filename) {
 	
 	Gtk::TreeModel::Row row= buscarRow_transf(filename);
@@ -545,6 +566,15 @@ std::string VistaTorrent::getEstadoFile(std::string filename) {
 	std::string status(estado.c_str());
 	
 	return status;	
+}
+
+/*--------------------------------------------------------------------------*/
+bool VistaTorrent::archivoSeleccionado(std::string filename) {
+
+	//Gtk::TreeModel::Row row= buscarRow_transf(filename);
+	//Glib::RefPtr<Gtk::TreeSelection> refTreeSelection= treeView_transf->get_selection();
+  	
+	return false; /*refTreeSelection->is_selected(*row);*/  
 }		
 	
 /*--------------------------------------------------------------------------*/
@@ -657,8 +687,7 @@ void VistaTorrent::modificarInformacion(std::string information) {
 
 /*--------------------------------------------------------------------------*/
 /**Pestania Trackers**/
-void VistaTorrent::agregarTracker(std::string name, std::string status,
-		                          int seed) {
+void VistaTorrent::agregarTracker(std::string name, std::string status) {
 
 	Gtk::TreeModel::Row row= *(treeModel_trackers->append());
   
@@ -675,17 +704,9 @@ void VistaTorrent::modificarStatusTracker(std::string name, std::string
 }
 
 /*--------------------------------------------------------------------------*/
-void VistaTorrent::modificarSeedTracker(std::string name, int seed) {
-	
-//	Gtk::TreeModel::Row row= buscarRow_trackers(name);
-//	row[columns_tracker.col_seed]= seed;	
-}
+void VistaTorrent::limpiarListaTrackers() {
 
-/*--------------------------------------------------------------------------*/
-void VistaTorrent::eliminarTracker(std::string name) {
-
-	Gtk::TreeModel::Row row= buscarRow_trackers(name);
-	treeModel_trackers->erase(row);
+	treeModel_trackers->clear();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -728,6 +749,12 @@ void VistaTorrent::agregarMessage(std::string message) {
 	
 	Gtk::TreeModel::Row row= *(treeModel_messages->append());
 	row[columns_messages.col_message]= message;
+}
+
+/*--------------------------------------------------------------------------*/
+void VistaTorrent::limpiarMessages() {
+	
+	treeModel_messages->clear();
 }
 
 /*--------------------------------------------------------------------------*/
