@@ -117,7 +117,7 @@ bool Controlador::cargarConfig() {
 		config.read(cantTorrents, sizeof(uint32_t));
 		uint32_t cantListaTorrents= *cantTorrents;
 		
-		for(uint32_t i= 0; i < cantListaTorrents; i++) {
+		for(uint32_t i= 0; i < cantListaTorrents+1; i++) {
 			listaOrdenada.push_back("-");
 		}
 
@@ -174,6 +174,9 @@ bool Controlador::cargarConfig() {
 			uint32_t ordenVista = *orden;
 			
 			std::string filename= nombreTorrent;
+			
+			std::cout << "Orden Vista:" << ordenVista << std::endl;
+			
 			listaOrdenada[ordenVista]= nombreTorrent;
 		}
 	} 		

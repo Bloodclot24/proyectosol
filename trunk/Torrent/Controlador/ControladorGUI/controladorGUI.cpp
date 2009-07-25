@@ -11,14 +11,14 @@ ControladorGUI::ControladorGUI(): mutexActividades(), mutexMensaje(),
 	this->active= 0;
 	//this->ventanaCargando= new VentanaCargando(this);
 	//ventanaCargando->start();
-	//cargarConfig();
+	cargarConfig();
 }
 
 /*--------------------------------------------------------------------------*/
 ControladorGUI::~ControladorGUI() {
 
 	//ventanaCargando->stop();	
-	//guardarConfig();
+	guardarConfig();
 	delete vista;	
 }
 
