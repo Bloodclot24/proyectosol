@@ -21,9 +21,11 @@
 #define DICT_PEERS      "peers"
 
 /****************************************************************************/
-Torrent::Torrent(const char* fileName, BitField* bitfieldGuardado):requestCondition(&requestMutex), 
-mutexActualizar() {
+Torrent::Torrent(const char* fileName, Client* client,
+                 BitField* bitfieldGuardado):requestCondition(&requestMutex), 
+				 mutexActualizar() {
      
+     this->client= client;
      this->bitField= bitfieldGuardado;
 
      partsRequested = 0;
@@ -172,9 +174,8 @@ void  Torrent::armarListaDeTrackers(const std::list<BeNode*> &listaLista){
 	       std::list<BeNode*>::const_iterator itInterno;
 	       for(itInterno = listaInterna.begin();itInterno != listaInterna.end(); itInterno++){
 		    BeNode* elementoInterno = *itInterno;
-		    if(elementoInterno->typeNode == BE_STR){
-			 announceUrlList.push_back(elementoInterno->beStr);
-		    }
+		    if(elementoInterno->typeNode == BE_STR)
+			 announceUrlList.push_back(elementoInterno->beStr);\
 	       }
 	  }
      }
@@ -260,8 +261,18 @@ int Torrent::announce(){
      /* Cantidad de Peers a pedir */
      req.addParam("numwant", "50");
 
-     
-     req.addParam("key", "79m8xvwlyg");
+  	std::cout << "--------------------------------" << std::endl;
+
+	 std::string tracker= announceUrlList.front();
+	 std::cout << "Conectando Tracker: " << tracker << std::endl;
+	 	 
+	 if(client->existeTracker(tracker)) {
+	 	std::cout << "Existe" << std::endl;
+	   	req.addParam("tracker id", client->trackerId(tracker));
+	 }	  	
+
+	std::cout << "--------------------------------" << std::endl;
+
 
      req.addParam("event", "started");
 
@@ -325,8 +336,26 @@ int Torrent::announce(){
 //	   controlador->agregarMessage("INFO: intervalo MINIMO de requests -> "+ elemento->beInt + "s" );
 
      elemento = (*dict)[DICT_TRCKID];
-     if(elemento != NULL)
+     std::cout << "--------------------------------" << std::endl;
+	 std::cout << "Guardando Tracker" << std::endl;
+	 	 
+     if(elemento != NULL) {
 	  controlador->agregarMessage( "INFO: ID TRACKER -> "+ elemento->beStr);
+	  std::string tracker= announceUrlList.front();
+	  
+	  std::cout << "Tracker: " << tracker << std::endl; 
+	  
+	  if(!client->existeTracker(tracker)) {
+	  	std::cout << "No existe" << std::endl;
+	  	client->addTracker(tracker, elemento->beStr);
+	  } else {
+	  	std::cout << "Existe" << std::endl;
+	  	client->modificarIdTracker(tracker,	elemento->beStr);
+	  }
+	   
+     }
+     
+     std::cout << "------------------------------------" << std::endl;
 
      elemento = (*dict)[DICT_COMPLETE];
      if(elemento != NULL)

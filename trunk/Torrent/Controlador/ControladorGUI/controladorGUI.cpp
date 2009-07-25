@@ -416,22 +416,15 @@ void ControladorGUI::actualizarDownSpeed(std::string file,
 		                                             uint32_t downSpeed) {
 	
 	vista->actualizarDownSpeed(file, obtenerVelocidad(downSpeed));
-//	
-//	std::cout << "Nombre archivo dp de actualizar down speed: " << file << std::endl;
-//	
-//	Torrent* torrent= obtenerTorrent(file);
-//	double done= torrent->getPorcentaje();
-//	double size = torrent->getTotalSize();
-//	uint32_t time = 0;
-//	if(downSpeed != 0){
-//		time = (size *( 100 - done)/100) / downSpeed;
-//		vista->actualizarTime(file,obtenerETA(time));
-//	}
-//	
-//	std::cout << "Nombre archivo final: " << file << std::endl;
-//	std::cout << "------------------------------------------" << std::endl;
-//	
-//	
+
+	Torrent* torrent= obtenerTorrent(file);
+	double done= torrent->getPorcentaje();
+	double size = torrent->getTotalSize();
+	uint32_t time = 0;
+	if(downSpeed != 0){
+		time = (size *( 100 - done)/100) / downSpeed;
+		vista->actualizarTime(file,obtenerETA(time));
+	}
 }
 
 /*--------------------------------------------------------------------------*/

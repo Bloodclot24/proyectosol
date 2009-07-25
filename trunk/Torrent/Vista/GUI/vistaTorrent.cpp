@@ -447,16 +447,8 @@ void VistaTorrent::actualizarStatus(std::string file, std::string status) {
 void VistaTorrent::actualizarDownSpeed(std::string file, 
                                        std::string downSpeed) {
 	
-	std::cout << "ESTOY POR BUSCAR" << std::endl;
-	
 	Gtk::TreeModel::Row row= buscarRow_transf(file);
-	
-	std::cout << "ESTOY YA BUSQUE" << std::endl;
-
 	row[columns_transf.col_downSpeed]= downSpeed;
-	
-	std::cout << "MODIFIQUE" << std::endl;
-	
 }
 
 /*--------------------------------------------------------------------------*/

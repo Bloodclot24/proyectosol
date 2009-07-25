@@ -38,6 +38,8 @@ class Torrent;
  */
 class Torrent: public Thread{
 private:
+	 Client* client;
+
      std::string nombreTorrent; /**< El nombre del archivo .torrent */
 
      std::list<TorrentFile*>* archivos; /**< La lista de archivos del
@@ -138,7 +140,7 @@ private:
 						  * que muestre en la
 						  * vista */
      Mutex mutexListaDireccionsPeers;
-     
+          
      Mutex mutexActualizar;
 
 private:
@@ -183,6 +185,7 @@ public:
       * y opcionalmente un BitField, crea un Torrent.
       * 
       * @param fileName El nombre del archivo '.torrent'
+      * @param client El cliente actual.
       *
       * @param bitfieldGuardado El BitField con la informacion de las
       * piezas del Torrent. Si es NULL o no se especifica, se crea un
@@ -190,7 +193,8 @@ public:
       * contenidos en el '.torrent' ya existian en disco, se realiza
       * una verificacion de cada una de las piezas.
       */
-     Torrent(const char* fileName, BitField* bitfieldGuardado= NULL);
+     Torrent(const char* fileName, Client* client,
+             BitField* bitfieldGuardado= NULL);
 
      /** 
       * Comienza el procesamiento del Torrent.
