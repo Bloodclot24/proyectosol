@@ -31,7 +31,7 @@ bool Client::addTorrent(const char* path, BitField* bitfield){
 bool Client::start(const char* filename){
 	
      // comienzo a recibir conexiones de peers entrantes
-     //	 this->threadAceptor->comenzar();
+     this->threadAceptor->comenzar();
 	 
      Torrent* torrent= buscarTorrent(filename);
 
