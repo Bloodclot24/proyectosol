@@ -2,6 +2,7 @@
 #define DOWNLOADSLOT_H_INCLUDED
 
 #include <queue>
+#include "deque.h"
 #include <stdint.h>
 
 /**
@@ -103,7 +104,7 @@ public:
       * 
       * @return El numero de bloques que se agregaron a la cola.
       */
-     static int agregarSlots(std::queue<DownloadSlot*> &cola, uint32_t index, uint32_t pieceSize, uint32_t partSize){
+     static int agregarSlots(Deque<DownloadSlot*> &cola, uint32_t index, uint32_t pieceSize, uint32_t partSize){
 	  DownloadSlot *ds;
 	  int contador = 0;
 

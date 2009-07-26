@@ -11,6 +11,16 @@ BitField::BitField(uint32_t length){
      memset(data,0,bytesLength);
 }
 
+
+/* Copia un bitfield */
+/****************************************************************************/
+BitField::BitField(const BitField& original){
+     this->length = original.getLength();
+     bytesLength = original.getBytesLength();
+     data = new char[bytesLength];
+     memcpy(data,original.data,bytesLength);
+}
+
 /* Copia los datos de *bitField */
 /****************************************************************************/
 void BitField::setFields(char* bitField){
@@ -65,12 +75,12 @@ bool BitField::getField(uint32_t index) const{
 }
 
 /****************************************************************************/
-const char* BitField::getData(){
+const char* BitField::getData() const {
 	return data;
 }	
 
 /* libera el area dedatos del bitfield */
 /****************************************************************************/
 BitField::~BitField(){
-     delete data;
+     delete[] data;
 }

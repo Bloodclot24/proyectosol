@@ -77,6 +77,7 @@ public:
 		    Mensaje *mensaje = colaDeEspera.popFront();
 		    //delete mensaje;
 	       }
+	       colaDeEspera.invalidate();
 	  }
      }
 
@@ -88,23 +89,22 @@ private:
       * @see Threads
       */
      void run(){
-	  colaDeEspera.hold();
 	  while(isRunning()){
 	       Mensaje *mensaje = colaDeEspera.popFront();
-	       if(colaDeEspera.isValid()){
+	       if(isRunning()){
 		    socket->enviar(mensaje->getDatos(), mensaje->getTamanio());
 		    delete mensaje;
 	       }
-	       else stop();
 	  }
-	  colaDeEspera.release();
      }
 public:
      
      /** 
       * Elimina el Thread.
       */
-     ~ThreadEmisor(){};
+     ~ThreadEmisor(){
+	  stop();
+     };
 };
 
 #endif

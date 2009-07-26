@@ -177,7 +177,7 @@ std::string ProtocoloBitTorrent::int32Astring(uint32_t valor) {
 /*--------------------------------------------------------------------------*/
 Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
      uint32_t bytes = 0;
-     char aux[4];
+     char aux[4] = {0,0,0,0};
      //Obtengo los primeros 4 bytes
      while(bytes<4){
 	  aux[bytes] = deque.popFront();
@@ -188,7 +188,8 @@ Message* ProtocoloBitTorrent::decode(Deque<char> &deque) {
      memset(message, 0, sizeof(Message));
 	
      uint32_t* longitudMsj = (uint32_t*)aux;
-     uint32_t longMsj = ntohl(*longitudMsj);
+     uint32_t longMsj = 0;
+     longMsj = ntohl(*longitudMsj);
 
 
      if(longMsj != 0) {

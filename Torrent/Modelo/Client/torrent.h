@@ -5,7 +5,7 @@ class Peer;
 /** 
  * Estados posibles del Torrent
  */
-enum EstadoTorrent {STOPPED, PAUSED, DOWNLOADING, SEEDING, ERROR};
+enum EstadoTorrent {STOPPING, STOPPED, PAUSED, STARTING, DOWNLOADING, SEEDING, ERROR};
 class Torrent;
 
 #include "socket.h"
@@ -32,6 +32,9 @@ class Torrent;
 #include <limits.h>
 #include <math.h>
 #include <queue>
+#include "deque.h"
+
+#define MAX_CONNECTED_PEERS 20
 
 /** 
  * Clase que modela cada Torrent que maneja el cliente.
@@ -84,9 +87,21 @@ private:
 				 * ocurrio algun error en el
 				 * constructor. */
      
-     std::list<Peer*> listaPeers; /**< Lista de Peers actualmente
-				   * conectados o esperando establecer
-				   * la conexion. */
+     std::list<Peer*> listaPeers; /**< Lista de Peers disponibles para
+				   * conectar */
+     std::list<Peer*> listaPeersConectados; /**< Lista de peers
+					     * conectados
+					     * actualmente */
+
+     std::list<Peer*> listaPeersActivos; /**< Lista de peers
+					  * conectados pero que nos
+					  * estan enviando datos
+					  * actualmente */
+
+     std::list<Peer*> listaPeersEspera;	/**< Lista de peers conectados
+					 * que acaban de terminar una
+					 * transferencia */
+     
      Mutex mutexPeers;		/**< Bloquea la lista de Peers */
 
      Mutex mutexBitField;	/**< Mutex para el bitField */
@@ -97,18 +112,28 @@ private:
      /**< representa las piezas que estamos bajando. Como cada pieza
       * se baja por partes, esto nos indica que partes de cada pieza
       * tenemos y que partes nos faltan */     
-     std::queue<DownloadSlot*> piezasEnProceso;	
-     
+     Deque<DownloadSlot*> piezasEnProceso;	
+
+     Mutex mutexPiezasAVerificar;
      
      std::map<int,int> piezasAVerificar; /**< Map que contiene las
-					  * piezas que todavia fueran
-					  * verificadas. Cada par es
-					  * del tipo <numero de pieza,
-					  * bloques>. Cuando recibimos
-					  * todas los bloques de esa
-					  * pieza realizamos la
-					  * verificacion de la
-					  * misma. */
+					  * piezas que todavia no
+					  * fueron verificadas. Cada
+					  * par es del tipo <numero de
+					  * pieza, bloques>. Cuando
+					  * recibimos todas los
+					  * bloques de esa pieza
+					  * realizamos la verificacion
+					  * de la misma. */
+
+     
+     std::list<uint32_t> listaPiezasAVerificar;	/**< Lista con las
+						 * piezas que deben
+						 * ser verificadas */
+     std::queue<uint32_t> colaPiezasAAnunciar; /**< Cola con las
+						* piezas que
+						* deboanunciar */
+     
 
      int partsRequested;	/**< indica la cantidad de partes que
 				 * estamos esperando en este momento */
@@ -125,6 +150,9 @@ private:
 				  * enviaron un Unchoke y estan
 				  * disponibles para realizar
 				  * requests */
+
+     uint32_t timeToAnnounce;	/**< Tiempo restante para el proximo
+				 * announce */
 
      Mutex downloadMutex;
 
@@ -227,11 +255,11 @@ public:
      bool isValid();
 
      /** 
-      * Devuelve el BitField asociado al Torrent.
+      * Devuelve una copia del BitField asociado al Torrent.
       * 
       * @return El BitField con las piezas completas del Torrent.
       */
-     BitField* getBitField();
+     BitField getBitField();
 
      /** 
       * Agrega un Peer a la lista de Peers, cuidando de que no este
@@ -241,13 +269,6 @@ public:
       */
      void agregarPeer(Peer* peer);
      
-     /** 
-      * Elimina un peer de la lista de peers.
-      * 
-      * @param peer El puntero al Peer a eliminar.
-      */
-     void eliminarPeer(Peer* peer);
-
      /** 
       * Rutina principal del torrent. Aqui se maneja la logica.
       * @see Thread
@@ -355,6 +376,14 @@ public:
      void peerTransferCanceled(Peer* peer, DownloadSlot * ds);
 
      /** 
+      * Aborta un request, insertandolo nuevamente en la cola de
+      * espera.
+      * 
+      * @param ds El slot a reinsertar en la lista de pendientes.
+      */
+     void abortRequest(DownloadSlot* ds);
+
+     /** 
       * Avisa a todos los peers conectados que tenemos una pieza.
       * 
       * @param index El numero de pieza a anunciar.
@@ -367,6 +396,31 @@ public:
       * @return Si tuvo exito devuelve 0, si falla devuelve -1.
       */
      int announce();
+
+     /** 
+      * Recorre la lista de trackers anunciando el torrent hasta que
+      * alguno responda satisfactoriamente. Si no se pudo anunciar a
+      * ninguno exitosamente, devuelve un numero menor a 0.
+      * 
+      * @return Codigo de error. Menor a cero si hubo algun
+      * error. Cero o mayor si se pudo comunicar con algun tracker.
+      */     
+     int do_announce();
+     
+     /** 
+      * Si hay que verificar alguna pieza, la verifica. Si la pieza es
+      * correcta o no, se ve reflejado en el bitfield.  Adicionalmente
+      * inserta los numeros de pieza en la lista de piezas a anunciar.
+      * 
+      */
+     void verificarPiezasPendientes();
+
+     /** 
+      * Anuncia a todos los peers (conectados, activos y en espera)
+      * las piezas que tengo pendientes de anunciar.
+      * 
+      */
+     void anunciarPiezasPendientes();
 
      /** 
       * Realiza un scrape al primer tracker de la lista.

@@ -3,6 +3,7 @@
 #include "threadEmisor.h"
 #include "client.h"
 #include "mensaje.h"
+#include "signal.h"
 
 /****************************************************************************/
 Peer::Peer(const std::string& host, int puerto , Torrent* torrent){
@@ -13,13 +14,17 @@ Peer::Peer(const std::string& host, int puerto , Torrent* torrent){
      peer_choking = 1;
      peer_interested = 0;
      this->torrent = torrent;
-     this->bitField = new BitField(ceil(torrent->getBitField()->getLength()));
-     conectado = false;
+     this->bitField = new BitField(ceil(torrent->getBitField().getLength()));
+     conectado = true;
      this->entrante = false;
      downloaded = 0;
      uploaded = 0;
      corrupted = 0;
      colaDatos = NULL;
+     receptor = NULL;
+     emisor = NULL;
+     socket = NULL;
+     estado = PEER_WAITING;
 }
 
 /****************************************************************************/
@@ -31,7 +36,7 @@ Peer::Peer(Socket* socket){
      peer_choking = 1;
      peer_interested = 0;
      this->socket = socket;
-     conectado = false;
+     conectado = true;
      this->torrent = NULL;
      this->bitField = NULL;
      this->entrante = true;
@@ -104,7 +109,7 @@ void Peer::have(uint32_t index){
 
 /****************************************************************************/
 bool Peer::getChoke(){
-     return am_choking;
+     return peer_choking;
 }
 
 /****************************************************************************/
@@ -127,7 +132,6 @@ void Peer::sendRequest(DownloadSlot* ds){
      emisor->enviarMensaje(mensaje);
 }
 
-
 /****************************************************************************/
 bool Peer::havePiece(uint32_t index){
      return bitField->getField(index);
@@ -135,6 +139,7 @@ bool Peer::havePiece(uint32_t index){
 
 /****************************************************************************/
 void Peer::run(){
+     estado = PEER_CONNECTING;
      ProtocoloBitTorrent proto;
      Deque<char> *datos = NULL;
      Mensaje *mensaje = NULL;
@@ -143,47 +148,43 @@ void Peer::run(){
 	  this->socket = new Socket(name,port);
 	  this->emisor = new ThreadEmisor(this->socket);
 	  this->receptor = new ThreadReceptor(this->socket,false);
-     
+	  
+	  //socket->setTimeout(30,0);
 	  socket->conectar();
 	  if(!socket->esValido()){
 	       stop();
-	       // "ERROR DEL SOCKET: " << socket->obtenerError() 
+	       std::cout <<  "ERROR DEL SOCKET: " << socket->obtenerError()  << "\n";
 	       conectado = false;
-	       torrent->eliminarPeer(this);
 	       return;
 	  }
-
+	  
 	  // "CONECTADO EXITOSAMENTE 
 	  receptor->comenzar();
 	  emisor->comenzar();
-
+	  
 	  /* Envio un handshake */
 	  mensaje = new Mensaje();
 	  std::string aux = proto.handshake("BitTorrent protocol", hash, CLIENT_ID);
 	  mensaje->copiarDatos(aux.c_str(), aux.length());
 	  emisor->enviarMensaje(mensaje);
-
+	  
 	  /* Envio un bitfield con las piezas que ya tenemos */
 	  mensaje = new Mensaje();
-	  aux = proto.bitfield(torrent->getBitField()->getBytesLength());
+	  aux = proto.bitfield(torrent->getBitField().getBytesLength());
 	  mensaje->copiarDatos(aux.c_str(), aux.length());
 	  emisor->enviarMensaje(mensaje);
 	  mensaje = new Mensaje();
-	  mensaje->copiarDatos(torrent->getBitField()->getData(), torrent->getBitField()->getBytesLength());
+	  mensaje->copiarDatos(torrent->getBitField().getData(), torrent->getBitField().getBytesLength());
 	  emisor->enviarMensaje(mensaje);
-
+	  
 	  /* Recibo el handshake del peer */
 	  colaDatos = datos = receptor->getColaDeDatos();
-	  if(datos->hold()){
-	       for(int i = 0; i <49+19;i++)
-		    datos->popFront();
-	       conectado = true;
-	  }
-	  else
-	       conectado = false;
-     
+	  for(int i = 0; i <49+19 && estado==PEER_CONNECTING;i++)
+	       datos->popFront();
+	  conectado = true;
+	  
      }else{
-     	
+	  
 	  this->emisor = new ThreadEmisor(this->socket);
 	  this->receptor = new ThreadReceptor(this->socket,false);
 	  receptor->comenzar();
@@ -193,59 +194,62 @@ void Peer::run(){
 	  char pstrlen;
 	  int contador = 0;
 	  bool primerByte = true;
-
+	  
 	  /* Recibo el handshake del peer */
 	  colaDatos = datos = receptor->getColaDeDatos();
-	  if(datos->hold()){
-	       for(int i = 0; i <49+19;i++){
-		    data = datos->popFront();
-		    //Obtengo la longitud de pstr
-		    if(primerByte){
-			 primerByte = false;
-			 pstrlen = data;
-		    }
-		    //obtengo el hash del handshake
-		    if ((i > pstrlen + 8) && (contador < 20)){
-			 hashRecibido += data;
-			 contador++;
-		    }
+	  for(int i = 0; i <49+19;i++){
+	       data = datos->popFront();
+	       //Obtengo la longitud de pstr
+	       if(primerByte){
+		    primerByte = false;
+		    pstrlen = data;
+	       }
+	       //obtengo el hash del handshake
+	       if ((i > pstrlen + 8) && (contador < 20)){
+		    hashRecibido += data;
+		    contador++;
 	       }
 	  }
+	  
 	  //asigno el hash obtenido al peer
 	  this->hash.clear();
 	  this->hash = hashRecibido;
-     
+	  
 	  /* Envio un handshake */
 	  mensaje = new Mensaje();
 	  std::string aux = proto.handshake("BitTorrent protocol", hash, CLIENT_ID);
 	  mensaje->copiarDatos(aux.c_str(), aux.length());
 	  emisor->enviarMensaje(mensaje);
-
+	  
 	  /* Envio un bitfield con las piezas que ya tenemos */
 	  mensaje = new Mensaje();
-	  aux = proto.bitfield(torrent->getBitField()->getBytesLength());
+	  aux = proto.bitfield(torrent->getBitField().getBytesLength());
 	  mensaje->copiarDatos(aux.c_str(), aux.length());
 	  emisor->enviarMensaje(mensaje);
 	  mensaje = new Mensaje();
-	  mensaje->copiarDatos(torrent->getBitField()->getData(), torrent->getBitField()->getBytesLength());
+	  mensaje->copiarDatos(torrent->getBitField().getData(), torrent->getBitField().getBytesLength());
 	  emisor->enviarMensaje(mensaje);
      }
 
 
-     if(conectado)
+     if(conectado && torrent){
 	  /* Aviso al torrent que me pude conectar */
 	  torrent->peerConected(this);
+	  estado = PEER_RUNNING;
+     }
      else
 	  stop();
-
-     while(isRunning() && receptor->isRunning()){
+     
+     while(estado == PEER_RUNNING && receptor !=NULL && emisor!=NULL &&receptor->isRunning() ){
 	  Message *respuesta = proto.decode(*datos);
-	  if(!datos->isValid()){
-	       stop();
-	  }
-	  else{
+// 	  if(!datos->isValid()){
+// 	       stop();
+// 	  }
+// 	  else{
+	  
+	  if(estado == PEER_RUNNING){
 	       switch(respuesta->id){
-	       
+		    
 	       case CHOKE:
 		    peer_choking = 1;
 		    torrent->peerChoked(this);
@@ -264,28 +268,37 @@ void Peer::run(){
 		    bitField->setField(respuesta->index, 1);
 		    break;
 	       case BITFIELD:
-		    if(respuesta->length == torrent->getBitField()->getBytesLength()){
+		    std::cout << "bitfield\n";
+		    if(respuesta->length == torrent->getBitField().getBytesLength()) {
 			 uint32_t i;
-			 for(i=0;i < respuesta->length && datos->isValid(); i++)
-			      bitField->setBlock(datos->popFront(),i);     
-			 if(i < respuesta->length)
-			    stop();
+			 for(i=0; i<(respuesta->length) ;i++)
+			      bitField->setBlock(datos->popFront(),i);
+			 
+// 			 if(i < respuesta->length){
+// 			      estado = PEER_STOPPING;
+// 			      std::cout << "FRENANDO BITFIELDDDDDDDDDDD\n";
+// 			      stop();
+// 			 }
+			
 		    }
 		    else{
 			 //Cerrar conexion y salir
 			 // "Bitfield de longitud erronea recibido"
+			 estado = PEER_STOPPING;
+			 std::cout << "FRENANDO BITFIELDDDDDDDDDDD222\n";
 			 stop();
 		    }
 		    break;
 	       case REQUEST:
-		    if(torrent->getBitField()->getField(respuesta->index) ==1){
+		    std::cout << "REQUESTTTTTTTTTTTTTTTTTTTTTTT\n";
+		    if(torrent->getBitField().getField(respuesta->index) ==1){
+			 std::cout << "request\n";
 			 //OK, me piden una pieza que tengo
 			 //Genero el mensaje del protocolo
 			 std::string aux = proto.piece(respuesta->index, respuesta->begin, respuesta->length);
 			 mensaje = new Mensaje();
 			 mensaje->copiarDatos(aux.c_str(), aux.length());
 			 emisor->enviarMensaje(mensaje);
-
 			 		    
 			 char *bloque = new char[respuesta->length];
 			 torrent->readData(bloque, respuesta->index, respuesta->begin, respuesta->length);
@@ -297,20 +310,20 @@ void Peer::run(){
 		    break;
 	       case PIECE:
 	       {
-		    //OK, me envian datos. 
+		    //OK, me envian datos.
+		    std::cout << "piece\n";
 		    std::string bloque;
-		    while(bloque.length() < respuesta->length && datos->isValid()){
+		    while(bloque.length() < respuesta->length && estado == PEER_RUNNING){
 			 bloque += datos->popFront();
 		    }
-
-		    torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, bloque.length());
+		    if(estado == PEER_RUNNING)
+			 torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, bloque.length());
 		    
-		    requests.hold();
 		    int size = requests.size();
 		    DownloadSlot *ds = NULL;
 		    for(int i=0;i<size;i++){
 			 ds = requests.popFront();
-			 if(requests.isValid() && ds != NULL &&		\
+			 if(ds != NULL &&		\
 			    respuesta->index == ds->getPieceIndex() &&	\
 			    respuesta->begin == ds->getOffset()     &&	\
 			    respuesta->length == ds->getLength()){
@@ -321,15 +334,19 @@ void Peer::run(){
 			      ds = NULL;
 			 }
 		    }
-		    requests.release();
-		    if(ds != NULL){
+
+		    if(ds && torrent){
 			 downloaded += respuesta->length;
 			 if(bloque.length() == respuesta->length)
 			      torrent->peerTransferFinished(this,ds);
 			 else
 			      torrent->peerTransferCanceled(this,ds);
 		    }
-		    else stop();
+		    else{
+			 estado = PEER_STOPPING;
+			 std::cout << "FRENANDO PIECEEEE\n";
+			 stop();
+		    }
 		    break;
 	       }
 	       case CANCEL:
@@ -343,27 +360,49 @@ void Peer::run(){
 		    break;
 
 	       default:
-		     stop();
+		    std::cout << "FRENANDO por inanicion \n";
+		    estado = PEER_STOPPING;
+		    stop();
 		    break;
 	       }
 	  }
      }
-
-     conectado = false;
+	  
      colaDatos=NULL;
-     datos->release();
-     receptor->finish();
-     emisor->finish();
-     socket->cerrar();
-     /* Le aviso al torrent que finalizo este peer */
-     torrent->eliminarPeer(this);
+	  
+     conectado = false;
 }
 
 
 void Peer::finish(){
+     estado = PEER_STOPPING;
+     stop();
+     signal();
+     if(receptor){
+	  receptor->finish();
+	  std::cout << "FINALIZANDO EL RECEPTORRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR" << this <<"\n";
+     }
+     if(emisor){
+	  emisor->finish();
+     }
+
+     signal();
+
+     if(socket)
+	  socket->cerrar();
      Thread::finish();
-     if(colaDatos)
-	  colaDatos->invalidate();
+     
+     if(torrent != NULL){
+	  DownloadSlot *ds = NULL;
+	  while(requests.size()>0){
+	       ds = requests.popFront();
+	       torrent->abortRequest(ds);
+	  }
+	  torrent = NULL;
+     }
+     std::cout << "JOIIIIIIIIIIIIIIIIIIIIIIIINNNNNNNNNN" << this <<"\n";
+     join();
+     estado = PEER_FINISHED;
 }
 
 
@@ -378,13 +417,13 @@ uint32_t Peer::getVelSubida(){
 }
 
 Peer::~Peer(){
-     if(colaDatos)
-	  colaDatos->invalidate();
+     std::cout << "borrando peer\n";
+     finish();
+     while(estado != PEER_FINISHED);
      if(receptor)
 	  delete receptor;
      if(emisor)
 	  delete emisor;
      if(socket)
 	  delete socket;
-
 }

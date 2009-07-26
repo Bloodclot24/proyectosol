@@ -65,7 +65,7 @@ bool Controlador::guardarConfig() {
 		
 	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++,contador++){
 		std::stringstream cvz;
-		BitField* bitfield = (*it)->getBitField();
+		BitField bitfield = (*it)->getBitField();
    		cvz <<  contador;
    		snumero = cvz.str();
    		std::string ruta;
@@ -77,9 +77,9 @@ bool Controlador::guardarConfig() {
 		
 		if(bitfieldFile.is_open()) {
 
-			auxiliar= bitfield->getLength();
+			auxiliar= bitfield.getLength();
 			bitfieldFile.write((const char*)&auxiliar,sizeof(uint32_t));
-			bitfieldFile.write(bitfield->getData(), bitfield->getBytesLength());		
+			bitfieldFile.write(bitfield.getData(), bitfield.getBytesLength());		
 			bitfieldFile.close();
 			resultado= true;
 		}

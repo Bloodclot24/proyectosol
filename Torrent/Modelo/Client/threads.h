@@ -3,6 +3,7 @@
 
 #include <pthread.h>
 #include <iostream>
+#include <signal.h>
 
 /** 
  * Encapsulacion de las funciones de manejo de Mutex.
@@ -135,6 +136,11 @@ public:
 };
 
 
+static void dummyHandler(int signo){
+     std::cout << "señal aca esta\n";
+     return;
+}
+
 /** 
  * Encapsulacion de Threads.
  */
@@ -172,6 +178,9 @@ private:
 	  threadPointer->run();
 	  return NULL;
      }
+
+     int signalable;
+     struct sigaction actions;
      
 protected:
      /** 
@@ -182,7 +191,14 @@ protected:
      /** 
       * Crea un nuevo Thread detenido.
       */
-     Thread(){ corriendo = false; }
+     Thread(){ corriendo = false; thread = 0; 
+	  memset(&actions, 0, sizeof(actions));
+	  sigemptyset(&actions.sa_mask);
+	  actions.sa_flags = 0;
+	  actions.sa_handler = &dummyHandler;
+	  if(sigaction(SIGUSR1,&actions,NULL)==0)
+	       signalable=1;
+     }
      
      /** 
       * Metodo virtual puro que debe redefinirse como la funcion
@@ -210,6 +226,16 @@ public:
 	  return pthread_create(&(this->thread), NULL, Thread::start_routine, this); 
      }
 
+     int signal(){
+	  /* if(!signalable) */
+/* 	       return -1; */
+/* 	  std::cout << "señal aiiiiiiiiiiiiiiiiii\n"; */
+	  if(thread!=0)
+	       return pthread_kill(thread, SIGUSR1);
+	  return 0;
+	  
+     }
+
      /** 
       * Indica si el thread sigue o no corriendo.
       *
@@ -221,8 +247,11 @@ public:
       * Espera a que el hilo termine.
       */
      void join(){ 
-	  corriendo = false;
-	  pthread_join(this->thread, NULL); 
+	  if(this->thread != 0){
+	       corriendo = false;
+	       pthread_join(this->thread, NULL); 
+	  }
+	  this->thread = 0;
      }
 
      /** 
