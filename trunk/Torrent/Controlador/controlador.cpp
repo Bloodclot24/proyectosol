@@ -116,7 +116,6 @@ bool Controlador::cargarConfig() {
 		char* cantTorrents= new char[sizeof(uint32_t)];
 		config.read(cantTorrents, sizeof(uint32_t));
 		uint32_t cantListaTorrents= *cantTorrents;
-		
 		for(uint32_t i= 0; i < cantListaTorrents; i++) {
 			listaOrdenada.push_back("-");
 		}

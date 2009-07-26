@@ -207,7 +207,7 @@ bool ControladorShell::validarNumFile(std::string numFile) {
 /*--------------------------------------------------------------------------*/
 uint32_t ControladorShell::obtenerOrden(std::string filename) {
 	
-	return(++contadorOrden);		
+	return(contadorOrden++);		
 }
 
 /*--------------------------------------------------------------------------*/
