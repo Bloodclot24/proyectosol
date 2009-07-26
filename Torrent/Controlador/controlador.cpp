@@ -174,9 +174,6 @@ bool Controlador::cargarConfig() {
 			uint32_t ordenVista = *orden;
 			
 			std::string filename= nombreTorrent;
-			
-			std::cout << "Orden Vista:" << ordenVista << std::endl;
-			
 			listaOrdenada[ordenVista]= nombreTorrent;
 		}
 	} 		

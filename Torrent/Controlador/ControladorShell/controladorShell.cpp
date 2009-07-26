@@ -25,13 +25,12 @@ void ControladorShell::correr() {
 void ControladorShell::mostrarAnnounceUrlTorrent(Torrent* torrent) {
 	
 	if(torrent->getAnnounceUrl().length() != 0)
-		shell->mostrarTracker(torrent->getAnnounceUrl(), "Disponible",
-			                          torrent->getPeersActivos());
+		shell->mostrarTracker(torrent->getAnnounceUrl(), "Disponible");
 	else {
 		const std::list<std::string>* listaUrl= torrent->getAnnounceUrlList();
 		std::list<std::string>::const_iterator it;
 		for(it = listaUrl->begin(); it != listaUrl->end(); it++)
-			shell->mostrarTracker((*it), "Disponible", torrent->getPeersActivos());
+			shell->mostrarTracker((*it), "Disponible");
 	}
 }
 
@@ -102,10 +101,10 @@ void ControladorShell::mostrarFiles() {
 		std::string size= obtenerSize(torrent->getTotalSize());
 		double done= torrent->getPorcentaje();
 		std::string status= obtenerStatus(torrent->getState());
-//		std::string downSpeed= obtenerVelocidad(torrent->getVelocidadBajada());
-//		std::string upSpeed= obtenerVelocidad(torrent->getVelocidadSubida());
+		std::string downSpeed= obtenerVelocidad(torrent->getVelocidadBajada());
+		std::string upSpeed= obtenerVelocidad(torrent->getVelocidadSubida());
 		
-		//	std::string ETA= obtenerETA(3600*24+1);
+		std::string ETA= obtenerETA(3600*24+1);
 				
 		estado= obtenerStatus(torrent->getState());
 		shell->mostrarArchivo(contador, name, size, done, status, /*downSpeed*/"0", 
@@ -223,6 +222,7 @@ const char* ControladorShell::obtenerFilename(std::string numFile) {
  * =============== */		 
 /*--------------------------------------------------------------------------*/
 /*Message*/
+/*--------------------------------------------------------------------------*/
 void ControladorShell::agregarMessage(std::string message) {
 
 	shell->mostrarMessage(message);

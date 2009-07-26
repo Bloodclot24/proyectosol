@@ -454,7 +454,7 @@ void ControladorGUI::actualizarUpSpeed(std::string file,
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarTime(std::string file, int time) {
+void ControladorGUI::actualizarTime(std::string file, uint32_t time) {
 
 //	vista->actualizarTime(file, obtenerETA(time));
 }

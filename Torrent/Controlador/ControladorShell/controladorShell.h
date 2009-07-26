@@ -107,7 +107,7 @@ class ControladorShell: public Controlador {
 		virtual uint32_t obtenerOrden(std::string filename);
 	
 		/* MODELO -> VISTA 
-		 * =============== */		 
+		 * =============== */		 	
 		/********Message********/		
 		/**
 		 * Muestra el mensaje pasado por parametro.
