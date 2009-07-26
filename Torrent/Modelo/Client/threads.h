@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <iostream>
 #include <signal.h>
+#include <memory.h>
 
 /** 
  * Encapsulacion de las funciones de manejo de Mutex.

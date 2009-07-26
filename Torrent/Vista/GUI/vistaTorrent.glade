@@ -274,11 +274,11 @@
                 <property name="model">liststore_tranferences</property>
                 <child>
                   <object class="GtkTreeViewColumn" id="column_file">
-                    <property name="sizing">fixed</property>
-                    <property name="fixed_width">350</property>
                     <property name="title">File</property>
                     <child>
-                      <object class="GtkCellRendererText" id="cell_file"/>
+                      <object class="GtkCellRendererText" id="cell_file">
+                        <property name="width">350</property>
+                      </object>
                       <attributes>
                         <attribute name="text">1</attribute>
                       </attributes>
@@ -313,7 +313,9 @@
                   <object class="GtkTreeViewColumn" id="column_status">
                     <property name="title">Status</property>
                     <child>
-                      <object class="GtkCellRendererText" id="cell_status"/>
+                      <object class="GtkCellRendererText" id="cell_status">
+                        <property name="width">85</property>
+                      </object>
                       <attributes>
                         <attribute name="text">4</attribute>
                       </attributes>
@@ -324,7 +326,9 @@
                   <object class="GtkTreeViewColumn" id="column_down_speed">
                     <property name="title">Down Speed</property>
                     <child>
-                      <object class="GtkCellRendererText" id="cell_down"/>
+                      <object class="GtkCellRendererText" id="cell_down">
+                        <property name="width">50</property>
+                      </object>
                       <attributes>
                         <attribute name="text">5</attribute>
                       </attributes>
@@ -335,7 +339,9 @@
                   <object class="GtkTreeViewColumn" id="column_up_speed">
                     <property name="title">Up Speed</property>
                     <child>
-                      <object class="GtkCellRendererText" id="cell_up"/>
+                      <object class="GtkCellRendererText" id="cell_up">
+                        <property name="width">50</property>
+                      </object>
                       <attributes>
                         <attribute name="text">6</attribute>
                       </attributes>
@@ -343,10 +349,12 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn_ETA">
+                  <object class="GtkTreeViewColumn" id="column_ETA">
                     <property name="title">ETA</property>
                     <child>
-                      <object class="GtkCellRendererText" id="cellrenderertext_ETA"/>
+                      <object class="GtkCellRendererText" id="cell_ETA">
+                        <property name="width">100</property>
+                      </object>
                       <attributes>
                         <attribute name="text">7</attribute>
                       </attributes>
