@@ -66,7 +66,7 @@ Torrent::Torrent(const char* fileName, Client* client,
 	       elemento = dict[DICT_TRACKERL];
 	       if(elemento != NULL){
 		    armarListaDeTrackers(elemento->beList->elements);
-	       }
+	       }else announceUrlList.push_back(this->announceUrl);
 
 	       elemento = dict[DICT_DATE];
 	       if(elemento != NULL)
@@ -495,11 +495,8 @@ int Torrent::announce(){
      /* Si tengo lista de trackers, uso el primero, si no uso el unico
       * que tengo*/
      std::string announceUrl;
-     if(announceUrlList.size() > 0){
-	  announceUrl=announceUrlList.front();
-     }
-     else announceUrl = this->announceUrl;
-
+     announceUrl=announceUrlList.front();
+     
      /* Creo un request con la direccion del tracker */
      HttpRequest req(announceUrl);
 
@@ -552,7 +549,6 @@ int Torrent::announce(){
      req.addParam("numwant", "50");
 
   	std::cout << "--------------------------------" << std::endl;
-	if(announceUrlList.size() > 0){
 	 std::string tracker= announceUrlList.front();
 	
 	 std::cout << "Conectando Tracker: " << tracker << std::endl;
@@ -563,7 +559,7 @@ int Torrent::announce(){
 	 }	  	
 
 	std::cout << "--------------------------------" << std::endl;
-	}
+	
 
 
      req.addParam("event", "started");
