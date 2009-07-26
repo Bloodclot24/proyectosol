@@ -154,7 +154,7 @@ class Controlador {
 		 * 
 		 * @param filename Nombre del archivo a buscar el orden.
 		 */ 
-		virtual uint32_t obtenerOrden(std::string filename) { return 0; };
+		virtual uint32_t obtenerOrden(std::string filename)= 0;
 		
 		/********DialogDelay********/
 		/**
