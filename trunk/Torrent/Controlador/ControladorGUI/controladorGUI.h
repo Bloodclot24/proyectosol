@@ -20,17 +20,12 @@ class ControladorGUI: public Controlador {
 		int completed;
 		int active;
 		
-		Mutex mutexActividades;
 		void actualizarCantActividades();
-		
-		Mutex mutexMensaje;
+
+		Mutex mutex;
 		
 		void mostrarFile(Torrent* torrent);
-		
-		Mutex mutexGeneral;
 		void modificarGeneral(Torrent* torrent);
-		
-		Mutex mutexPeers;
 		void modificarPeers(Torrent* torrent);
 			
 	protected:

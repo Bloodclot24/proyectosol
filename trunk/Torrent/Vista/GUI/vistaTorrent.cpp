@@ -45,8 +45,8 @@ void VistaTorrent::correr() {
   	treeView_transf->set_model(treeModel_transf);
   	
   	refTreeSelection= treeView_transf->get_selection();
-  	refTreeSelection->signal_changed().connect(sigc::mem_fun(*this, 
-  	                                           &VistaTorrent::on_selection_changed));
+//  	refTreeSelection->signal_changed().connect(sigc::mem_fun(*this, 
+//  	                                           &VistaTorrent::on_selection_changed));
 	
 	/*TREEVIEW ACTIVITIES*/ 
     Glib::RefPtr<Glib::Object> obj_treeView_activities= 
@@ -120,7 +120,7 @@ std::string getPathStatusIcon(std::string status) {
 	
 	std::string path;
 	
-	if(status == "Downloading")
+	if(status == "Downloading" || status == "Waiting ...")
 		path= PATH_DOWN_OK;
 	else if(status == "Seeding")
 		path= PATH_SEED_OK;
@@ -128,7 +128,7 @@ std::string getPathStatusIcon(std::string status) {
 		path= PATH_COMPLETE;
 	else if(status == "Paused")
 		path= PATH_PAUSED;
-	else if(status == "Stopped" || status == "Inactive")
+	else if(status == "Stopped" || status == "Inactive" || status == "Stopping")
 		path= PATH_STOPPED;
 	else if(status == "Active")
 		path= PATH_ACTIVE;
