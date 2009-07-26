@@ -733,7 +733,8 @@ void Torrent::run(){
 
 	       mutexPiezasAVerificar.lock();
 
-	       int velBajada=0;
+	       velSubida = 0;
+	       velBajada = 0;
 
 	       /* Si habia peers en espera, los vuelvo a insertar */
 	       std::cout << "cantidad en espera: " << listaPeersEspera.size() << "\n";
@@ -743,6 +744,7 @@ void Torrent::run(){
 		    if(peer->conectado){
 			 listaPeersConectados.push_back(peer);
 			 velBajada += peer->getVelBajada();
+			 velSubida += peer->getVelSubida();
 		    }
 		    else delete peer; //eliminarPeer(peer);
 	       }
@@ -794,6 +796,7 @@ void Torrent::run(){
 	       std::cout << "Por pedir en espera ----->" <<  piezasEnProceso.size() <<"\n";
 
 	       controlador->actualizarDownSpeed(nombreTorrent, velBajada);	
+	       controlador->actualizarUpSpeed(nombreTorrent, velSubida);	
 
 	       if(piezasVerificadas<sizeInPieces){
 		    /* Si necesito mas piezas */
@@ -876,43 +879,48 @@ void Torrent::run(){
 
 	  std::cout << "Stopping\n";
 	  if(getEstado() == STOPPING){
-	       std::cout << "borrando peers " << listaPeersActivos.size() << "\n";
-	       
-	       while(listaPeersActivos.size()>0){
-		    Peer* peer = listaPeersActivos.front();
-		    listaPeersActivos.pop_front();
-		    std::cout << "peer " << peer << "\n";
-		    delete peer;
-	       }
-	       std::cout << "borrando peers " << listaPeersEspera.size() << "\n";
-	       while(listaPeersEspera.size()>0){
-		    Peer* peer = listaPeersEspera.front();
-		    listaPeersEspera.pop_front();		    std::cout << "peer " << peer << "\n";
-		    delete peer;
-	       }
-	       std::cout << "borrando peers " << listaPeersConectados.size() << "\n";
-	       int cantidad = listaPeersConectados.size();
-	       while(cantidad>0){
-		    Peer* peer = listaPeersConectados.front();
-		    listaPeersConectados.pop_front();
-		    std::cout << "peer " << peer << "\n";
-		    delete peer;
-		    cantidad--;
-	       }
-
-	       std::cout << "borando restantes\n";
-	       while(listaPeers.size()>0){
-		    Peer* peer = listaPeers.front();
-		    listaPeers.pop_front();		    std::cout << "peer " << peer << "\n";
-		    delete peer;
-	       }
-
-	       std::cout << "fin borrando peers\n";
-	       mutexEstado.lock();
-	       estado = STOPPED;
-	       mutexEstado.unlock();
+	       cleanup();
 	  }
      }
+}
+
+/****************************************************************************/
+void Torrent::cleanup(){
+     std::cout << "borrando peers " << listaPeersActivos.size() << "\n";
+     
+     while(listaPeersActivos.size()>0){
+	  Peer* peer = listaPeersActivos.front();
+	  listaPeersActivos.pop_front();
+	  std::cout << "peer " << peer << "\n";
+	  delete peer;
+     }
+     std::cout << "borrando peers " << listaPeersEspera.size() << "\n";
+     while(listaPeersEspera.size()>0){
+	  Peer* peer = listaPeersEspera.front();
+	  listaPeersEspera.pop_front();		    std::cout << "peer " << peer << "\n";
+	  delete peer;
+     }
+     std::cout << "borrando peers " << listaPeersConectados.size() << "\n";
+     int cantidad = listaPeersConectados.size();
+     while(cantidad>0){
+	  Peer* peer = listaPeersConectados.front();
+	  listaPeersConectados.pop_front();
+	  std::cout << "peer " << peer << "\n";
+	  delete peer;
+	  cantidad--;
+     }
+
+     std::cout << "borando restantes\n";
+     while(listaPeers.size()>0){
+	  Peer* peer = listaPeers.front();
+	  listaPeers.pop_front();		    std::cout << "peer " << peer << "\n";
+	  delete peer;
+     }
+
+     std::cout << "fin borrando peers\n";
+     mutexEstado.lock();
+     estado = STOPPED;
+     mutexEstado.unlock();
 }
 
 /****************************************************************************/
@@ -1043,10 +1051,17 @@ Torrent::~Torrent(){
 int Torrent::stop(){
      mutexEstado.lock();
      
-     if(this->estado != STOPPED && this->estado != STOPPING){
+     if(this->estado != STOPPED && this->estado != STOPPING && this->estado != SEEDING){
 	  this->estado= STOPPING;
 	  signal(); //por si se quedo trabado en el announce
 	  mutexEstado.unlock();
+	  return 1;
+     }
+     if(this->estado == SEEDING){
+	  signal(); //por si se quedo trabado en el announce
+	  join();
+	  mutexEstado.unlock();
+	  cleanup();
 	  return 1;
      }
      mutexEstado.unlock();

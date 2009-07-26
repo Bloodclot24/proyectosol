@@ -544,6 +544,8 @@ public:
       * @return La lista de ip de peers.
       */
      std::list<std::string> getListaPeers();     
+
+     void cleanup();
      
      /** 
       * Destruye al Torrent y libera los recursos asociados.
