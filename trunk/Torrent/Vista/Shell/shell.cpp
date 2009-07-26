@@ -32,11 +32,13 @@ void mostrarHelp() {
 	std::cout << "salir del programa." << std::endl;		 
 }
 
+/*--------------------------------------------------------------------------*/
 void commandNoEncontrado() {
 	std::cerr << "Comando no encontrado. ";
 	std::cerr << "Intente con el comando help." << std::endl;
 }
 
+/*--------------------------------------------------------------------------*/
 void Shell::correr() {
 	
 	std::cout << std::endl;
@@ -132,6 +134,7 @@ void Shell::mostrarArchivos() {
 	mostrarSubrayado(MAX_FILES);
 }	
 
+/*--------------------------------------------------------------------------*/
 void Shell::mostrarArchivo(int amount, std::string file, std::string size,
 						   int done, std::string status,
   						   std::string upSpeed, std::string downSpeed, 
@@ -201,6 +204,7 @@ void Shell::mostrarTrackers() {
 	mostrarSubrayado(MAX_TRACKERS);
 }
 
+/*--------------------------------------------------------------------------*/
 void Shell::mostrarTracker(std::string name, std::string status) {
 	
 	if(name.length() > MAX_NAME)
@@ -233,6 +237,7 @@ void Shell::mostrarPeers() {
 	mostrarSubrayado(MAX_PEERS);
 }
 
+/*--------------------------------------------------------------------------*/
 void Shell::mostrarCliente(std::string ip, std::string estado) {
 	
 	if(estado.length() > MAX_CLIENT)

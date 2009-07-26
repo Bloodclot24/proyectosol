@@ -98,17 +98,27 @@ void ControladorShell::mostrarFiles() {
 		Torrent* torrent= *it;
 		
 		std::string name= torrent->getName();		
-		std::string size= obtenerSize(torrent->getTotalSize());
-		double done= torrent->getPorcentaje();
+		std::string sizeS= obtenerSize(torrent->getTotalSize());
 		std::string status= obtenerStatus(torrent->getState());
-		std::string downSpeed= obtenerVelocidad(torrent->getVelocidadBajada());
-		std::string upSpeed= obtenerVelocidad(torrent->getVelocidadSubida());
 		
-		std::string ETA= obtenerETA(3600*24+1);
+		uint32_t downSpeed= torrent->getVelocidadBajada();
+		std::string downSpeedS= obtenerVelocidad(downSpeed);
+		uint32_t upSpeed= torrent->getVelocidadSubida();
+		std::string upSpeedS= obtenerVelocidad(upSpeed);
+		
+		double done= torrent->getPorcentaje();
+		double size= torrent->getTotalSize();
+		uint32_t time= 0;
+		if(downSpeed != 0)
+			time= (size *( 100 - done)/100) / downSpeed;
+		else if(upSpeed != 0)
+			time= (size *( 100 - done)/100) / upSpeed;
+		
+		std::string ETAS= obtenerETA(time);
 				
 		estado= obtenerStatus(torrent->getState());
-		shell->mostrarArchivo(contador, name, size, done, status, /*downSpeed*/"0", 
-		                      /*upSpeed*/"0", "");		
+		shell->mostrarArchivo(contador, name, sizeS, done, status, downSpeedS, 
+		                      upSpeedS, ETAS);		
 	}	
 }
 
@@ -121,7 +131,6 @@ void ControladorShell::mostrarPeers(std::string numFile) {
 	
 	if(valido) {
 		Torrent* torrent= obtenerTorrent(filename);
-		std::cout << "Valido" << std::endl;	
 		shell->mostrarPeers();
 		std::list<std::string> lista= torrent->getListaPeers();
 		std::list<std::string>::iterator it;
