@@ -262,8 +262,9 @@ int Torrent::announce(){
      req.addParam("numwant", "50");
 
   	std::cout << "--------------------------------" << std::endl;
-
+	if(announceUrlList.size() > 0){
 	 std::string tracker= announceUrlList.front();
+	
 	 std::cout << "Conectando Tracker: " << tracker << std::endl;
 	 	 
 	 if(client->existeTracker(tracker)) {
@@ -272,7 +273,7 @@ int Torrent::announce(){
 	 }	  	
 
 	std::cout << "--------------------------------" << std::endl;
-
+	}
 
      req.addParam("event", "started");
 
