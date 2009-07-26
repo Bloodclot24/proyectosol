@@ -197,12 +197,11 @@ void Shell::mostrarTrackers() {
 	std::cout << std::left << "Status";
 	std::cout.width(MAX_SEED);
 	std::cout.fill(RELLENO);
-	std::cout << std::left << "Seed";  
 	std::cout << std::endl;
 	mostrarSubrayado(MAX_TRACKERS);
 }
 
-void Shell::mostrarTracker(std::string name, std::string status, int seed) {
+void Shell::mostrarTracker(std::string name, std::string status) {
 	
 	if(name.length() > MAX_NAME)
 		name.resize(MAX_NAME-1);
@@ -213,9 +212,6 @@ void Shell::mostrarTracker(std::string name, std::string status, int seed) {
 	std::cout.width(MAX_STATUS);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << status;
-	std::cout.width(MAX_SEED);
-	std::cout.fill(RELLENO);
-	std::cout << std::left << seed;
 	std::cout << std::endl;		
 }
 

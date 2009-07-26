@@ -209,8 +209,6 @@ class Controlador {
 		 * @param file Nombre del archivo.
 		 */	
 		virtual void seed(std::string filename) {};
-		
-
 			
 		/**
 		 * Actualiza el porcentaje de completado del archivo pasado por
@@ -255,7 +253,7 @@ class Controlador {
 		 * @param file Nombre del archivo.
 		 * @param time Tiempo restante para completar la descarga.
 		 */	
-		virtual void actualizarTime(std::string file, int time) {};	
+		virtual void actualizarTime(std::string file, uint32_t time) {};	
 		
 		/********Trackers********/
 		/**

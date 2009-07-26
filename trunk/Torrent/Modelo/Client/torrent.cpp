@@ -22,8 +22,7 @@
 
 /****************************************************************************/
 Torrent::Torrent(const char* fileName, Client* client,
-                 BitField* bitfieldGuardado):requestCondition(&requestMutex), 
-					     mutexActualizar() {
+                 BitField* bitfieldGuardado):requestCondition(&requestMutex) {
      
      this->client= client;
      
@@ -1088,4 +1087,16 @@ std::list<std::string> Torrent::getListaPeers(){
      std::list<std::string> copia =listaDireccionesPeers;
      mutexListaDireccionsPeers.unlock();
      return copia;
+}
+
+/****************************************************************************/
+uint32_t Torrent::getVelocidadSubida() {
+	
+	return velSubida;
+}
+
+/****************************************************************************/
+uint32_t Torrent::getVelocidadBajada() {
+
+	return velBajada;	
 }

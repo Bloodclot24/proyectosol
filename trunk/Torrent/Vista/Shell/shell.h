@@ -70,7 +70,7 @@ class Shell {
 	private:
 		std::string command;
 		Controlador* controlador;
-		
+						
 	public:
 		/**
 		 * Crea un Shell. 
@@ -130,10 +130,8 @@ class Shell {
 		 *
 		 * @param name Nombre del tracker.
 		 * @param status Estado del tracker.
-		 * @param seed Cantidad de seed del tracker.
 		 */
-		void mostrarTracker(std::string name, std::string status,
-		                    int seed);
+		void mostrarTracker(std::string name, std::string status);
 
 		/*Peers*/
 		/**
