@@ -497,7 +497,7 @@ void VistaTorrent::start(std::string filename) {
 	     getPathStatusIcon("Downloading"));
 	row[columns_transf.col_upSpeed]= "";
 	row[columns_transf.col_downSpeed]= "";
-	
+	row[columns_transf.col_time]= ""; 
 }
 
 /*--------------------------------------------------------------------------*/
@@ -510,6 +510,7 @@ void VistaTorrent::pause(std::string filename) {
 	     getPathStatusIcon("Paused"));
 	row[columns_transf.col_upSpeed]= "";
 	row[columns_transf.col_downSpeed]= "";
+	row[columns_transf.col_time]= "";  
 }
 
 /*--------------------------------------------------------------------------*/
@@ -522,6 +523,7 @@ void VistaTorrent::stop(std::string filename) {
 	     getPathStatusIcon("Stopped"));
 	row[columns_transf.col_upSpeed]= "";
   	row[columns_transf.col_downSpeed]= "";
+  	row[columns_transf.col_time]= "";  
 }
 
 /*--------------------------------------------------------------------------*/
