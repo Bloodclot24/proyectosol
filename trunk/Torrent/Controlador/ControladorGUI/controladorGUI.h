@@ -4,7 +4,6 @@
 #include "../../Controlador/controlador.h"
 #include "../../Vista/GUI/vistaTorrent.h"
 class ControladorGUI;
-#include "../../Vista/ventanaCargando.h"
 /****************************************************************************/
 /**
  * El controlador de la vista de la aplicacion Sun Torrent.
@@ -13,7 +12,6 @@ class ControladorGUI: public Controlador {
 
 	private:
 		VistaTorrent* vista;
-		VentanaCargando* ventanaCargando;
 		
 		int all;
 		int downloading;
