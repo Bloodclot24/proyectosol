@@ -8,15 +8,12 @@ ControladorGUI::ControladorGUI(): mutex() {
 	this->downloading= 0;
 	this->completed= 0;
 	this->active= 0;
-	//this->ventanaCargando= new VentanaCargando(this);
-	//ventanaCargando->start();
-	//cargarConfig();
+	cargarConfig();
 }
 
 /*--------------------------------------------------------------------------*/
 ControladorGUI::~ControladorGUI() {
 
-	//ventanaCargando->stop();	
 	guardarConfig();
 	delete vista;	
 }

@@ -101,23 +101,29 @@ void ControladorShell::mostrarFiles() {
 		std::string sizeS= obtenerSize(torrent->getTotalSize());
 		std::string status= obtenerStatus(torrent->getState());
 		
-		uint32_t downSpeed= torrent->getVelocidadBajada();
-		std::string downSpeedS= obtenerVelocidad(downSpeed);
-		uint32_t upSpeed= torrent->getVelocidadSubida();
-		std::string upSpeedS= obtenerVelocidad(upSpeed);
-		
-		double done= torrent->getPorcentaje();
+		uint32_t downSpeed= 0;
+		uint32_t upSpeed= 0;
 		double size= torrent->getTotalSize();
+		double done= torrent->getPorcentaje();
 		uint32_t time= 0;
-		if(downSpeed != 0)
-			time= (size *( 100 - done)/100) / downSpeed;
-		else if(upSpeed != 0)
-			time= (size *( 100 - done)/100) / upSpeed;
-		
-		std::string ETAS= obtenerETA(time);
-				
-		estado= obtenerStatus(torrent->getState());
-		shell->mostrarArchivo(contador, name, sizeS, done, status, downSpeedS, 
+					
+		if(status == "Downloading" || status == "Seeding") {
+			
+			downSpeed= torrent->getVelocidadBajada();
+			upSpeed= torrent->getVelocidadSubida();
+			
+			if(downSpeed != 0)
+				time= (size *( 100 - done)/100) / downSpeed;
+			else if(upSpeed != 0)
+				time= (size *( 100 - done)/100) / upSpeed;
+					
+			estado= obtenerStatus(torrent->getState());
+	}	
+			std::string ETAS= obtenerETA(time);
+			std::string downSpeedS= obtenerVelocidad(downSpeed);
+			std::string upSpeedS= obtenerVelocidad(upSpeed);
+			
+			shell->mostrarArchivo(contador, name, sizeS, done, status, downSpeedS, 
 		                      upSpeedS, ETAS);		
 	}	
 }

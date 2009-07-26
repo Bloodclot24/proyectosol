@@ -22,8 +22,8 @@ void mostrarHelp() {
 	std::cout << "se borra el # archivo." << std::endl;
 	std::cout << START << " file#: "; 
 	std::cout << "se comienza a bajar el # archivo." << std::endl;
-	std::cout << PAUSE << " file#: "; 
-	std::cout << "se pausa la bajada del # archivo." << std::endl;
+//	std::cout << PAUSE << " file#: "; 
+//	std::cout << "se pausa la bajada del # archivo." << std::endl;
 	std::cout << STOP << " file#: "; 
 	std::cout << "se detiene la bajada del # archivo." << std::endl;
 	std::cout << SHOW_PEERS << " file#: "; 
@@ -69,8 +69,8 @@ void Shell::correr() {
 				controlador->removeFile(file);
 			else if(command.compare(0, finParametro, START) == 0)
 				controlador->startFile(file);
-			else if(command.compare(0, finParametro, PAUSE) == 0)
-				controlador->pauseFile(file);
+//			else if(command.compare(0, finParametro, PAUSE) == 0)
+//				controlador->pauseFile(file);
 			else if(command.compare(0, finParametro, STOP) == 0)
 				controlador->stopFile(file);
 			else if(command.compare(0, finParametro, SHOW_PEERS) == 0)
@@ -169,20 +169,6 @@ void Shell::mostrarArchivo(int amount, std::string file, std::string size,
 	std::cout << std::left << ETA;  
 	std::cout << std::endl;
 }
-
-///*--------------------------------------------------------------------------*/
-///**General**/
-//void Shell::mostrarGeneral(std::string file, std::string downloaded,
-//						   std::string information) {
-//
-//	std::cout << std::endl;	 							  	
-//	std::cout << "++ GENERAL ++"<< std::endl;
-//	std::cout << "============="<< std::endl;
-//	
-//	std::cout << "File: " << file << std::endl;
-//	std::cout << "Downloaded: " << downloaded << std::endl;
-//	std::cout << "Information: " << information << std::endl;		
-//}
 
 /*--------------------------------------------------------------------------*/
 /**Trackers**/
