@@ -3,6 +3,8 @@
 
 class Torrent;
 
+enum EstadoPeer {PEER_WAITING, PEER_CONNECTING, PEER_RUNNING, PEER_STOPPING, PEER_FINISHED};
+
 #define REQUEST_SIZE_DEFAULT 16*1024
 
 #include "socket.h"
@@ -14,6 +16,7 @@ class Torrent;
 #include "downloadSlot.h"
 #include "deque.h"
 
+
 /** 
  * Clase que representa al Peer remoto.
  * 
@@ -23,7 +26,9 @@ private:
      Socket *socket;
      ThreadEmisor *emisor;
      ThreadReceptor *receptor;
-     
+
+     EstadoPeer estado;
+
      Torrent* torrent;		/**< El Torrent asociado al Peer */
 
      int am_choking, am_interested; /**< Indican si estamos o no

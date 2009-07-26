@@ -1,4 +1,6 @@
 #include "socket.h"
+#include <unistd.h>
+#include <fcntl.h> 
 
 /* Crea un nuevo socket con la direccion de destino y puerto dados */
 /****************************************************************************/
@@ -178,7 +180,25 @@ bool Socket::conectar(void){
 /* Cierra el socket, lo desconecta */
 /****************************************************************************/
 bool Socket::cerrar(void){
+     std::cout << "cerrando socket" << this << "\n";
+     long arg;
+//      arg = fcntl(s, F_GETFL, NULL);
+//      if(arg <0){
+// 	  std::cout << "Error 1" << strerror(errno);
+//      }
+//      arg |= O_NONBLOCK;
+//      if(fcntl(s,F_SETFL,O_NONBLOCK) == -1){
+// 	  std::cout << "Error 2" << strerror(errno);
+//      }
+//      else{
+// 	  std::cout << "exito\n";
+//      }
+//      setTimeout(0,1);
+
+     shutdown(s,SHUT_RDWR);
      int retorno = close(s);
+     s=-1;
+     std::cout << "cerrado\n";
      if(retorno == -1)
 	  error = errno;
      return esValido();
@@ -234,5 +254,6 @@ uint32_t Socket::getVelSubida(void) {
 /* Cierra y libera el socket */
 /****************************************************************************/
 Socket::~Socket(){
-     cerrar();
+     if(s > 0)
+	  cerrar();
 }

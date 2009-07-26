@@ -23,6 +23,13 @@ public:
      BitField(uint32_t length);
 
      /** 
+      * Copia unbitfield;
+      * 
+      * @param original Elbitfield a copiar.
+      */
+     BitField(const BitField& original);
+
+     /** 
       * Copia el contenido de un buffer y lo asigna como contenido del
       * BitField.
       * 
@@ -86,7 +93,7 @@ public:
       * 
       * @return El buffer de datos.
       */
-     const char* getData();
+     const char* getData() const;
 	 
      /** 
       * Libera el area de datos del bitfield.

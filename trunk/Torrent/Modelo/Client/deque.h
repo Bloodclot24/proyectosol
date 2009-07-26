@@ -55,13 +55,15 @@ public:
       */
      t popFront(){
 	  t temp;
-	  
 	  mutex.lock();
 	  while(queue.empty() && valida)
 	       condition.wait();
 	  if(valida){
 	       temp = queue.front();
 	       queue.pop_front();
+	  }
+	  else{
+	       std::cout << "invalidez\n";
 	  }
 	  mutex.unlock();
 	  return temp;
@@ -111,50 +113,51 @@ public:
       * 
       * @return true si se tuvo exito, o false si falla.
       */
-     bool hold(){
-	  bool value = false;
-	  mutex.lock();
-	  holdMutex.lock();
-	  if(valida){
-	       value = true;
-	       holdCounter++;
-	  }
-	  holdMutex.unlock();
-	  mutex.unlock();
-	  return value;
-     }
+//      bool hold(){
+// 	  bool value = false;
+// 	  mutex.lock();
+// 	  holdMutex.lock();
+// 	  if(valida){
+// 	       value = true;
+// 	       holdCounter++;
+// 	  }
+// 	  holdMutex.unlock();
+// 	  mutex.unlock();
+// 	  return value;
+//      }
 
      /** 
       * Avisa a la cola que se deja de utilizar.
       */
-     void release(){
-	  holdMutex.lock();
-	  if(holdCounter > 0){
-	       holdCounter--;
-	       holdCondition.signal();
-	  }
-	  holdMutex.unlock();  
-     }
+//      void release(){
+// 	  holdMutex.lock();
+// 	  if(holdCounter > 0){
+// 	       holdCounter--;
+// 	       holdCondition.signal();
+// 	  }
+// 	  holdMutex.unlock();  
+//      }
 
      /** 
       * Indica si es o no valida la cola.
       * @return true si la cola es valida. false si es invalida.
       */
-     bool isValid(){
+    bool isValid(){
 	  bool state = false;
 	  mutex.lock();
 	  state = valida;
 	  mutex.unlock();
 	  return state;
-     }
+    }
      /** 
       * Marca la cola como invalida
       * 
       */
      void invalidate(){
-	  Lock lock(mutex);
-	  valida=false;
-	  condition.signal();
+ 	  Lock lock(mutex);
+ 	  valida=false;
+	  std::cout << "invalidateeeee\n";
+ 	  condition.signal();
      }
 
      /** 
@@ -163,14 +166,16 @@ public:
       */
      ~Deque(){
 	  mutex.lock();
-	  holdMutex.lock();
+//	  holdMutex.lock();
+	  queue.clear();
 	  valida=false;
 	  condition.signal();
 	  mutex.unlock();
-	  while(holdCounter > 0)
-	       holdCondition.wait();
+	  ///sleep(2);
+//	  while(holdCounter > 0)
+//	       holdCondition.wait();
 	 
-	  holdMutex.unlock();
+//	  holdMutex.unlock();
 	 
      }
      

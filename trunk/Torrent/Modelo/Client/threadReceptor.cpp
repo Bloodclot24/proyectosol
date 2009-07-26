@@ -41,9 +41,14 @@ void ThreadReceptor::finish(void){
 	  condHttp.signal(); //Por si alguien se quedo esperando una respuesta
 	  mutexHttp.unlock();
 
+	  colaDeDatos.invalidate();
+
 	  socket->setTimeout(0,1);
 	  Thread::finish();
 	  socket->cerrar();
+     }
+     else{
+	  colaDeDatos.invalidate();
      }
 }
      
