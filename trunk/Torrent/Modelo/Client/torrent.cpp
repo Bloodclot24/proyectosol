@@ -713,6 +713,7 @@ void Torrent::run(){
 	  mutexEstado.lock();
 	  estado = STOPPED;
 	  mutexEstado.unlock();
+	  return;
      }
      else{
 	  /* Si me pude anunciar */
@@ -1043,8 +1044,9 @@ Torrent::~Torrent(){
 int Torrent::stop(){
      mutexEstado.lock();
      
-     if(this->estado != STOPPED) {
+     if(this->estado != STOPPED && this->estado != STOPPING){
 	  this->estado= STOPPING;
+	  signal(); //por si se quedo trabado en el announce
 	  mutexEstado.unlock();
 	  return 1;
      }
