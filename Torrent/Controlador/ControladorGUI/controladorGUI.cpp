@@ -434,11 +434,12 @@ void ControladorGUI::actualizarDownSpeed(std::string file,
 	Torrent* torrent= obtenerTorrent(file);
 	double done= torrent->getPorcentaje();
 	double size = torrent->getTotalSize();
-	uint32_t time = 0;
-	if(downSpeed != 0){
-		time = (size *( 100 - done)/100) / downSpeed;
-		vista->actualizarTime(file,obtenerETA(time));
-	}
+	
+	uint32_t time= 8639999;
+	if(downSpeed != 0)
+		time= (size *( 100 - done)/100) / downSpeed;
+	
+	vista->actualizarTime(file,obtenerETA(time));
 	
 	mutex.unlock();
 }
