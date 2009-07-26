@@ -123,8 +123,8 @@ void ControladorShell::mostrarFiles() {
 			std::string downSpeedS= obtenerVelocidad(downSpeed);
 			std::string upSpeedS= obtenerVelocidad(upSpeed);
 			
-			shell->mostrarArchivo(contador, name, sizeS, done, status, downSpeedS, 
-		                      upSpeedS, ETAS);		
+			shell->mostrarArchivo(contador, name, sizeS, done, status, upSpeedS, 
+		                      downSpeedS, ETAS);		
 	}	
 }
 
