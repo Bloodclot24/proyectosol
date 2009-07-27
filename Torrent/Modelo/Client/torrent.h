@@ -181,8 +181,10 @@ private:
 						  * vista */
      Mutex mutexListaDireccionsPeers;
           
-	 uint32_t velSubida;
-	 uint32_t velBajada;
+     uint32_t velSubida;
+     uint32_t velBajada;
+
+     uint32_t downloaded, uploaded, corrupt, left;
 
 private:
 
