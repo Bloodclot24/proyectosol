@@ -1,4 +1,5 @@
 #include "torrent.h"
+#include "sys/time.h"
 
 /* Claves del .torrent */
 #define DICT_TRACKER    "announce"
@@ -620,7 +621,8 @@ int Torrent::announce(){
      elemento = (*dict)[DICT_INTERVAL];
      if(elemento != NULL){
 	  controlador->agregarMessage( "INFO: intervalo de requests -> " + elemento->beInt);
-	  timeToAnnounce = elemento->beInt;
+	  announceTime = elemento->beInt;
+	  
 	  std::cout << "TIEMMMMMMMMMMMMMMMPO de anuncio "<< timeToAnnounce << "\n";
      }
 
@@ -703,9 +705,7 @@ void Torrent::run(){
 //      agregarPeer(peer);
 
 //      if(0){}
-
-     timeToAnnounce=10;
-
+     struct timeval tiempo;
      if(do_announce() < 0){
 	  controlador->agregarMessage("Error: no se pudo conectar con ningun tracker.");
 	  controlador->stop(nombreTorrent);
@@ -716,6 +716,8 @@ void Torrent::run(){
      }
      else{
 	  /* Si me pude anunciar */
+	  gettimeofday(&tiempo, NULL);
+	  timeToAnnounce=tiempo.tv_sec + announceTime;
 	  mutexEstado.lock();
 	  if(estado != STARTING){
 	       estado = STOPPED;
@@ -772,15 +774,19 @@ void Torrent::run(){
 		    listaPeersConectados.push_back(peer);
 	       }
 	       /* Me fijo si me quedan peers para conectar a futuro */
-	       if(listaPeers.size()==0 && timeToAnnounce <= 0){
+	       gettimeofday(&tiempo, NULL);
+	       if(listaPeers.size()==0 && tiempo.tv_sec >= timeToAnnounce){
 		    /* Si no me quedan y ya puedo anunciarme */
 		    //Anunciar
 		    std::cout << "Anunciar!!\n";
 		    if(do_announce()<0){
 			 controlador->agregarMessage("Error: no se pudo conectar con ningun tracker.");
 		    }
-		    else
-			 timeToAnnounce = 10;
+		    else{
+			 gettimeofday(&tiempo, NULL);
+			 timeToAnnounce=tiempo.tv_sec + announceTime;
+		    };
+
 	       }
 
 	       /* Verifico cualquier pieza que pueda estar pendiente */
@@ -795,8 +801,8 @@ void Torrent::run(){
 
 	       std::cout << "Por pedir en espera ----->" <<  piezasEnProceso.size() <<"\n";
 
-	       controlador->actualizarDownSpeed(nombreTorrent, velBajada);	
-	       controlador->actualizarUpSpeed(nombreTorrent, velSubida);	
+	       controlador->actualizarDownSpeed(nombreTorrent, velBajada);
+	       controlador->actualizarUpSpeed(nombreTorrent, velSubida);
 
 	       if(piezasVerificadas<sizeInPieces){
 		    /* Si necesito mas piezas */
@@ -804,12 +810,12 @@ void Torrent::run(){
 		    if(piezasEnProceso.size() > 0){
 			 DownloadSlot *ds = NULL;
 			 Peer *peer=NULL;
-		    
+			 
 			 // por cada bloque en proceso
 			 int size = piezasEnProceso.size();
 			 for(int i=0;i<size; i++){
 			      ds = piezasEnProceso.popFront();
-			 
+			      
 			      int j=listaPeersConectados.size();
 			      while(j>0){
 				   peer = listaPeersConectados.front();
@@ -982,12 +988,12 @@ void Torrent::verificarPiezasPendientes(){
 	       piezasVerificadas++;
 	       bitField->setField(pieza,true);
 	       colaPiezasAAnunciar.push(pieza);
-	       if(piezasVerificadas >= sizeInPieces){
-		    mutexEstado.lock();
-		    estado = SEEDING;
-		    controlador->complete(nombreTorrent);
-		    mutexEstado.unlock();
-	       }
+// 	       if(piezasVerificadas >= sizeInPieces){
+// 		    mutexEstado.lock();
+// 		    estado = SEEDING;
+// 		    controlador->complete(nombreTorrent);
+// 		    mutexEstado.unlock();
+// 	       }
 	  }
 	  else{
 	       bitField->setField(pieza,false);
@@ -1036,6 +1042,10 @@ void Torrent::peerTransferCanceled(Peer* peer, DownloadSlot* ds){
 
 /****************************************************************************/
 Torrent::~Torrent(){
+     
+     std::cout << "Destruyendooooooooooooooooooooooo\n";
+     while(stop() != 1);
+     join();
 
      if(archivos != NULL){
 	  while(archivos->size() > 0){
@@ -1062,6 +1072,7 @@ int Torrent::stop(){
 	  join();
 	  mutexEstado.unlock();
 	  cleanup();
+	  estado = STOPPED;
 	  return 1;
      }
      mutexEstado.unlock();

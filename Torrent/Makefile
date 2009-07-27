@@ -101,7 +101,7 @@ LD = $(CXX)
 endif
 
 # Si no especifica archivos, tomo todos.
-fuentes = main.cpp Vista/GUI/*.cpp Vista/Shell/shell.cpp Controlador/controlador.cpp Controlador/ControladorShell/controladorShell.cpp Controlador/ControladorGUI/controladorGUI.cpp Modelo/Client/client.cpp Modelo/Client/torrent.cpp Modelo/Client/mensaje.cpp Modelo/Client/thread*.cpp Modelo/Client/socket.cpp Modelo/ParserBencode/parserBencode.cpp Modelo/HTTP/HttpRe*.cpp Modelo/Client/torrentFile.cpp Modelo/SHA1/sha1.cpp Modelo/Client/peer.cpp Modelo/ProtocoloBitTorrent/protocoloBitTorrent.cpp Modelo/Client/bitField.cpp  Modelo/SHA1/bitStream.cpp Modelo/FileManager/fileManager.cpp Vista/ventanaCargando.cpp
+fuentes = main.cpp Vista/GUI/*.cpp Vista/Shell/shell.cpp Controlador/controlador.cpp Controlador/ControladorShell/controladorShell.cpp Controlador/ControladorGUI/controladorGUI.cpp Modelo/Client/client.cpp Modelo/Client/torrent.cpp Modelo/Client/mensaje.cpp Modelo/Client/thread*.cpp Modelo/Client/socket.cpp Modelo/ParserBencode/parserBencode.cpp Modelo/HTTP/HttpRe*.cpp Modelo/Client/torrentFile.cpp Modelo/SHA1/sha1.cpp Modelo/Client/peer.cpp Modelo/ProtocoloBitTorrent/protocoloBitTorrent.cpp Modelo/Client/bitField.cpp  Modelo/SHA1/bitStream.cpp Modelo/FileManager/fileManager.cpp
 
 occ := $(CC)
 ocxx := $(CXX)

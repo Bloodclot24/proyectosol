@@ -149,7 +149,7 @@ void Peer::run(){
 	  this->emisor = new ThreadEmisor(this->socket);
 	  this->receptor = new ThreadReceptor(this->socket,false);
 	  
-	  //socket->setTimeout(30,0);
+//	  socket->setTimeout(30,0);
 	  socket->conectar();
 	  if(!socket->esValido()){
 	       stop();
