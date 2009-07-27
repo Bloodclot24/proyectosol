@@ -123,10 +123,10 @@ void Shell::mostrarArchivos() {
 	std::cout << std::left << "Status";
 	std::cout.width(MAX_SPEED);
 	std::cout.fill(RELLENO);
-	std::cout << std::left << "Up Speed";
+	std::cout << std::left << "Down Speed";
 	std::cout.width(MAX_SPEED);
 	std::cout.fill(RELLENO);
-	std::cout << std::left << "Down Speed";
+	std::cout << std::left << "Up Speed";
 	std::cout.width(MAX_TIME);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << "ETA";  
@@ -137,7 +137,7 @@ void Shell::mostrarArchivos() {
 /*--------------------------------------------------------------------------*/
 void Shell::mostrarArchivo(int amount, std::string file, std::string size,
 						   int done, std::string status,
-  						   std::string upSpeed, std::string downSpeed, 
+  						   std::string downSpeed, std::string upSpeed, 
   						   std::string ETA) {
 	
 	if(file.length() > MAX_FILE)
@@ -160,10 +160,10 @@ void Shell::mostrarArchivo(int amount, std::string file, std::string size,
 	std::cout << std::left << status; 
 	std::cout.width(MAX_SPEED);
 	std::cout.fill(RELLENO);
-	std::cout << std::left << upSpeed; 
+	std::cout << std::left << downSpeed; 
 	std::cout.width(MAX_SPEED);
 	std::cout.fill(RELLENO);
-	std::cout << std::left << downSpeed;
+	std::cout << std::left << upSpeed;
 	std::cout.width(MAX_TIME);
 	std::cout.fill(RELLENO);
 	std::cout << std::left << ETA;  

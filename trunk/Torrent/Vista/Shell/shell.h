@@ -104,8 +104,8 @@ class Shell {
 		 * @param time Tiempo restante para completar la descarga.
 		 */
 		void mostrarArchivo(int amount, std::string file, std::string size,
-		                    int done, std::string status, std::string upSpeed,
-		                    std::string downSpeed, std::string ETA);
+		                    int done, std::string status, std::string downSpeed,
+		                    std::string upSpeed, std::string ETA);
 				                    
 		/*General*/
 		/**

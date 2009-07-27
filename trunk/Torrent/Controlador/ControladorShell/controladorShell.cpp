@@ -115,17 +115,16 @@ void ControladorShell::mostrarFiles() {
 			
 			if(downSpeed != 0)
 				time= (size *( 100 - done)/100) / downSpeed;
-			else if(upSpeed != 0)
+			if(upSpeed != 0)
 				time= (size *( 100 - done)/100) / upSpeed;
-					
-			estado= obtenerStatus(torrent->getState());
-	}	
-			std::string ETAS= obtenerETA(time);
-			std::string downSpeedS= obtenerVelocidad(downSpeed);
-			std::string upSpeedS= obtenerVelocidad(upSpeed);
+		}	
+		
+		std::string ETAS= obtenerETA(time);
+		std::string downSpeedS= obtenerVelocidad(downSpeed);
+		std::string upSpeedS= obtenerVelocidad(upSpeed);
 			
-			shell->mostrarArchivo(contador, name, sizeS, done, status, upSpeedS, 
-		                      downSpeedS, ETAS);		
+		shell->mostrarArchivo(contador, name, sizeS, done, status, downSpeedS, 
+		                      upSpeedS, ETAS);		
 	}	
 }
 
