@@ -536,16 +536,16 @@ int Torrent::announce(){
      /* Agrego algunos parametros al request */
      /* Hash que identifica al torrent */
 
-     req.addParam("info_hash", HttpRequest::UrlEncode(idHash));
+     req.addParam(REQ_HASH, HttpRequest::UrlEncode(idHash));
      /* 20 bytes que nos identifican */ 
-     req.addParam("peer_id", CLIENT_ID); 
+     req.addParam(REQ_PEER_ID, CLIENT_ID); 
      /* Anuncio el puerto que uso para escuchar conexiones */
-     req.addParam("port", "1234");     req.addParam("uploaded", "0");
-     req.addParam("downloaded", "0");  req.addParam("corrupt", "0");
+     req.addParam(REQ_PORT, "1234");     req.addParam(REQ_UPLOADED, "0");
+     req.addParam(REQ_DOWNLOADED, "0");  req.addParam(REQ_CORRUPT, "0");
 //     TODO: req.addParam("left", getTotalSize);
-     req.addParam("left", "1000");     req.addParam("compact", "1");
+     req.addParam(REQ_LEFT, "1000");     req.addParam(REQ_COMPACT, "1");
      /* Cantidad de Peers a pedir */
-     req.addParam("numwant", "50");
+     req.addParam(REQ_NUMWANT, "50");
 
   	std::cout << "--------------------------------" << std::endl;
 	 std::string tracker= announceUrlList.front();
