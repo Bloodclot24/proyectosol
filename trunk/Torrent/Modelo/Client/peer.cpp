@@ -103,8 +103,10 @@ void Peer::have(uint32_t index){
      ProtocoloBitTorrent proto;
      std::string msg;
      msg = proto.have(index);
-     mensaje->copiarDatos(msg.c_str(), msg.length());
-     emisor->enviarMensaje(mensaje);
+     if(emisor != NULL){
+	  mensaje->copiarDatos(msg.c_str(), msg.length());
+	  emisor->enviarMensaje(mensaje);
+     }
 }
 
 /****************************************************************************/
@@ -223,11 +225,11 @@ void Peer::run(){
 		    contador++;
 	       }
 	  }
-	  
+
 	  //asigno el hash obtenido al peer
 	  this->hash.clear();
 	  this->hash = hashRecibido;
-	  
+
 	  /* Envio un handshake */
 	  mensaje = new Mensaje();
 	  std::string aux = proto.handshake("BitTorrent protocol", hash, CLIENT_ID);
