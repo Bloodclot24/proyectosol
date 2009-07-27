@@ -44,6 +44,7 @@ Torrent::Torrent(const char* fileName, Client* client,
 
      peersActivos=0;
      estado = STOPPED;
+     archivos=NULL;
      
      if(info != NULL){
 	  
@@ -1044,7 +1045,8 @@ void Torrent::peerTransferCanceled(Peer* peer, DownloadSlot* ds){
 Torrent::~Torrent(){
      
      std::cout << "Destruyendooooooooooooooooooooooo\n";
-     while(stop() != 1);
+     while(getEstado() != STOPPED)
+	  stop();
      join();
 
      if(archivos != NULL){

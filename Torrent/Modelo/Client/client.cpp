@@ -22,7 +22,7 @@ bool Client::addTorrent(const char* path, BitField* bitfield){
      }
      else {
 	  //TODO: pincha con los torrents vacios
-	  //delete torrent;
+	  delete torrent;
 	  return false;
      }
 }
@@ -190,14 +190,14 @@ const std::string Client::getMaxRequest(){
 /*--------------------------------------------------------------------------*/
 Client::~Client(){
 
-	std::list<Torrent*>::iterator it;
-    for(it=torrents.begin();it!=torrents.end();it++){
-		(*it)->stop();
-		delete (*it);
-    }
-    // dejo de recibir conexiones de peers entrantes
-    this->threadAceptor->finish();
-    delete this->threadAceptor;
+     std::list<Torrent*>::iterator it;
+     for(it=torrents.begin();it!=torrents.end();it++){
+	  (*it)->stop();
+	  delete (*it);
+     }
+     // dejo de recibir conexiones de peers entrantes
+     this->threadAceptor->finish();
+     delete this->threadAceptor;
 }
 
 /****************************************************************************/
