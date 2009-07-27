@@ -3,6 +3,7 @@
 
 #include "torrent.h"
 #include <iostream>
+#include <sstream>
 #include <list>
 #include <string.h>
 #include "../ParserBencode/parserBencode.h"
@@ -35,6 +36,15 @@ private:
      std::map<std::string,std::string> trackersIds; /**< Lista Ids de los trackers.*/
      
      Torrent* buscarTorrent(const char* filename);
+     
+     std::string intAstring(uint32_t valor) {
+     	//convierto de int a string
+     	std::string snumero;
+     	std::stringstream cvz;
+     	cvz << valor;
+     	snumero = cvz.str();
+     	return snumero;
+	 }
 
 public:
 
@@ -156,7 +166,39 @@ public:
      * @param tracker Nombre del tracker.
      * @param id Id del tracker.
 	 */
-	void modificarIdTracker(const std::string tracker, const std::string id);				
+	void modificarIdTracker(const std::string tracker, const std::string id);
+	
+	/**
+	 * Modifica la id del tracker.
+	 * 
+     * @param tracker Nombre del tracker.
+     * @param id Id del tracker.
+	 */
+	const std::string getClientId();
+	
+	/**
+	 * Modifica la id del tracker.
+	 * 
+     * @param tracker Nombre del tracker.
+     * @param id Id del tracker.
+	 */
+	const std::string getPortIn();
+	
+	/**
+	 * Modifica la id del tracker.
+	 * 
+     * @param tracker Nombre del tracker.
+     * @param id Id del tracker.
+	 */
+	const std::string getPeersNumWant();
+	
+	/**
+	 * Modifica la id del tracker.
+	 * 
+     * @param tracker Nombre del tracker.
+     * @param id Id del tracker.
+	 */
+	const std::string getMaxRequest();				
 	
     /**
      * Destruye el cliente y libera todos los torrents. 

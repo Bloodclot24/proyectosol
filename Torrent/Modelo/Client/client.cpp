@@ -165,6 +165,26 @@ void Client::addTracker(const std::string tracker, const std::string id) {
 void Client::modificarIdTracker(const std::string tracker, const std::string id) {
 	
 	trackersIds[tracker]= id;
+}
+
+/*--------------------------------------------------------------------------*/	
+const std::string Client::getClientId(){
+	return CLIENT_ID;
+}
+
+/*--------------------------------------------------------------------------*/	
+const std::string Client::getPortIn(){
+	return intAstring(PORT_IN);
+}
+
+/*--------------------------------------------------------------------------*/	
+const std::string Client::getPeersNumWant(){
+	return intAstring(PEERS_NUM_WANT);
+}
+
+/*--------------------------------------------------------------------------*/	
+const std::string Client::getMaxRequest(){
+	return intAstring(MAX_REQUESTS);
 }	
 
 /*--------------------------------------------------------------------------*/
