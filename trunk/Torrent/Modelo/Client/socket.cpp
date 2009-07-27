@@ -165,6 +165,8 @@ int Socket::recibir(void *buf, int cuanto){
 /* Conecta al socket a la direccion y puerto dados en el constructor */
 /****************************************************************************/
 bool Socket::conectar(void){
+     if(!esValido())
+	  return esValido();
      if(host == NULL){
 	  error = -1;
 	  return false;

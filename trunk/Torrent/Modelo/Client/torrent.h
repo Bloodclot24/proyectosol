@@ -161,6 +161,8 @@ private:
 				  * disponibles para realizar
 				  * requests */
 
+     uint32_t announceTime;	/**< intervalo minimo entre
+				 * announce */
      uint32_t timeToAnnounce;	/**< Tiempo restante para el proximo
 				 * announce */
 
