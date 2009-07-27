@@ -86,15 +86,6 @@ void VistaTorrent::correr() {
                                           refXml->get_object("liststore_peers");
 	treeModel_peers= Glib::RefPtr<Gtk::ListStore>::cast_static(obj_treeModel_peers);
 
-	/*TREEVIEW PIECES*/
-	Glib::RefPtr<Glib::Object> obj_treeView_pieces=
-                                          refXml->get_object("treeview_pieces");
-	treeView_pieces= Glib::RefPtr<Gtk::TreeView>::cast_static(obj_treeView_pieces);
-
-    Glib::RefPtr<Glib::Object> obj_treeModel_pieces=
-                                          refXml->get_object("liststore_pieces");
-	treeModel_pieces= Glib::RefPtr<Gtk::ListStore>::cast_static(obj_treeModel_pieces);
-
 	/*TREEVIEW MESSAGES*/
 	Glib::RefPtr<Glib::Object> obj_treeView_messages=
                                           refXml->get_object("treeview_messages");

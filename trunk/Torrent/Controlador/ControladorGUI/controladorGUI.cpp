@@ -101,15 +101,10 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 	bool existe= cliente->existeTorrent(filename.c_str());
 	
 	if(valido && !existe) {
-	     //ventanaCargando->show();
-		
 		std::string pathCopia= crearCopiaTorrent(pathTorrent);
 			
 		if(cliente->addTorrent(pathCopia.c_str())) {
 			
-		     //while(!vista->isVisibleDelayDialog());
-
-			//vista->cerrarDelayDialog();	
 			vista->cerrarFileChooser();
 
 			this->all++;
@@ -399,10 +394,6 @@ void ControladorGUI::actualizarDone(std::string file, int done) {
 //		modificarGeneral(torrent);
 //	}
 	
-	std::cout << "Filename:" << file << std::endl;
-	std::cout << "Done:" << done << std::endl;
-	std::cout << "-----------------------------------------------" << std::endl;
-	
 	mutex.unlock();
 }
 
@@ -449,12 +440,6 @@ void ControladorGUI::actualizarUpSpeed(std::string file, uint32_t upSpeed) {
 	mutex.lock();	
 	vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
 	mutex.unlock();
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarTime(std::string file, uint32_t time) {
-
-//	vista->actualizarTime(file, obtenerETA(time));
 }
 
 /*--------------------------------------------------------------------------*/
