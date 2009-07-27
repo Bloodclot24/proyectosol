@@ -202,15 +202,6 @@ class ControladorGUI: public Controlador {
 		 */	
 		virtual void actualizarUpSpeed(std::string file, uint32_t upSpeed);	
 		
-		/**
-		 * Actualiza el tiempo restante del archivo pasado por parametro
-		 * en el panel de transferencias.
-		 * 
-		 * @param file Nombre del archivo.
-		 * @param time Tiempo restante para completar la descarga.
-		 */	
-		virtual void actualizarTime(std::string file, uint32_t time);	
-		
 		/********Trackers********/
 		/**
 		 * Modifica el estado del tracker de la vista.

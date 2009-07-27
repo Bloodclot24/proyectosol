@@ -65,7 +65,7 @@ class VistaTorrent {
 		    	Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf> > col_icon;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_file;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_size;
-		    	Gtk::TreeModelColumn<int> col_done;
+		    	Gtk::TreeModelColumn<gint> col_done;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_status;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_downSpeed;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_upSpeed;
@@ -139,30 +139,6 @@ class VistaTorrent {
 		
 		Glib::RefPtr<Gtk::ListStore> treeModel_peers;
 		ModelColumns_peers columns_peers;
-		
-		/*TREEVIEW PIECES*/
-		Glib::RefPtr<Gtk::TreeView> treeView_pieces;
-		
-		class ModelColumns_pieces: public Gtk::TreeModel::ColumnRecord {
-		  
-			public:
-				ModelColumns_pieces() {
-			  		add(col_number);
-			  		add(col_size);
-			  		add(col_blocks);
-			  		add(col_block);
-			  		add(col_completed);
-			  	}
-		
-		    	Gtk::TreeModelColumn<int> col_number;
-		    	Gtk::TreeModelColumn<Glib::ustring> col_size;
-		    	Gtk::TreeModelColumn<int> col_block;
-		    	Gtk::TreeModelColumn<int> col_blocks;
-		    	Gtk::TreeModelColumn<int> col_completed;
-		};
-		
-		Glib::RefPtr<Gtk::ListStore> treeModel_pieces;
-		ModelColumns_pieces columns_pieces;
 		
 		/*TREEVIEW MESSAGES*/
 		Glib::RefPtr<Gtk::TreeView> treeView_messages;
