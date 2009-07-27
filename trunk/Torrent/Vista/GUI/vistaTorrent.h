@@ -65,7 +65,7 @@ class VistaTorrent {
 		    	Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf> > col_icon;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_file;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_size;
-		    	Gtk::TreeModelColumn<gint> col_done;
+		    	Gtk::TreeModelColumn<int> col_done;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_status;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_downSpeed;
 		    	Gtk::TreeModelColumn<Glib::ustring> col_upSpeed;

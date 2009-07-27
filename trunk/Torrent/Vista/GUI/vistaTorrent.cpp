@@ -45,8 +45,8 @@ void VistaTorrent::correr() {
   	treeView_transf->set_model(treeModel_transf);
 
   	refTreeSelection= treeView_transf->get_selection();
-//  	refTreeSelection->signal_changed().connect(sigc::mem_fun(*this,
-//  	                                           &VistaTorrent::on_selection_changed));
+  	refTreeSelection->signal_changed().connect(sigc::mem_fun(*this,
+  	                                           &VistaTorrent::on_selection_changed));
 
 	/*TREEVIEW ACTIVITIES*/
     Glib::RefPtr<Glib::Object> obj_treeView_activities=
@@ -130,12 +130,12 @@ std::string getPathStatusIcon(std::string status) {
 /*--------------------------------------------------------------------------*/
 void VistaTorrent::on_selection_changed() {
 
-//	Gtk::TreeModel::iterator iter= refTreeSelection->get_selected();
-//	if(iter) {
-//  		Gtk::TreeModel::Row row= *iter;
-//  		Glib::ustring filename= row[columns_transf.col_file];
-//		controlador->actualizarPestanias(filename);
-//	}
+	Gtk::TreeModel::iterator iter= refTreeSelection->get_selected();
+	if(iter) {
+  		Gtk::TreeModel::Row row= *iter;
+  		Glib::ustring filename= row[columns_transf.col_file];
+		controlador->actualizarPestanias(filename);
+	}
 }
 
 /*--------------------------------------------------------------------------*/
