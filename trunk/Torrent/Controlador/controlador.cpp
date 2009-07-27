@@ -9,7 +9,10 @@ Controlador::Controlador(): listaOrdenada() {
 }
 
 /*--------------------------------------------------------------------------*/
-Controlador::~Controlador() { };
+Controlador::~Controlador() {
+	
+	delete cliente;	
+};
 
 /*--------------------------------------------------------------------------*/
 bool Controlador::validarExtensionFile(std::string path) {
@@ -48,62 +51,60 @@ std::string Controlador::crearCopiaTorrent(std::string pathTorrent) {
 }
 
 /*--------------------------------------------------------------------------*/
-bool Controlador::guardarConfig() {
+void Controlador::guardarConfig() {
 
 	//Elimino el archivo alerta de fallos de segmentacion
 	remove(NAME_FILE_FALLO);
 		
-	bool resultado= false;
 	std::fstream bitfieldFile;
 	std::fstream config;
 	uint32_t contador = 0;
 	std::string snumero;
 	uint32_t auxiliar;	
-	const std::list<Torrent*>* listaTorrents  = this->cliente->getListaTorrents();
+	const std::list<Torrent*>* listaTorrents = this->cliente->getListaTorrents();
 	std::list<Torrent*>::const_iterator it;
 	config.open(NAME_FILE_CONFIG , std::fstream::out);
-	if(!bitfieldFile.is_open()) resultado = false;
+	
+	if(config.is_open()){
 		auxiliar= listaTorrents->size();
 		config.write((const char*)&auxiliar,sizeof(uint32_t));	
-		
-	for(it = listaTorrents->begin(); it != listaTorrents->end(); it++,contador++){
-		std::stringstream cvz;
-		BitField bitfield = (*it)->getBitField();
-   		cvz <<  contador;
-   		snumero = cvz.str();
-   		std::string ruta;
-		ruta += PATH_CONFIG; 
-		ruta += NAME_FILE_BF;
-		ruta += snumero;
-		ruta += EXTENSION_BITFIELD;
-		bitfieldFile.open(ruta.c_str(), std::fstream::out);
-		
-		if(bitfieldFile.is_open()) {
-
-			auxiliar= bitfield.getLength();
-			bitfieldFile.write((const char*)&auxiliar,sizeof(uint32_t));
-			bitfieldFile.write(bitfield.getData(), bitfield.getBytesLength());		
-			bitfieldFile.close();
-			resultado= true;
+			
+		for(it = listaTorrents->begin(); it != listaTorrents->end(); it++,contador++){
+			std::stringstream cvz;
+			BitField bitfield = (*it)->getBitField();
+	   		cvz <<  contador;
+	   		snumero = cvz.str();
+	   		std::string ruta;
+			ruta += PATH_CONFIG; 
+			ruta += NAME_FILE_BF;
+			ruta += snumero;
+			ruta += EXTENSION_BITFIELD;
+			bitfieldFile.open(ruta.c_str(), std::fstream::out);
+			
+			if(bitfieldFile.is_open()) {
+	
+				auxiliar= bitfield.getLength();
+				bitfieldFile.write((const char*)&auxiliar,sizeof(uint32_t));
+				bitfieldFile.write(bitfield.getData(), bitfield.getBytesLength());		
+				bitfieldFile.close();
+			}
+			auxiliar= (*it)->getName().length();
+			config.write((const char*)&auxiliar,sizeof(uint32_t));
+			config.write((*it)->getName().c_str(), auxiliar);
+			auxiliar= ruta.length();
+			config.write((const char*)&auxiliar,sizeof(uint32_t));
+			config.write(ruta.c_str(), auxiliar);
+			auxiliar= this->obtenerOrden((*it)->getName());
+			config.write((const char*)&auxiliar, sizeof(uint32_t));
 		}
-		auxiliar= (*it)->getName().length();
-		config.write((const char*)&auxiliar,sizeof(uint32_t));
-		config.write((*it)->getName().c_str(), auxiliar);
-		auxiliar= ruta.length();
-		config.write((const char*)&auxiliar,sizeof(uint32_t));
-		config.write(ruta.c_str(), auxiliar);
-		auxiliar= this->obtenerOrden((*it)->getName());
-		config.write((const char*)&auxiliar, sizeof(uint32_t));
-	}
-	config.close();		
-
-	return resultado;
+	
+		config.close();
+	}		
 }
 
 /*--------------------------------------------------------------------------*/
-bool Controlador::cargarConfig() {
+void Controlador::cargarConfig() {
 	
-	bool resultado= false;
 	bool error= false;
 	std::fstream fallo;
 	fallo.open(NAME_FILE_FALLO , std::fstream::in);
@@ -125,7 +126,7 @@ bool Controlador::cargarConfig() {
 	config.seekg(0, std::fstream::beg);
 		
 	if(config.is_open()) {
-		resultado=true;
+		//resultado=true;
 		char* cantTorrents= new char[sizeof(uint32_t)];
 		config.read(cantTorrents, sizeof(uint32_t));
 		uint32_t cantListaTorrents= *cantTorrents;
@@ -174,7 +175,6 @@ bool Controlador::cargarConfig() {
 					bitField->setData(dataBitField);
 					cliente->addTorrent(pathTorrent.c_str(), bitField);
 					
-					resultado = true;
 					delete[] lengthBitField;
 					
 					bitFieldFile.close();
@@ -200,8 +200,6 @@ bool Controlador::cargarConfig() {
 	} 		
 	
 	config.close();	
-	
-	return resultado;
 }
 
 /*--------------------------------------------------------------------------*/

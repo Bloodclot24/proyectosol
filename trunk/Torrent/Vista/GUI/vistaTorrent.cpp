@@ -576,6 +576,9 @@ bool VistaTorrent::buscarRow_transf(std::string file, Gtk::TreeModel::Row &row) 
   			
 	typedef Gtk::TreeModel::Children type_children;
 	type_children children = treeModel_transf->children();
+	
+	std::cout << "asigno children" << std::endl;
+  		
 	bool found= false;
 	for(type_children::iterator iter= children.begin(); !found&&  
 	    iter != children.end(); ++iter) {

@@ -444,10 +444,11 @@ void ControladorGUI::actualizarDownSpeed(std::string file,
 }
 
 /*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarUpSpeed(std::string file, 
-                                       uint32_t upSpeed) {	
-	
-//	vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
+void ControladorGUI::actualizarUpSpeed(std::string file, uint32_t upSpeed) {	
+
+	mutex.lock();	
+	vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
+	mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
