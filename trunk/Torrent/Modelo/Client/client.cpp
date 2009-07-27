@@ -2,7 +2,7 @@
 
 /****************************************************************************/
 Client::Client(Controlador* controlador): trackersIds() {
-	
+
 	this->controlador= controlador;
 	this->puertoPorDefecto = PORT_IN;
 	this->cantidadDePeers = PEERS_NUM_WANT;
@@ -12,9 +12,9 @@ Client::Client(Controlador* controlador): trackersIds() {
 
 /*--------------------------------------------------------------------------*/
 bool Client::addTorrent(const char* path, BitField* bitfield){
-	
+
      Torrent *torrent = new Torrent(path, this, bitfield);
-	
+
      if(torrent->isValid()){
 	  torrent->setControlador(controlador);
 	  torrents.push_back(torrent);
@@ -29,45 +29,45 @@ bool Client::addTorrent(const char* path, BitField* bitfield){
 
 /*--------------------------------------------------------------------------*/
 bool Client::start(const char* filename){
-	
+
      // comienzo a recibir conexiones de peers entrantes
-     this->threadAceptor->comenzar();
-	 
+     if(!this->threadAceptor->isRunning())this->threadAceptor->comenzar();
+
      Torrent* torrent= buscarTorrent(filename);
 
-	
+
      if(torrent) {
 	  return torrent->start();
      } else
-	  return false;	
+	  return false;
 }
 
 
 /*--------------------------------------------------------------------------*/
 bool Client::stop(const char* filename) {
-	
+
      Torrent* torrent= buscarTorrent(filename);
 	if(torrent) {
 		if(torrent->stop())
 			return true;
 	}
-	return false;	
+	return false;
 }
-     
+
 /*--------------------------------------------------------------------------*/
 bool Client::pause(const char* filename) {
-	
+
 	Torrent* torrent= buscarTorrent(filename);
 	if(torrent) {
 		if(torrent->pause())
 			return true;
-	} 
-	return false;	
+	}
+	return false;
 }
 
 /*--------------------------------------------------------------------------*/
 bool Client::remove(const char* filename) {
-	
+
 	Torrent* torrent= buscarTorrent(filename);
 	if(torrent) {
 		torrent->stop();
@@ -75,25 +75,25 @@ bool Client::remove(const char* filename) {
 //		delete torrent;
 		return true;
 	}
-	return false;		
+	return false;
 }
 
 /*--------------------------------------------------------------------------*/
 Torrent* Client::buscarTorrent(const char* filename) {
-	
+
      std::list<Torrent*>::iterator it;
      bool encontrado= false;
-     
-     for(it= torrents.begin(); it!= torrents.end() && !encontrado; it++) {     	
+
+     for(it= torrents.begin(); it!= torrents.end() && !encontrado; it++) {
 	  if(strcmp(filename, (*it)->getName().c_str()) == 0){
 	       encontrado = true;
 		    break;
 	  }
      }
-     
+
      if(!encontrado)
 	  return NULL;
-     else   
+     else
 	  return *(it);
 }
 
@@ -124,17 +124,17 @@ void Client::setNumPeersForTorrent(uint32_t numeroDePeers){
 
 /*--------------------------------------------------------------------------*/
 bool Client::existeTorrent(const char* filename){
-	
+
 	bool encontrado= false;
 	std::list<Torrent*>::iterator it;
-	
-	for(it= torrents.begin(); it!= torrents.end() && !encontrado; it++) {     	
+
+	for(it= torrents.begin(); it!= torrents.end() && !encontrado; it++) {
 		if(strcmp(filename, (*it)->getName().c_str()) == 0){
 	    	encontrado = true;
 		    break;
 	  	}
    	}
-   
+
 	if(encontrado)
 		return true;
 	return false;
@@ -142,7 +142,7 @@ bool Client::existeTorrent(const char* filename){
 
 /*--------------------------------------------------------------------------*/
 bool Client::existeTracker(const std::string tracker) {
-	
+
 	 std::string trackerMap= trackersIds[tracker];
      if((trackerMap.compare("")) != 0)
      	return true;
@@ -151,41 +151,41 @@ bool Client::existeTracker(const std::string tracker) {
 
 /*--------------------------------------------------------------------------*/
 const std::string Client::trackerId(const std::string tracker) {
-	
+
 	return trackersIds[tracker];
 }
-	
+
 /*--------------------------------------------------------------------------*/
 void Client::addTracker(const std::string tracker, const std::string id) {
-	
+
 	trackersIds.insert(std::pair<std::string,std::string>(tracker, id));
-}	
+}
 
 /*--------------------------------------------------------------------------*/
 void Client::modificarIdTracker(const std::string tracker, const std::string id) {
-	
+
 	trackersIds[tracker]= id;
 }
 
-/*--------------------------------------------------------------------------*/	
+/*--------------------------------------------------------------------------*/
 const std::string Client::getClientId(){
 	return CLIENT_ID;
 }
 
-/*--------------------------------------------------------------------------*/	
+/*--------------------------------------------------------------------------*/
 const std::string Client::getPortIn(){
 	return intAstring(PORT_IN);
 }
 
-/*--------------------------------------------------------------------------*/	
+/*--------------------------------------------------------------------------*/
 const std::string Client::getPeersNumWant(){
 	return intAstring(PEERS_NUM_WANT);
 }
 
-/*--------------------------------------------------------------------------*/	
+/*--------------------------------------------------------------------------*/
 const std::string Client::getMaxRequest(){
 	return intAstring(MAX_REQUESTS);
-}	
+}
 
 /*--------------------------------------------------------------------------*/
 Client::~Client(){
@@ -197,6 +197,7 @@ Client::~Client(){
      }
      // dejo de recibir conexiones de peers entrantes
      this->threadAceptor->finish();
+     this->threadAceptor->signal();
      delete this->threadAceptor;
 }
 
