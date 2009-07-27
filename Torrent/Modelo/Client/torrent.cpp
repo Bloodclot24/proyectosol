@@ -24,9 +24,9 @@
 /****************************************************************************/
 Torrent::Torrent(const char* fileName, Client* client,
                  BitField* bitfieldGuardado):requestCondition(&requestMutex) {
-     
+
      this->client= client;
-     
+
      this->bitField= bitfieldGuardado;
 
      partsRequested = 0;
@@ -34,7 +34,7 @@ Torrent::Torrent(const char* fileName, Client* client,
      piezasVerificadas = 0;
      timeToAnnounce = 0;
      downloaded = uploaded = corrupt = left = 0;
-     
+
      ParserBencode parser;
      /* Decodifico todo el .torrent y obtengo una lista con toda la
       * informacion */
@@ -46,20 +46,20 @@ Torrent::Torrent(const char* fileName, Client* client,
      peersActivos=0;
      estado = STOPPED;
      archivos=NULL;
-     
+
      if(info != NULL){
-	  
+
 	  // "Torrent Valido"
 	  valido = true;
 
 	  BeNode* primero = info->front();
-	  
+
 	  if(primero->typeNode == BE_DICT){
 	       std::map<std::string, BeNode*> dict =	\
 		    primero->beDict->elements;
-	       
+
 	       BeNode* elemento;
-	       
+
 	       /* Extraigo todos los elementos que necesito */
 	       elemento = dict[DICT_TRACKER];
 	       if(elemento != NULL)
@@ -74,21 +74,21 @@ Torrent::Torrent(const char* fileName, Client* client,
 	       if(elemento != NULL)
 		    this->creationDate = elemento->beInt;
 	       else this->creationDate = 0;
-	       
+
 	       elemento = dict[DICT_COMMENTS];
 	       if(elemento != NULL)
 		    this->comment = elemento->beStr;
-	       
+
 	       elemento = dict[DICT_CREATOR];
 	       if(elemento != NULL)
 		    this->createdBy = elemento->beStr;
-	       
+
 	       elemento = dict[DICT_ENCODING];
 	       if(elemento != NULL)
 	       this->encoding = elemento->beInt;
 	       else this->encoding = 0;
 
-	       elemento = dict[DICT_INFO];    
+	       elemento = dict[DICT_INFO];
 	       if(elemento != NULL){
 		    Sha1 hasher;
 		    idHash = hasher.ejecutarSha1(			\
@@ -105,7 +105,7 @@ Torrent::Torrent(const char* fileName, Client* client,
 			 it++;
 		    for(;it!=archivos->end();it++){
 			 TorrentFile *file = *it;
-			 
+
 			 FileManager * manager= file->getManager();
 			 status=manager->getStatus();
 			 if(status == -1){
@@ -132,11 +132,11 @@ Torrent::Torrent(const char* fileName, Client* client,
 
 	       pieceSize = (*(archivos->begin()))->getPieceLength();
 	       sizeInPieces = ceil((double)getTotalSize()/(double)pieceSize);
-			
+
 	       if(bitfieldGuardado == NULL){
-		    
+
 		    this->bitField = new BitField(sizeInPieces);
-		    
+
 		    //Si alguno de los archivos y ya existia, verifico si hay datos validos
 		    if(check){
 			 for(uint32_t i=0;i<sizeInPieces;i++){
@@ -208,7 +208,7 @@ int Torrent::start(){
 	  estado = STARTING;
 	  mutexEstado.unlock();
 	  /* Comienzo el proceso */
-	  Thread::start();	  
+	  Thread::start();
 	  return 1;
      }
      mutexEstado.unlock();
@@ -231,7 +231,7 @@ void Torrent::agregarPeer(Peer* peer){
      }
 
      if(!encontrado){
-	  listaPeers.push_back(peer); // agrego al peer la lista	  
+	  listaPeers.push_back(peer); // agrego al peer la lista
 	  mutexListaDireccionsPeers.lock();
 	  listaDireccionesPeers.push_back(peer->getName());
 	  mutexListaDireccionsPeers.unlock();
@@ -268,7 +268,7 @@ int Torrent::writeData(const char* data, uint32_t index, uint32_t offset, uint32
 
      uint64_t restante = size;
      uint64_t comienzo = bytes-acumulado;
-     
+
      while(restante > 0){
 	  if(comienzo+restante <= (*it)->getSize()){
 	       // Cae toda la parte dentro del archivo
@@ -320,7 +320,7 @@ uint32_t Torrent::readData(char *data, uint32_t index, uint32_t offset, uint32_t
      uint64_t restante = size;
      uint64_t comienzo = bytes-acumulado;
      uint32_t retorno= 0;
-     
+
      while(restante > 0){
 	  if(comienzo+restante <= (*it)->getSize()){
 	       // Cae toda la parte dentro del archivo
@@ -426,17 +426,17 @@ uint32_t Torrent::rarestFirst() {
      //es decir la pieza mas rara.
      mutexBitField.lock();
      for(uint32_t i=0;i<tamanio;i++){
-	  
-	  if(vectorPiezas[i] > 0 && menor > vectorPiezas[i] && 
+
+	  if(vectorPiezas[i] > 0 && menor > vectorPiezas[i] &&
 	     this->bitField->getField(i) == 0){
-	       
+
 	       menor = vectorPiezas[i];
 	       posMenor = i;
 	  }
      }
      mutexBitField.unlock();
 
-     return posMenor;		
+     return posMenor;
 }
 
 /****************************************************************************/
@@ -475,7 +475,7 @@ int Torrent::validarPieza(uint32_t index){
 	  return -2;
      }
      int returnValue=0;
-     
+
      Sha1 hasher;
      std::string temp(buffer,tamanio);
      std::string hash = hasher.ejecutarSha1(temp);
@@ -486,9 +486,9 @@ int Torrent::validarPieza(uint32_t index){
      else{
 	  returnValue = 0;
      }
-     
+
      delete[] buffer;
-     return returnValue;     
+     return returnValue;
 }
 
 /****************************************************************************/
@@ -498,7 +498,7 @@ int Torrent::announce(){
       * que tengo*/
      std::string announceUrl;
      announceUrl=announceUrlList.front();
-     
+
      /* Creo un request con la direccion del tracker */
      HttpRequest req(announceUrl);
 
@@ -508,7 +508,7 @@ int Torrent::announce(){
 
      /* conecto el socket */
      socket->conectar();
-	 
+
      if(!socket->esValido()){
 	  std::string mensaje("Error al conectar: ");
 	  mensaje+= socket->obtenerError();
@@ -532,7 +532,7 @@ int Torrent::announce(){
 	  delete socket;
 	  return -2;
      }
-     
+
      emisor->comenzar();
      receptor->comenzar();
 
@@ -542,28 +542,28 @@ int Torrent::announce(){
      left = getTotalSize()-pieceSize*piezasVerificadas;
 
      req.addParam(REQ_HASH, HttpRequest::UrlEncode(idHash));
-     /* 20 bytes que nos identifican */ 
-     req.addParam(REQ_PEER_ID, CLIENT_ID);
+     /* 20 bytes que nos identifican */
+     req.addParam(REQ_PEER_ID, this->client->getClientId());
      /* Anuncio el puerto que uso para escuchar conexiones */
-     req.addParam(REQ_PORT, "1234");     req.addParam(REQ_UPLOADED, "0");
-     req.addParam(REQ_DOWNLOADED, "0");  req.addParam(REQ_CORRUPT, "0");
+     req.addParam(REQ_PORT, this->client->getPortIn() );     req.addParam(REQ_UPLOADED, this->client->intAstring(uploaded));
+     req.addParam(REQ_DOWNLOADED, this->client->intAstring(downloaded));  req.addParam(REQ_CORRUPT, this->client->intAstring(corrupt));
 //     TODO: req.addParam("left", getTotalSize);
-     req.addParam(REQ_LEFT, "1000");     req.addParam(REQ_COMPACT, "1");
+     req.addParam(REQ_LEFT, this->client->intAstring(left));     req.addParam(REQ_COMPACT, "1");
      /* Cantidad de Peers a pedir */
-     req.addParam(REQ_NUMWANT, "50");
+     req.addParam(REQ_NUMWANT, this->client->getPeersNumWant);
 
   	std::cout << "--------------------------------" << std::endl;
 	 std::string tracker= announceUrlList.front();
-	
+
 	 std::cout << "Conectando Tracker: " << tracker << std::endl;
-	 	 
+
 	 if(client->existeTracker(tracker)) {
 	 	std::cout << "Existe" << std::endl;
 	   	req.addParam("tracker id", client->trackerId(tracker));
-	 }	  	
+	 }
 
 	std::cout << "--------------------------------" << std::endl;
-	
+
 
 
      req.addParam("event", "started");
@@ -576,7 +576,7 @@ int Torrent::announce(){
      /* envio el request HTTP */
      emisor->enviarMensaje(mensaje);
      emisor->esperarEmision();
-     
+
      /* recibo la respuesta */
      HttpResponse *resp = receptor->getResponse();
 
@@ -612,12 +612,12 @@ int Torrent::announce(){
 
      /* La respuesta del tracker consiste en un diccionario, lo obtengo */
      std::map<std::string, BeNode*>* dict = &(primero->beDict->elements);
-	       
+
      /* Extraigo todos los elementos que necesito */
      elemento = (*dict)[DICT_FAIL];
      if(elemento != NULL)
 	  controlador->agregarMessage(  "ERROR: " + elemento->beStr );
-     
+
      elemento = (*dict)[DICT_WARNING];
      if(elemento != NULL)
 	  controlador->agregarMessage( "WARNING: " + elemento->beStr );
@@ -626,7 +626,7 @@ int Torrent::announce(){
      if(elemento != NULL){
 	  controlador->agregarMessage( "INFO: intervalo de requests -> " + elemento->beInt);
 	  announceTime = elemento->beInt;
-	  
+
 	  std::cout << "TIEMMMMMMMMMMMMMMMPO de anuncio "<< timeToAnnounce << "\n";
      }
 
@@ -637,13 +637,13 @@ int Torrent::announce(){
      elemento = (*dict)[DICT_TRCKID];
      std::cout << "--------------------------------" << std::endl;
      std::cout << "Guardando Tracker" << std::endl;
-     
+
      if(elemento != NULL) {
 	  controlador->agregarMessage( "INFO: ID TRACKER -> "+ elemento->beStr);
 	  std::string tracker= announceUrlList.front();
-	  
-	  std::cout << "Tracker: " << tracker << std::endl; 
-	  
+
+	  std::cout << "Tracker: " << tracker << std::endl;
+
 	  if(!client->existeTracker(tracker)) {
 	       std::cout << "No existe" << std::endl;
 	       client->addTracker(tracker, elemento->beStr);
@@ -651,9 +651,9 @@ int Torrent::announce(){
 	       std::cout << "Existe" << std::endl;
 	       client->modificarIdTracker(tracker,	elemento->beStr);
 	  }
-	  
+
      }
-     
+
      std::cout << "------------------------------------" << std::endl;
 
      elemento = (*dict)[DICT_COMPLETE];
@@ -667,7 +667,7 @@ int Torrent::announce(){
      elemento = (*dict)[DICT_PEERS];
      if(elemento != NULL){
 	  controlador->agregarMessage( "INFO: Lista de PEERS -> " );
-	  
+
 	  for(size_t i=0;i<elemento->beStr.length();i+=6){
 	       std::string snumero;
 	       std::stringstream cvz;
@@ -676,10 +676,10 @@ int Torrent::announce(){
 		   << ((int)elemento->beStr[i+2] & 0xff) << "."		\
 		   << ((int)elemento->beStr[i+3] & 0xff);
 	       snumero = cvz.str();
-	       
+
 	       //creo el nuevo peer con los datos obtenidos
 	       controlador->agregarMessage(snumero);
-	      
+
 	       Peer *peer = new						\
 		    Peer(snumero,					\
 			 ntohs(*(uint16_t*)(elemento->beStr.c_str()+i+4)), \
@@ -766,7 +766,7 @@ void Torrent::run(){
 		    else delete peer; //eliminarPeer(peer);
 		    cantidad--;
 	       }
-  
+
 	       /* Conecto tantos peers como necesite */
 	       while(listaPeersConectados.size() < MAX_CONNECTED_PEERS && listaPeers.size() > 0){
 		    Peer* peer = listaPeers.front();
@@ -795,7 +795,7 @@ void Torrent::run(){
 
 	       /* Verifico cualquier pieza que pueda estar pendiente */
 	       verificarPiezasPendientes();
-	       
+
 	       /* Anuncio cualquier pieza que pueda estar pendiente */
 	       anunciarPiezasPendientes();
 
@@ -810,16 +810,16 @@ void Torrent::run(){
 
 	       if(piezasVerificadas<sizeInPieces){
 		    /* Si necesito mas piezas */
-		    
+
 		    if(piezasEnProceso.size() > 0){
 			 DownloadSlot *ds = NULL;
 			 Peer *peer=NULL;
-			 
+
 			 // por cada bloque en proceso
 			 int size = piezasEnProceso.size();
 			 for(int i=0;i<size; i++){
 			      ds = piezasEnProceso.popFront();
-			      
+
 			      int j=listaPeersConectados.size();
 			      while(j>0){
 				   peer = listaPeersConectados.front();
@@ -851,7 +851,7 @@ void Torrent::run(){
 			      }
 			 }
 		    }
-	       
+
 		    // Si no estoy realizando tantos requests como puedo
 		    if(partsRequested < MAX_REQUESTS){
 			 //pido otra pieza y agrego los download slots
@@ -866,7 +866,7 @@ void Torrent::run(){
 			      if(index == getSizeInPieces()-1){
 				   tamanio = getLastPieceSize();
 			      }
-			 
+
 			      int contador = DownloadSlot::agregarSlots(piezasEnProceso, index, tamanio, REQUEST_SIZE_DEFAULT);
 			      piezasAVerificar[index] = contador;
 			 }
@@ -897,7 +897,7 @@ void Torrent::run(){
 /****************************************************************************/
 void Torrent::cleanup(){
      std::cout << "borrando peers " << listaPeersActivos.size() << "\n";
-     
+
      while(listaPeersActivos.size()>0){
 	  Peer* peer = listaPeersActivos.front();
 	  listaPeersActivos.pop_front();
@@ -948,7 +948,7 @@ void Torrent::peerChoked(Peer* peer){
      std::cout << "CHOKEEEEEEEEEEEE+++++++++\n";
      //Aviso que ya hay un nuevo Peer en la cola, por si el run()
      //estaba esperando
-     requestCondition.signal();     
+     requestCondition.signal();
 }
 
 /****************************************************************************/
@@ -957,7 +957,7 @@ void Torrent::peerUnchoked(Peer* peer){
      std::cout << "UNCHOKEEEEEEEEEEEE---------\n";
      //Aviso que ya hay un nuevo Peer en la cola, por si el run()
      //estaba esperando
-     requestCondition.signal();     
+     requestCondition.signal();
 }
 
 /****************************************************************************/
@@ -975,7 +975,7 @@ void Torrent::peerTransferFinished(Peer* peer, DownloadSlot* ds){
      }
      listaPeersActivos.remove(peer);
      listaPeersEspera.push_back(peer);
-     
+
      delete ds;
 }
 
@@ -988,7 +988,7 @@ void Torrent::verificarPiezasPendientes(){
 	  uint32_t pieza = listaPiezasAVerificar.front();
 	  listaPiezasAVerificar.pop_front();
 	  std::cout << "verificando " << pieza << "\n";
-	  
+
 	  if(validarPieza(pieza)){
 	       piezasVerificadas++;
 	       bitField->setField(pieza,true);
@@ -1019,7 +1019,7 @@ void Torrent::anunciarPiezasPendientes(){
 	  std::cout << "anuncio pieza " << pieza << "\n";
 	  for(it=listaPeersConectados.begin();it!=listaPeersConectados.end();it++)
 	       (*it)->have(pieza);
-	  
+
 	  for(it=listaPeersActivos.begin();it!=listaPeersActivos.end();it++)
 	       (*it)->have(pieza);
 
@@ -1031,7 +1031,7 @@ void Torrent::anunciarPiezasPendientes(){
 /****************************************************************************/
 void Torrent::peerTransferCanceled(Peer* peer, DownloadSlot* ds){
      Lock lock(mutexPiezasAVerificar);
-     
+
      partsRequested--;
      std::cout << "c la transferencia\n";
      piezasEnProceso.push(ds);
@@ -1043,12 +1043,12 @@ void Torrent::peerTransferCanceled(Peer* peer, DownloadSlot* ds){
 
      listaPeersEspera.push_back(peer);
      listaPeersActivos.remove(peer);
-     requestCondition.signal();     
+     requestCondition.signal();
 }
 
 /****************************************************************************/
 Torrent::~Torrent(){
-     
+
      std::cout << "Destruyendooooooooooooooooooooooo\n";
      while(getEstado() != STOPPED)
 	  stop();
@@ -1067,7 +1067,7 @@ Torrent::~Torrent(){
 /****************************************************************************/
 int Torrent::stop(){
      mutexEstado.lock();
-     
+
      if(this->estado != STOPPED && this->estado != STOPPING && this->estado != SEEDING){
 	  this->estado= STOPPING;
 	  signal(); //por si se quedo trabado en el announce
@@ -1090,12 +1090,12 @@ int Torrent::stop(){
 int Torrent::pause(){
 
 	Lock lock(mutexEstado);
-	
+
 	if(this->estado == DOWNLOADING) {
 		this->estado= PAUSED;
-		return 1; 
+		return 1;
 	}
-	
+
 	return 0;
 }
 
@@ -1111,7 +1111,7 @@ void Torrent::abortRequest(DownloadSlot *ds){
      partsRequested--;
      std::cout << "se aborto la transferencia\n";
      piezasEnProceso.push(ds);
-     requestCondition.signal();     
+     requestCondition.signal();
 }
 
 /****************************************************************************/
@@ -1124,12 +1124,12 @@ std::list<std::string> Torrent::getListaPeers(){
 
 /****************************************************************************/
 uint32_t Torrent::getVelocidadSubida() {
-	
+
 	return velSubida;
 }
 
 /****************************************************************************/
 uint32_t Torrent::getVelocidadBajada() {
 
-	return velBajada;	
+	return velBajada;
 }
