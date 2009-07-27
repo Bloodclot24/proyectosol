@@ -146,6 +146,8 @@ private:
      std::list<DownloadSlot*> listaPiezasPedidas; /**< Piezas que
 					      * fueron asignadas a
 					      * peers */
+
+     Mutex mutexPiezasPedidas;
      
 
      int partsRequested;	/**< indica la cantidad de partes que
