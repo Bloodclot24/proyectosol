@@ -151,40 +151,37 @@ void Controlador::cargarConfig() {
 			char* ruta= new char[longitudRuta+1];
 			config.read(ruta,longitudRuta);
 			ruta[longitudRuta] = '\0';
+
+			pathTorrent= ""; 
+			pathTorrent += PATH_CONFIG;
+			pathTorrent += nombreTorrent;
+			pathTorrent += "\0";
 					
 			bitFieldFile.open(ruta,std::fstream::in);
 			
-			if(bitFieldFile.is_open()){
-				pathTorrent= ""; 
-				pathTorrent += PATH_CONFIG;
-				pathTorrent += nombreTorrent;
-				pathTorrent += "\0";
-				
-				if(!error){
-	 				char* lengthBitField= new char[sizeof(uint32_t)];
-	 				bitFieldFile.read(lengthBitField, sizeof(uint32_t));
-	 				uint32_t length= *((uint32_t*)lengthBitField);
+			if(bitFieldFile.is_open() && !error){
+
+				char* lengthBitField= new char[sizeof(uint32_t)];
+	 			bitFieldFile.read(lengthBitField, sizeof(uint32_t));
+	 			uint32_t length= *((uint32_t*)lengthBitField);
 					
-					BitField* bitField= new BitField(length);
-					uint32_t lengthBytes = bitField->getBytesLength();
-	 				
-	 				char* dataBitField = new char[bitField->getBytesLength()+1];
-	 				bitFieldFile.read(dataBitField, lengthBytes);
-	 				dataBitField[lengthBytes] = '\0';
+				BitField* bitField= new BitField(length);
+				uint32_t lengthBytes = bitField->getBytesLength();
+	 			
+	 			char* dataBitField = new char[bitField->getBytesLength()+1];
+	 			bitFieldFile.read(dataBitField, lengthBytes);
+	 			dataBitField[lengthBytes] = '\0';
 									
-					bitField->setData(dataBitField);
-					cliente->addTorrent(pathTorrent.c_str(), bitField);
+				bitField->setData(dataBitField);
+				cliente->addTorrent(pathTorrent.c_str(), bitField);
 					
-					delete[] lengthBitField;
-					
-					bitFieldFile.close();
-					
-				} else {
-					bitFieldFile.close();
-					remove(ruta);
-					cliente->addTorrent(pathTorrent.c_str());
-				}					
-			} 
+				delete[] lengthBitField;
+				
+				bitFieldFile.close();		
+			} else {
+				remove(ruta);
+				cliente->addTorrent(pathTorrent.c_str());
+			}					
 			
 			delete[] longNombreTorrent;
 			delete[] longRuta;

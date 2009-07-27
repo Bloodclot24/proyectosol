@@ -34,7 +34,7 @@ void VistaTorrent::correr() {
     Glib::RefPtr<Glib::Object> obj_treeView_transf= 
                                           refXml->get_object("treeview_tranferences");   	
 	treeView_transf= Glib::RefPtr<Gtk::TreeView>::cast_static(obj_treeView_transf); 
-	
+	 	   	
 	treeView_transf->insert_column("", columns_transf.col_icon, 0);
 	
 	Glib::RefPtr<Glib::Object> obj_treeModel_transf= 
@@ -578,6 +578,8 @@ bool VistaTorrent::buscarRow_transf(std::string file, Gtk::TreeModel::Row &row) 
 	type_children children = treeModel_transf->children();
 	
 	std::cout << "asigno children" << std::endl;
+	std::cout << "children begin" << children.begin() << std::endl;
+	std::cout << "children end" << children.end() << std::endl;
   		
 	bool found= false;
 	for(type_children::iterator iter= children.begin(); !found&&  
