@@ -49,7 +49,10 @@ std::string Controlador::crearCopiaTorrent(std::string pathTorrent) {
 
 /*--------------------------------------------------------------------------*/
 bool Controlador::guardarConfig() {
-	
+
+	//Elimino el archivo alerta de fallos de segmentacion
+	remove(NAME_FILE_FALLO);
+		
 	bool resultado= false;
 	std::fstream bitfieldFile;
 	std::fstream config;
@@ -101,6 +104,16 @@ bool Controlador::guardarConfig() {
 bool Controlador::cargarConfig() {
 	
 	bool resultado= false;
+	bool error= false;
+	std::fstream fallo;
+	fallo.open(NAME_FILE_FALLO , std::fstream::in);
+	
+	if(fallo.is_open()) {
+		error= true;
+		fallo.close();
+		remove(NAME_FILE_FALLO);		
+	}
+	
 	std::fstream config;
 			
 	std::fstream bitFieldFile;
@@ -137,32 +150,41 @@ bool Controlador::cargarConfig() {
 			char* ruta= new char[longitudRuta+1];
 			config.read(ruta,longitudRuta);
 			ruta[longitudRuta] = '\0';
-
+					
 			bitFieldFile.open(ruta,std::fstream::in);
+			
 			if(bitFieldFile.is_open()){
 				pathTorrent= ""; 
 				pathTorrent += PATH_CONFIG;
 				pathTorrent += nombreTorrent;
 				pathTorrent += "\0";
 				
- 				char* lengthBitField= new char[sizeof(uint32_t)];
- 				bitFieldFile.read(lengthBitField, sizeof(uint32_t));
- 				uint32_t length= *((uint32_t*)lengthBitField);
-				
-				BitField* bitField= new BitField(length);
-				uint32_t lengthBytes = bitField->getBytesLength();
- 				
- 				char* dataBitField = new char[bitField->getBytesLength()+1];
- 				bitFieldFile.read(dataBitField, lengthBytes);
- 				dataBitField[lengthBytes] = '\0';
-								
-				bitField->setData(dataBitField);
-				cliente->addTorrent(pathTorrent.c_str(), bitField);
-				
-				resultado = true;
-				delete[] lengthBitField;
-				bitFieldFile.close();	
-			}
+				if(!error){
+	 				char* lengthBitField= new char[sizeof(uint32_t)];
+	 				bitFieldFile.read(lengthBitField, sizeof(uint32_t));
+	 				uint32_t length= *((uint32_t*)lengthBitField);
+					
+					BitField* bitField= new BitField(length);
+					uint32_t lengthBytes = bitField->getBytesLength();
+	 				
+	 				char* dataBitField = new char[bitField->getBytesLength()+1];
+	 				bitFieldFile.read(dataBitField, lengthBytes);
+	 				dataBitField[lengthBytes] = '\0';
+									
+					bitField->setData(dataBitField);
+					cliente->addTorrent(pathTorrent.c_str(), bitField);
+					
+					resultado = true;
+					delete[] lengthBitField;
+					
+					bitFieldFile.close();
+					
+				} else {
+					bitFieldFile.close();
+					remove(ruta);
+					cliente->addTorrent(pathTorrent.c_str());
+				}					
+			} 
 			
 			delete[] longNombreTorrent;
 			delete[] longRuta;
@@ -177,8 +199,17 @@ bool Controlador::cargarConfig() {
 		}
 	} 		
 	
-	config.close();
+	config.close();	
+	
 	return resultado;
+}
+
+/*--------------------------------------------------------------------------*/
+void Controlador::crearAlertaFallo() {
+	
+	std::fstream fallo;
+	fallo.open(NAME_FILE_FALLO , std::fstream::out);
+	fallo.close();	
 }
 
 /*--------------------------------------------------------------------------*/
