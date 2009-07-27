@@ -180,6 +180,7 @@ void  Torrent::armarListaDeTrackers(const std::list<BeNode*> &listaLista){
 
 /****************************************************************************/
 BitField Torrent::getBitField(){
+     Lock lock(mutexPiezasPedidas);
      BitField copia(*bitField);
      int size = piezasEnProceso.size();
      while(size > 0){
@@ -421,12 +422,13 @@ uint32_t Torrent::rarestFirst() {
      }
 
      DownloadSlot *ds=NULL;
-
+     mutexPiezasPedidas.lock();
      for(uint32_t i=0;i<piezasEnProceso.size(); i++){
 	  ds = piezasEnProceso.popFront();
 	  vectorPiezas[ds->getPieceIndex()] = 0;
 	  piezasEnProceso.push(ds);
      }
+     mutexPiezasPedidas.unlock();
 
      uint32_t menor = -1;
      uint32_t posMenor = -1;
@@ -825,7 +827,9 @@ void Torrent::run(){
 
 			 // por cada bloque en proceso
 			 int size = piezasEnProceso.size();
+			 
 			 for(int i=0;i<size; i++){
+			      Lock lock(mutexPiezasPedidas);
 			      ds = piezasEnProceso.popFront();
 
 			      int j=listaPeersConectados.size();
@@ -875,8 +879,9 @@ void Torrent::run(){
 			      if(index == getSizeInPieces()-1){
 				   tamanio = getLastPieceSize();
 			      }
-
+			      mutexPiezasPedidas.lock();
 			      int contador = DownloadSlot::agregarSlots(piezasEnProceso, index, tamanio, REQUEST_SIZE_DEFAULT);
+			      mutexPiezasPedidas.unlock();
 			      piezasAVerificar[index] = contador;
 			 }
 			 else{
@@ -983,7 +988,9 @@ void Torrent::peerTransferFinished(Peer* peer, DownloadSlot* ds){
 	  return;
      }
      listaPeersActivos.remove(peer);
+     mutexPiezasPedidas.lock();
      listaPiezasPedidas.remove(ds);
+     mutexPiezasPedidas.unlock();
      listaPeersEspera.push_back(peer);
 
      delete ds;
@@ -1041,6 +1048,7 @@ void Torrent::anunciarPiezasPendientes(){
 /****************************************************************************/
 void Torrent::peerTransferCanceled(Peer* peer, DownloadSlot* ds){
      Lock lock(mutexPiezasAVerificar);
+     Lock lock2(mutexPiezasPedidas);
 
      partsRequested--;
      std::cout << "c la transferencia\n";
