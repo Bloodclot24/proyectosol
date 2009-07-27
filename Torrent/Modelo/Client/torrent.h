@@ -143,6 +143,9 @@ private:
      std::queue<uint32_t> colaPiezasAAnunciar; /**< Cola con las
 						* piezas que
 						* deboanunciar */
+     std::list<DownloadSlot*> listaPiezasPedidas; /**< Piezas que
+					      * fueron asignadas a
+					      * peers */
      
 
      int partsRequested;	/**< indica la cantidad de partes que

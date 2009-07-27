@@ -188,6 +188,14 @@ BitField Torrent::getBitField(){
 	  piezasEnProceso.push(ds);
 	  size--;
      }
+     size = listaPiezasPedidas.size();
+     while(size > 0){
+	  DownloadSlot* ds = listaPiezasPedidas.front();
+	  listaPiezasPedidas.pop_front();
+	  copia.setField(ds->getPieceIndex(),false);
+	  listaPiezasPedidas.push_back(ds);
+	  size--;
+     }
 
      return copia;
 }
@@ -550,7 +558,7 @@ int Torrent::announce(){
 //     TODO: req.addParam("left", getTotalSize);
      req.addParam(REQ_LEFT, this->client->intAstring(left));     req.addParam(REQ_COMPACT, "1");
      /* Cantidad de Peers a pedir */
-     req.addParam(REQ_NUMWANT, this->client->getPeersNumWant);
+     req.addParam(REQ_NUMWANT, this->client->getPeersNumWant());
 
   	std::cout << "--------------------------------" << std::endl;
 	 std::string tracker= announceUrlList.front();
@@ -837,6 +845,7 @@ void Torrent::run(){
 				   //se la asigno para enviar el request
 				   ds->setPeer(peer);
 				   std::cout << "envio un request\n";
+				   listaPiezasPedidas.push_back(ds);
 				   peer->sendRequest(ds);
 				   std::cout << "peers conectados despues del request "<< listaPeersConectados.size() <<"\n";
 				   /* Agrego al peer a la lista de activos */
@@ -974,6 +983,7 @@ void Torrent::peerTransferFinished(Peer* peer, DownloadSlot* ds){
 	  return;
      }
      listaPeersActivos.remove(peer);
+     listaPiezasPedidas.remove(ds);
      listaPeersEspera.push_back(peer);
 
      delete ds;
@@ -1043,6 +1053,7 @@ void Torrent::peerTransferCanceled(Peer* peer, DownloadSlot* ds){
 
      listaPeersEspera.push_back(peer);
      listaPeersActivos.remove(peer);
+     listaPiezasPedidas.remove(ds);
      requestCondition.signal();
 }
 
