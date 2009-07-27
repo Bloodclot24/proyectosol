@@ -179,10 +179,23 @@ void Peer::run(){
 	  
 	  /* Recibo el handshake del peer */
 	  colaDatos = datos = receptor->getColaDeDatos();
-	  for(int i = 0; i <49+19 && estado==PEER_CONNECTING;i++)
-	       datos->popFront();
-	  conectado = true;
-	  
+	  std::string cadena;
+	  for(int i = 0; i <49+19 && estado==PEER_CONNECTING;i++){
+	       cadena += datos->popFront();
+	  }
+	  if(cadena.length() == 49+19){
+	       char pstrlen = *cadena.c_str();
+	       if(pstrlen != 19 && cadena.compare(1, 19, "BitTorrent protocol") != 0 ){
+		    std::cout << "len o protocolo incorrectoooooooooooooooooooooooooooooooooooooooooooooooooo\n";
+		    conectado = false;
+		    stop();
+	       }
+	       else if(cadena.compare(19+8+1,20,hash)!= 0){
+		    std::cout << "HASSH ERRONEOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO\n";
+		    conectado = false;
+		    stop();
+	       }
+	  }
      }else{
 	  
 	  this->emisor = new ThreadEmisor(this->socket);
