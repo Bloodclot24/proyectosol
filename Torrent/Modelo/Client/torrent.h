@@ -1,6 +1,7 @@
 #ifndef TORRENT_H_INCLUDED
 #define TORRENT_H_INCLUDED
 
+
 class Peer;
 /** 
  * Estados posibles del Torrent
@@ -35,6 +36,15 @@ class Torrent;
 #include "deque.h"
 
 #define MAX_CONNECTED_PEERS 20
+#define REQ_HASH "info_hash"
+#define REQ_PEER_ID "peer_id"
+#define REQ_PORT "port"
+#define REQ_UPLOADED "uploaded"
+#define REQ_DOWNLOADED "downloaded"
+#define REQ_CORRUPT "corrupt"
+#define REQ_LEFT "left"
+#define REQ_COMPACT "compact"
+#define REQ_NUMWANT "numwant"
 
 /** 
  * Clase que modela cada Torrent que maneja el cliente.
