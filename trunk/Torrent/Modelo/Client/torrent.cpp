@@ -33,6 +33,7 @@ Torrent::Torrent(const char* fileName, Client* client,
 
      piezasVerificadas = 0;
      timeToAnnounce = 0;
+     downloaded = uploaded = corrupt = left = 0;
      
      ParserBencode parser;
      /* Decodifico todo el .torrent y obtengo una lista con toda la
@@ -183,7 +184,7 @@ BitField Torrent::getBitField(){
      int size = piezasEnProceso.size();
      while(size > 0){
 	  DownloadSlot* ds = piezasEnProceso.popFront();
-	  copia.setField(ds->getPieceIndex(),0);
+	  copia.setField(ds->getPieceIndex(),false);
 	  piezasEnProceso.push(ds);
 	  size--;
      }
@@ -538,9 +539,11 @@ int Torrent::announce(){
      /* Agrego algunos parametros al request */
      /* Hash que identifica al torrent */
 
+     left = getTotalSize()-pieceSize*piezasVerificadas;
+
      req.addParam(REQ_HASH, HttpRequest::UrlEncode(idHash));
      /* 20 bytes que nos identifican */ 
-     req.addParam(REQ_PEER_ID, CLIENT_ID); 
+     req.addParam(REQ_PEER_ID, CLIENT_ID);
      /* Anuncio el puerto que uso para escuchar conexiones */
      req.addParam(REQ_PORT, "1234");     req.addParam(REQ_UPLOADED, "0");
      req.addParam(REQ_DOWNLOADED, "0");  req.addParam(REQ_CORRUPT, "0");
@@ -960,6 +963,7 @@ void Torrent::peerUnchoked(Peer* peer){
 /****************************************************************************/
 void Torrent::peerTransferFinished(Peer* peer, DownloadSlot* ds){
      Lock lock(mutexPiezasAVerificar);
+     downloaded += pieceSize;
      std::cout << "Finalizo la transferencia\n";
      partsRequested--;
      piezasAVerificar[ds->getPieceIndex()] -= 1;
@@ -999,6 +1003,7 @@ void Torrent::verificarPiezasPendientes(){
 	  else{
 	       bitField->setField(pieza,false);
 	       piezasAVerificar[pieza] = -1;
+	       corrupt += pieceSize;
 	  }
 
      }
