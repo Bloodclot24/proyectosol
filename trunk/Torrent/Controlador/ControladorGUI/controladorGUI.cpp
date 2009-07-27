@@ -200,17 +200,18 @@ void ControladorGUI::stopFile(std::string file) {
 
 	if(cliente->stop(file.c_str())) {
 		
-		if((vista->getEstadoFile(file).compare("Seeding")) == 0)	
-			vista->complete(file);
-		else {
-			vista->stop(file);
+		std::string status= vista->getEstadoFile(file); 
+		
+		if((status.compare("Completed")) == 0)
+			this->completed--;							
+		else
 			this->downloading--;			
-		}
 			
 		this->active--;		
 		actualizarCantActividades();
-
 		actualizarPestanias(file);
+
+		vista->stop(file);
 
 	} else 
 		vista->agregarMessage("ERROR: No se pudo DETENER la descarga de "
@@ -322,7 +323,9 @@ void ControladorGUI::pause(std::string filename) {
 	
 	mutex.lock();	
 	
-	this->active--;		
+	if(active > 0)
+		this->active--;		
+	if(downloading > 0)
 	this->downloading--;
 	actualizarCantActividades();
 	
@@ -340,9 +343,12 @@ void ControladorGUI::pause(std::string filename) {
 void ControladorGUI::stop(std::string filename) {
 	
 	mutex.lock();
-	
-	this->active--;		
-	this->downloading--;		
+
+	if(active > 0)
+		this->active--;	
+	if(downloading > 0)
+		this->downloading--;
+			
 	actualizarCantActividades();
 	
 	vista->stop(filename);
@@ -360,7 +366,8 @@ void ControladorGUI::complete(std::string filename) {
 
 	mutex.lock();
 	
-	this->downloading--;		
+	if(downloading > 0)
+		this->downloading--;		
 	this->completed++;		
 	actualizarCantActividades();
 	
