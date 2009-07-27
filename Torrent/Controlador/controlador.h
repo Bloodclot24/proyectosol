@@ -19,6 +19,7 @@ class Controlador;
 #define NAME_FILE_BF "Torrent"
 #define EXTENSION_BITFIELD ".bf"
 #define NAME_FILE_CONFIG "Downloads/Config/config.sun"
+#define NAME_FILE_FALLO "Downloads/Config/fallo.sun"
 
 /****************************************************************************/
 /**
@@ -37,6 +38,8 @@ class Controlador {
 		bool guardarConfig();
 		bool cargarConfig();
 		std::string crearCopiaTorrent(std::string pathTorrent);
+		void crearAlertaFallo();
+				
 		virtual void mostrarAnnounceUrlTorrent(Torrent* torrent)= 0;
 
 		/*Preparar Datos para mostrar en la vista*/
@@ -155,17 +158,6 @@ class Controlador {
 		 * @param filename Nombre del archivo a buscar el orden.
 		 */ 
 		virtual uint32_t obtenerOrden(std::string filename)= 0;
-		
-		/********DialogDelay********/
-		/**
-		 * Muestra el dialogo de generacion de archivos.
-		 */ 
-		virtual void mostrarDialogDelay() {};
-
-		/**
-		 * Esconde el dialogo de generacion de archivos.
-		 */ 
-		virtual void esconderDialogDelay() {};
 		
 		/* MODELO -> VISTA 
 		 * =============== */

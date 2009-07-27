@@ -6,6 +6,7 @@ ControladorShell::ControladorShell() {
 	this->shell= new Shell(this);	
 	this->contadorOrden= 0;
 	cargarConfig();
+	crearAlertaFallo();
 }
 
 /*--------------------------------------------------------------------------*/

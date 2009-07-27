@@ -75,7 +75,7 @@ class VistaTorrent {
 		Glib::RefPtr<Gtk::ListStore> treeModel_transf;
 		ModelColumns_transf columns_transf;
 		  
-		Gtk::TreeModel::Row buscarRow_transf(std::string file);
+		bool buscarRow_transf(std::string file, Gtk::TreeModel::Row &row);
 		Glib::RefPtr<Gtk::TreeSelection> refTreeSelection;
 		void on_selection_changed();
 		
@@ -180,7 +180,6 @@ class VistaTorrent {
 		Glib::RefPtr<Gtk::ListStore> treeModel_messages;
 		ModelColumns_messages columns_messages;
 		
-		Gtk::Dialog* delayDialog;
 		Gtk::FileChooserDialog* fileChooserDialog;
 						
 	public:
@@ -467,22 +466,6 @@ class VistaTorrent {
 		 * Agrega un mensaje en el dialogo File Chooser.
 		 */	
 		void borrarMensaje();
-		
-		/**********DelayDialog**********/
-		/**
-		 * Corre el dialogo esperando la generacion de archivos.
-		 */	
-		void correrDelayDialog();
-
-		/**
-		 * Cierra el dialogo esperando la generacion de archivos.
-		 */	
-		void cerrarDelayDialog();
-		
-		/**
-		 * Indica si el dialogo es visible.
-		 */	
-		bool isVisibleDelayDialog();
 };
 
 /****************************************************************************/

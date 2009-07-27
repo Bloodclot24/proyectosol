@@ -123,12 +123,6 @@ class ControladorGUI: public Controlador {
 		 */ 
 		virtual uint32_t obtenerOrden(std::string filename);
 			
-		/********DialogDelay********/
-		/**
-		 * Muestra el dialogo de generacion de archivos.
-		 */ 
-		virtual void mostrarDialogDelay();
-			
 		/* MODELO -> VISTA 
 		 * =============== */		 
 		/********Files********/ 		 

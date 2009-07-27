@@ -9,6 +9,7 @@ ControladorGUI::ControladorGUI(): mutex() {
 	this->completed= 0;
 	this->active= 0;
 	cargarConfig();
+	crearAlertaFallo();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -122,13 +123,11 @@ bool ControladorGUI::addTorrent(std::string pathTorrent) {
 			
 			return true;
 		} else {
-			vista->cerrarDelayDialog();
 			vista->mostrarMensaje("Error al cargar el archivo");
 			return false;
 		}
 	}
 	
-	vista->cerrarDelayDialog();
 	if(!valido)
 		vista->mostrarMensaje("Debe seleccionar un archivo .torrent");
 	else
@@ -285,13 +284,6 @@ void ControladorGUI::limpiarPestanias() {
 uint32_t ControladorGUI::obtenerOrden(std::string filename) {
 	
 	return(vista->obtenerOrden(filename));
-}
-
-/*--------------------------------------------------------------------------*/
-/** DialogDelay**/
-void ControladorGUI::mostrarDialogDelay() {
-	
-	vista->correrDelayDialog();
 }
 
 /*--------------------------------------------------------------------------*/
