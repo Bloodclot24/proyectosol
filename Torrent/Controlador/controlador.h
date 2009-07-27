@@ -35,8 +35,8 @@ class Controlador {
 		Torrent* obtenerTorrent(std::string filename);
 				
 		/*Persistencia*/
-		bool guardarConfig();
-		bool cargarConfig();
+		void guardarConfig();
+		void cargarConfig();
 		std::string crearCopiaTorrent(std::string pathTorrent);
 		void crearAlertaFallo();
 				
