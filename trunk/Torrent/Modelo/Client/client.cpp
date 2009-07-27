@@ -188,6 +188,26 @@ const std::string Client::getMaxRequest(){
 }
 
 /*--------------------------------------------------------------------------*/
+Torrent* Client::buscarPorHash(std::string hash) {
+
+     std::list<Torrent*>::iterator it;
+     bool encontrado= false;
+
+     for(it= torrents.begin(); it!= torrents.end() && !encontrado; it++) {
+	  if(hash.compare((*it)->getIdHash()) == 0){
+	       encontrado = true;
+		    break;
+	  }
+     }
+
+     if(!encontrado)
+	  return NULL;
+     else
+	  return *(it);
+}
+
+
+/*--------------------------------------------------------------------------*/
 Client::~Client(){
 
      std::list<Torrent*>::iterator it;

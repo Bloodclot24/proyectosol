@@ -207,8 +207,14 @@ public:
 	     	return snumero;
 	}
 
+	/**
+	* Dado un hash obtiene el torrent correspondiente al mismo.
+	* @return el puntero al torrent correspondiente o NULL en
+	* caso de no encontrarlo.
+    */
+	Torrent* buscarPorHash(std::string hash);
 
-    /**
+	/**
      * Destruye el cliente y libera todos los torrents.
      */
     ~Client();
