@@ -1,4 +1,5 @@
 #include <gtkmm.h>
+#include <glibmm.h>
 #include "Controlador/ControladorShell/controladorShell.h"
 #include "Controlador/ControladorGUI/controladorGUI.h"
 
@@ -11,6 +12,7 @@ int main(int argc, char *argv[]) {
    		controlador= new ControladorShell();   
    		controlador->correr();
    	} else {
+		Glib::thread_init();
 		Gtk::Main kit(argc, argv);
    		controlador= new ControladorGUI();   
    		controlador->correr();

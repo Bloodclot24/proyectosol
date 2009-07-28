@@ -249,21 +249,21 @@ void ControladorGUI::modificarPeers(Torrent* torrent) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarPestanias(std::string filename) {
 	
-	mutex.lock();
+	//mutex.lock();
 	
 	Torrent* torrent= obtenerTorrent(filename);
 
 	modificarGeneral(torrent);
 	//modificarPeers(torrent);
 	
-	mutex.unlock();
+	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::limpiarPestanias() {
 	
 	//-General-
-	mutex.lock();
+	//mutex.lock();
 	
 	vista->modificarFilename("");
 	vista->modificarDownloaded("");
@@ -272,7 +272,7 @@ void ControladorGUI::limpiarPestanias() {
 	//-Peers-
 	vista->limpiarListaClientes();
 	
-	mutex.unlock();
+	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -289,7 +289,7 @@ uint32_t ControladorGUI::obtenerOrden(std::string filename) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::start(std::string filename) {
 	
-	mutex.lock();
+	//mutex.lock();
 		
 	this->active++;	
 	this->downloading++;
@@ -302,13 +302,13 @@ void ControladorGUI::start(std::string filename) {
 		modificarGeneral(torrent);
 	}
 	
-	mutex.unlock();
+	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::pause(std::string filename) {
 	
-	mutex.lock();	
+	//mutex.lock();	
 	
 	if(active > 0)
 		this->active--;		
@@ -323,13 +323,13 @@ void ControladorGUI::pause(std::string filename) {
 		modificarGeneral(torrent);
 	}
 	
-	mutex.unlock();
+	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::stop(std::string filename) {
 	
-	mutex.lock();
+	//mutex.lock();
 
 	if(active > 0)
 		this->active--;	
@@ -345,13 +345,13 @@ void ControladorGUI::stop(std::string filename) {
 		modificarGeneral(torrent);
 	}
 	
-	mutex.unlock();
+	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::complete(std::string filename) {
 
-	mutex.lock();
+	//mutex.lock();
 	
 	if(downloading > 0)
 		this->downloading--;		
@@ -365,13 +365,13 @@ void ControladorGUI::complete(std::string filename) {
 //		modificarGeneral(torrent);
 //	}
 	
-	mutex.unlock();
+	//mutex.unlock();
 }	
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::seed(std::string filename) {
 
-	mutex.lock();
+	//mutex.lock();
 	
 	this->downloading--;		
 	this->completed++;		
@@ -379,28 +379,31 @@ void ControladorGUI::seed(std::string filename) {
 
 	vista->seed(filename);
 	
-	mutex.unlock();			
+	//mutex.unlock();			
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarDone(std::string file, int done) {
 
-	mutex.lock();
+	//mutex.lock();
 	
 	vista->actualizarDone(file, done);
+	
+	vista->actualizarTransferencias();
+	
 	
 //	if(vista->archivoSeleccionado(file)) {
 //		Torrent* torrent= obtenerTorrent(file);
 //		modificarGeneral(torrent);
 //	}
 	
-	mutex.unlock();
+	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarStatus(std::string file, std::string status) {
 	
-	mutex.lock();
+	//mutex.lock();
 		
 	vista->actualizarStatus(file, status);
 	actualizarCantActividades();
@@ -410,14 +413,14 @@ void ControladorGUI::actualizarStatus(std::string file, std::string status) {
 //		modificarGeneral(torrent);
 //	}
 
-	mutex.unlock();
+	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarDownSpeed(std::string file, 
 		                                             uint32_t downSpeed) {
 	
-	mutex.lock();
+	//mutex.lock();
 	
 	vista->actualizarDownSpeed(file, obtenerVelocidad(downSpeed));
 
@@ -431,15 +434,18 @@ void ControladorGUI::actualizarDownSpeed(std::string file,
 	
 	vista->actualizarTime(file,obtenerETA(time));
 	
-	mutex.unlock();
+	vista->actualizarTransferencias();
+	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarUpSpeed(std::string file, uint32_t upSpeed) {	
 
-	mutex.lock();	
+	//mutex.lock();	
 	vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
-	mutex.unlock();
+	vista->actualizarTransferencias();
+	
+	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -456,11 +462,11 @@ void ControladorGUI::modificarStatusTracker(std::string name,
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::agregarMessage(std::string message) {
 	
-	mutex.lock();
+	//mutex.lock();
 	
 	//vista->agregarMessage(message);
 	
-	mutex.unlock();
+	//mutex.unlock();
 }
 
 /****************************************************************************/
