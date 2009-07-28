@@ -472,7 +472,7 @@ void VistaTorrent::start(std::string filename) {
 
 	Gtk::TreeModel::Row row;
 	if(buscarRow_transf(filename, row)) {
-		row[columns_transf.col_status]= "Downloading";
+		row[columns_transf.col_status]= "Waiting...";
 		row[columns_transf.col_icon]= Gdk::Pixbuf::create_from_file(
 		     getPathStatusIcon("Downloading"));
 		row[columns_transf.col_upSpeed]= "";

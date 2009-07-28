@@ -360,10 +360,10 @@ void ControladorGUI::complete(std::string filename) {
 	
 	vista->complete(filename);	
 
-//	if(vista->archivoSeleccionado(filename)) {
-//		Torrent* torrent= obtenerTorrent(filename);
-//		modificarGeneral(torrent);
-//	}
+	if(vista->archivoSeleccionado(filename)) {
+		Torrent* torrent= obtenerTorrent(filename);
+		modificarGeneral(torrent);
+	}
 	
 	//mutex.unlock();
 }	
@@ -390,8 +390,8 @@ void ControladorGUI::actualizarDone(std::string file, int done) {
 	vista->actualizarDone(file, done);
 	
 //	if(vista->archivoSeleccionado(file)) {
-//		Torrent* torrent= obtenerTorrent(file);
-//		modificarGeneral(torrent);
+//		std::string doneS= obtenerDownloaded(done);
+//		vista->modificarDownloaded(doneS);
 //	}
 	
 	//mutex.unlock();
@@ -405,10 +405,8 @@ void ControladorGUI::actualizarStatus(std::string file, std::string status) {
 	vista->actualizarStatus(file, status);
 	actualizarCantActividades();
 	
-//	if(vista->archivoSeleccionado(file)) {
-//		Torrent* torrent= obtenerTorrent(file);
-//		modificarGeneral(torrent);
-//	}
+//	if(vista->archivoSeleccionado(file))
+//		vista->modificarInformacion(status);
 
 	//mutex.unlock();
 }
