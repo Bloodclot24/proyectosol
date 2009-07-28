@@ -554,24 +554,17 @@ std::string VistaTorrent::getEstadoFile(std::string filename) {
 /*--------------------------------------------------------------------------*/
 bool VistaTorrent::archivoSeleccionado(std::string filename) {
 
-	//Gtk::TreeModel::Row row= buscarRow_transf(filename);
-
-	return false; /*refTreeSelection->is_selected(*row);*/
+	Gtk::TreeModel::Row row;
+	if(buscarRow_transf(filename, row))
+		return refTreeSelection->is_selected(*row);
+	return false;
 }
 
 /*--------------------------------------------------------------------------*/
 bool VistaTorrent::buscarRow_transf(std::string file, Gtk::TreeModel::Row &row) {
 
-	std::cout << "------------------------------------------" << std::endl;
-	std::cout << "MIRARRRRRRRRRRRRRRRRRRRRRRRRRRRR" << std::endl;
-	std::cout << "Nombre Buscado: " << file << std::endl;
-
 	typedef Gtk::TreeModel::Children type_children;
 	type_children children = treeModel_transf->children();
-
-	std::cout << "asigno children" << std::endl;
-	std::cout << "children begin" << children.begin() << std::endl;
-	std::cout << "children end" << children.end() << std::endl;
 
 	bool found= false;
 	for(type_children::iterator iter= children.begin(); !found&&
@@ -579,18 +572,19 @@ bool VistaTorrent::buscarRow_transf(std::string file, Gtk::TreeModel::Row &row) 
 
   		row= *iter;
 
-  		std::cout << "Nombre actual: " << row[columns_transf.col_file] << std::endl;
-
-
-  		if(row[columns_transf.col_file] == file) {
- 	 	   std::cout << "Si lo encontre!!!" << std::endl;
+  		if(row[columns_transf.col_file] == file)
   		   found= true;
-  		}
 	}
 
-	std::cout << "Encontrado: " << found << std::endl;
-
 	return(found);
+}
+
+/*--------------------------------------------------------------------------*/
+void VistaTorrent::actualizarTransferencias() {
+	
+	Glib::RefPtr<Gtk::Widget> transf= Glib::RefPtr<Gtk::Widget>::cast_static(treeView_transf);
+	
+	transf->queue_draw();
 }
 
 /*--------------------------------------------------------------------------*/
