@@ -860,6 +860,7 @@ void Torrent::run(){
 		    /* FIN, salgo y desconecto + seed */
 		    estado = SEEDING;
 		    controlador->complete(nombreTorrent);
+		    controlador->actualizarStatus(nombreTorrent, "Seeding");
 	       }
 	  }
 
