@@ -360,7 +360,7 @@ std::string Controlador::obtenerStatus(EstadoTorrent status) {
 	
 	switch(status) {
 		case STARTING: 
-			sStatus= "Waiting ...";
+			sStatus= "Waiting...";
 		break;
 		case STOPPING: 
 			sStatus= "Stopping";
