@@ -255,7 +255,7 @@
             <child>
               <object class="GtkTreeView" id="treeview_tranferences">
                 <property name="visible">True</property>
-                <property name="sensitive">False</property>
+                <property name="app_paintable">True</property>
                 <property name="can_focus">True</property>
                 <property name="has_focus">True</property>
                 <property name="is_focus">True</property>
