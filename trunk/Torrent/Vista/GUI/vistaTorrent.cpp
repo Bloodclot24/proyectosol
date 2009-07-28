@@ -407,8 +407,7 @@ void VistaTorrent::actualizarDone(std::string file, int done) {
 
 	Gtk::TreeModel::Row row;
 	if(buscarRow_transf(file, row))
-//		row[columns_transf.col_done]= done;
-		row.set_value(3,done);
+		row[columns_transf.col_done]= done;
 }
 
 /*--------------------------------------------------------------------------*/

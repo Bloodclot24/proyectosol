@@ -254,7 +254,7 @@ void ControladorGUI::actualizarPestanias(std::string filename) {
 	Torrent* torrent= obtenerTorrent(filename);
 
 	modificarGeneral(torrent);
-	//modificarPeers(torrent);
+	modificarPeers(torrent);
 	
 	//mutex.unlock();
 }
@@ -389,9 +389,6 @@ void ControladorGUI::actualizarDone(std::string file, int done) {
 	
 	vista->actualizarDone(file, done);
 	
-	vista->actualizarTransferencias();
-	
-	
 //	if(vista->archivoSeleccionado(file)) {
 //		Torrent* torrent= obtenerTorrent(file);
 //		modificarGeneral(torrent);
@@ -443,8 +440,6 @@ void ControladorGUI::actualizarUpSpeed(std::string file, uint32_t upSpeed) {
 
 	//mutex.lock();	
 	vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
-	vista->actualizarTransferencias();
-	
 	//mutex.unlock();
 }
 
@@ -454,7 +449,7 @@ void ControladorGUI::actualizarUpSpeed(std::string file, uint32_t upSpeed) {
 void ControladorGUI::modificarStatusTracker(std::string name,     
                                                         std::string status) {
 	
-//	vista->modificarStatusTracker(name, status);
+	vista->modificarStatusTracker(name, status);
 }		
 
 /*--------------------------------------------------------------------------*/
@@ -464,7 +459,7 @@ void ControladorGUI::agregarMessage(std::string message) {
 	
 	//mutex.lock();
 	
-	//vista->agregarMessage(message);
+	vista->agregarMessage(message);
 	
 	//mutex.unlock();
 }
