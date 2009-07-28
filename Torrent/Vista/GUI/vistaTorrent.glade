@@ -202,6 +202,7 @@
             <property name="vscrollbar_policy">automatic</property>
             <child>
               <object class="GtkTreeView" id="treeview_activities">
+                <property name="visible">True</property>
                 <property name="model">liststore_activities</property>
                 <child>
                   <object class="GtkTreeViewColumn" id="column_activities">
