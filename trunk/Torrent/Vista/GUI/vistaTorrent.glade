@@ -255,14 +255,6 @@
             <child>
               <object class="GtkTreeView" id="treeview_tranferences">
                 <property name="visible">True</property>
-                <property name="app_paintable">True</property>
-                <property name="can_focus">True</property>
-                <property name="has_focus">True</property>
-                <property name="is_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="has_default">True</property>
-                <property name="receives_default">True</property>
-                <property name="no_show_all">True</property>
                 <property name="model">liststore_tranferences</property>
                 <child>
                   <object class="GtkTreeViewColumn" id="column_file">
