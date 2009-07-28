@@ -629,20 +629,12 @@ int Torrent::announce(){
 
      elemento = (*dict)[DICT_INTERVAL];
      if(elemento != NULL){
-	  controlador->agregarMessage( "INFO: intervalo de requests -> " + client->intAstring(elemento->beInt));
 	  announceTime = elemento->beInt;
-
-	  std::cout << "TIEMMMMMMMMMMMMMMMPO de anuncio "<< timeToAnnounce << "\n";
      }
-
-     elemento = (*dict)[DICT_MININT];
-     if(elemento != NULL)
-	  controlador->agregarMessage("INFO: intervalo MINIMO de requests -> "+ client->intAstring(elemento->beInt));
 
      elemento = (*dict)[DICT_TRCKID];
 
      if(elemento != NULL) {
-	  controlador->agregarMessage( "INFO: ID TRACKER -> "+ elemento->beStr);
 	  std::string tracker= announceUrlList.front();
 
 	  if(!client->existeTracker(tracker)) {
@@ -653,17 +645,9 @@ int Torrent::announce(){
 
      }
 
-     elemento = (*dict)[DICT_COMPLETE];
-     if(elemento != NULL)
-	  controlador->agregarMessage("INFO: Cantidad de veces completo -> " + elemento->beInt );
-
-     elemento = (*dict)[DICT_INCOMPLETE];
-     if(elemento != NULL)
-	  controlador->agregarMessage("INFO: Cantidad de veces incompleto -> " + elemento->beInt );
 
      elemento = (*dict)[DICT_PEERS];
      if(elemento != NULL){
-	  controlador->agregarMessage( "INFO: Lista de PEERS -> " );
 
 	  for(size_t i=0;i<elemento->beStr.length();i+=6){
 	       std::string snumero;
@@ -675,7 +659,6 @@ int Torrent::announce(){
 	       snumero = cvz.str();
 
 	       //creo el nuevo peer con los datos obtenidos
-	       controlador->agregarMessage(snumero);
 
 	       Peer *peer = new						\
 		    Peer(snumero,					\
@@ -699,6 +682,8 @@ void Torrent::run(){
      //Logica. Basicamente pido datos.
      ProtocoloBitTorrent proto;
 
+     controlador->agregarMessage("Informacion: Comenzando el torrent " + nombreTorrent);
+     
      struct timeval tiempo;
      if(do_announce() < 0){
 	  controlador->agregarMessage("Error: no se pudo conectar con ningun tracker.");
@@ -1044,6 +1029,7 @@ int Torrent::stop(){
 
      if(this->estado != STOPPED && this->estado != STOPPING && this->estado != SEEDING){
 	  this->estado= STOPPING;
+     controlador->agregarMessage("Informacion: Frenando el torrent " + nombreTorrent);
 	  signal(); //por si se quedo trabado en el announce
 	  mutexEstado.unlock();
 	  return 1;
