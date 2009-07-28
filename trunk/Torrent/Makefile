@@ -68,8 +68,8 @@ endif
 
 # Agrego flags y libs de GTK+ de ser necesario.
 ifdef gtkmm
-CFLAGS += $(shell pkg-config --cflags gtkmm-2.4)
-LDFLAGS += $(shell pkg-config --libs gtkmm-2.4)
+CFLAGS += $(shell pkg-config --cflags gtkmm-2.4 gthread-2.0)
+LDFLAGS += $(shell pkg-config --libs gtkmm-2.4 gthread-2.0)
 endif
 
 # Linkeo con libm de ser necesario.

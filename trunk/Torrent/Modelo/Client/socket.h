@@ -25,6 +25,7 @@ private:
      int error;			/**< Codigo del ultimo error */
      std::string ultimoError;	/**< Descripcion del ultimo error */
      struct hostent *host;	/**< El host */
+     unsigned int timeout;
 
      /** 
       * Crea un Socket a partir de un fileDescriptor.
@@ -35,6 +36,7 @@ private:
 	  s = fd;
 	  host=NULL;
 	  error = 0;
+	  timeout=0;
      }
 
      /** 

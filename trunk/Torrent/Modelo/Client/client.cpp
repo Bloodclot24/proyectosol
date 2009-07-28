@@ -7,7 +7,7 @@ Client::Client(Controlador* controlador): trackersIds() {
 	this->puertoPorDefecto = PORT_IN;
 	this->cantidadDePeers = PEERS_NUM_WANT;
 	this->socket = new Socket("localhost",PORT_IN);
-	this->threadAceptor = new ThreadAceptor(this->socket);
+	this->threadAceptor = new ThreadAceptor(this->socket, this);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -206,6 +206,10 @@ Torrent* Client::buscarPorHash(std::string hash) {
 	  return *(it);
 }
 
+/*--------------------------------------------------------------------------*/
+void Client::descartarPeer(Peer* peer){
+     delete peer;
+}
 
 /*--------------------------------------------------------------------------*/
 Client::~Client(){

@@ -6,18 +6,9 @@
 
 /** 
   * Cola bloqueante. Es una cola threadsafe que se utiliza para pasar
-  * datos entre dos threads distintos. Para utilizarla, se debe
-  * primero llamar al metodo hold(). A partir de este momento, se
-  * pueden utilizar las operaciones proporcionadas. Al dejar de
-  * utilizarla se debe llamar al metodo release(). Es importante notar
-  * que este ultimo, debe ser llamado al menos la misma cantidad de
-  * veces que hold(). Si esto no se hace, el objeto no puede ser
-  * destruido y el destructor se quedara esperando hasta que se cumpla
-  * la condicion.  Inicialmente la cola se encuantra en el estado
-  * 'valido'. Solo pasa a ser invalida cuando se invoca al destructor,
-  * en cuyo caso, las operaciones normales de la cola retornan
-  * inmediatamente.  Adicionalmente, una vez llamado al metodo
-  * release(), la cola puede dejar de ser valida automaticamente.
+  * datos entre dos threads distintos. Cuando se quieran sacar datos
+  * de la cola, si esta vacia se bloquea y espera o bien a que alguien
+  * ponga datosen la cola o a que se llame al destructor.
   */
 template <class t>
 class Deque{
@@ -26,20 +17,14 @@ private:
      CVariable condition;
      std::deque<t> queue;
      bool valida;
-
-     Mutex holdMutex;
-     CVariable holdCondition;
-
-     int holdCounter;
      
 public:
      /** 
       * Crea una cola bloqueante. 
       * @return 
       */
-     Deque<t>():condition(&mutex),holdCondition(&holdMutex){
+     Deque<t>():condition(&mutex){
 	  valida = true;
-	  holdCounter = 0;
      }
 
      /** 
@@ -108,35 +93,6 @@ public:
 	  return tamanio;
      }
 
-     /** 
-      * Avisa a la cola que va a ser utilizada.
-      * 
-      * @return true si se tuvo exito, o false si falla.
-      */
-//      bool hold(){
-// 	  bool value = false;
-// 	  mutex.lock();
-// 	  holdMutex.lock();
-// 	  if(valida){
-// 	       value = true;
-// 	       holdCounter++;
-// 	  }
-// 	  holdMutex.unlock();
-// 	  mutex.unlock();
-// 	  return value;
-//      }
-
-     /** 
-      * Avisa a la cola que se deja de utilizar.
-      */
-//      void release(){
-// 	  holdMutex.lock();
-// 	  if(holdCounter > 0){
-// 	       holdCounter--;
-// 	       holdCondition.signal();
-// 	  }
-// 	  holdMutex.unlock();  
-//      }
 
      /** 
       * Indica si es o no valida la cola.
@@ -166,17 +122,10 @@ public:
       */
      ~Deque(){
 	  mutex.lock();
-//	  holdMutex.lock();
 	  queue.clear();
 	  valida=false;
 	  condition.signal();
 	  mutex.unlock();
-	  ///sleep(2);
-//	  while(holdCounter > 0)
-//	       holdCondition.wait();
-	 
-//	  holdMutex.unlock();
-	 
      }
      
 };

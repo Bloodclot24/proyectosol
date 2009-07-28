@@ -211,8 +211,16 @@ public:
 	* Dado un hash obtiene el torrent correspondiente al mismo.
 	* @return el puntero al torrent correspondiente o NULL en
 	* caso de no encontrarlo.
-    */
+	*/
 	Torrent* buscarPorHash(std::string hash);
+
+	/** 
+	 * Elimina un peer recibido externamente por el thread aceptor.
+	 * Cuando el peer recibido es invalido, llama aesta funcion.
+	 * 
+	 * @param peer El peer a aeliminar.
+	 */
+	void descartarPeer(Peer* peer);
 
 	/**
      * Destruye el cliente y libera todos los torrents.

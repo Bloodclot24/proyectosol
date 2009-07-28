@@ -576,6 +576,13 @@ public:
     	 return this->idHash;
      }
 
+     /** 
+      * Agrega un peer externo a la lista de peers en espera.
+      * 
+      * @param peer El peer a agregar.
+      */
+     void agregarPeerExterno(Peer* peer);
+
      /**
       * Destruye al Torrent y libera los recursos asociados.
       * Llama a stop().

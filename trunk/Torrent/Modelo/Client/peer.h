@@ -15,6 +15,7 @@ enum EstadoPeer {PEER_WAITING, PEER_CONNECTING, PEER_RUNNING, PEER_STOPPING, PEE
 
 #include "downloadSlot.h"
 #include "deque.h"
+#include "client.h"
 
 
 /** 
@@ -23,6 +24,7 @@ enum EstadoPeer {PEER_WAITING, PEER_CONNECTING, PEER_RUNNING, PEER_STOPPING, PEE
  */
 class Peer:public Thread{
 private:
+     Client *cliente;
      Socket *socket;
      ThreadEmisor *emisor;
      ThreadReceptor *receptor;
@@ -104,7 +106,7 @@ public:
       * 
       * @see Socket
       */
-     Peer(Socket* socket);
+     Peer(Socket* socket, Client* client);
 	 
      /** 
       * Devuelve un bitField con las piezas que provee este peer.

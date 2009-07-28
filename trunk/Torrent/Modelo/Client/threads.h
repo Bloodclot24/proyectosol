@@ -91,6 +91,13 @@ public:
       * Mutex asociado.
       */
      void wait(){ pthread_cond_wait(&condition, &(mutex->mutex)); }
+
+     void timedWait(int sec){ 
+	  struct timespec ts;
+	  clock_gettime(CLOCK_REALTIME, &ts);
+	  ts.tv_sec += sec;
+	  pthread_cond_timedwait(&condition, &(mutex->mutex), &ts);
+     }
      
      /** 
       * Pide a la CVariable que emita un signal().  Para que funcione
@@ -138,7 +145,13 @@ public:
 
 
 static void dummyHandler(int signo){
-     std::cout << "señal aca esta\n";
+/*      std::cerr << "señal aca esta...................................................................................\n"; */
+/*      if(signo == SIGUSR1) */
+/* 	  std::cerr << "SIGUSR1\n"; */
+/*      else if(signo == SIGALRM) */
+/* 	  std::cerr << "SIGALRM\n"; */
+/*      else */
+/* 	  std::cerr << "SIG???????????????????????\n"; */
      return;
 }
 
@@ -192,13 +205,15 @@ protected:
      /** 
       * Crea un nuevo Thread detenido.
       */
-     Thread(){ corriendo = false; thread = 0; 
+     Thread(){ corriendo = false; thread = 0;
 	  memset(&actions, 0, sizeof(actions));
 	  sigemptyset(&actions.sa_mask);
 	  actions.sa_flags = 0;
 	  actions.sa_handler = &dummyHandler;
 	  if(sigaction(SIGUSR1,&actions,NULL)==0)
 	       signalable=1;
+	  if(sigaction(SIGALRM, &actions,NULL)==0)
+	       std::cout << "seeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee \n";
      }
      
      /** 

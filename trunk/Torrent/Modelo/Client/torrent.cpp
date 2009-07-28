@@ -555,26 +555,21 @@ int Torrent::announce(){
      /* 20 bytes que nos identifican */
      req.addParam(REQ_PEER_ID, this->client->getClientId());
      /* Anuncio el puerto que uso para escuchar conexiones */
-     req.addParam(REQ_PORT, this->client->getPortIn() );     req.addParam(REQ_UPLOADED, this->client->intAstring(uploaded));
-     req.addParam(REQ_DOWNLOADED, this->client->intAstring(downloaded));  req.addParam(REQ_CORRUPT, this->client->intAstring(corrupt));
-//     TODO: req.addParam("left", getTotalSize);
-     req.addParam(REQ_LEFT, this->client->intAstring(left));     req.addParam(REQ_COMPACT, "1");
+     req.addParam(REQ_PORT, this->client->getPortIn() );     
+     req.addParam(REQ_UPLOADED, this->client->intAstring(uploaded));
+     req.addParam(REQ_DOWNLOADED, this->client->intAstring(downloaded));  
+     req.addParam(REQ_CORRUPT, this->client->intAstring(corrupt));
+     req.addParam(REQ_LEFT, this->client->intAstring(left));     
+     req.addParam(REQ_COMPACT, "1");
      /* Cantidad de Peers a pedir */
      req.addParam(REQ_NUMWANT, this->client->getPeersNumWant());
 
-  	std::cout << "--------------------------------" << std::endl;
-	 std::string tracker= announceUrlList.front();
+     
+     std::string tracker= announceUrlList.front();
 
-	 std::cout << "Conectando Tracker: " << tracker << std::endl;
-
-	 if(client->existeTracker(tracker)) {
-	 	std::cout << "Existe" << std::endl;
-	   	req.addParam("tracker id", client->trackerId(tracker));
-	 }
-
-	std::cout << "--------------------------------" << std::endl;
-
-
+     if(client->existeTracker(tracker)) {
+	  req.addParam("tracker id", client->trackerId(tracker));
+     }
 
      req.addParam("event", "started");
 
@@ -634,7 +629,7 @@ int Torrent::announce(){
 
      elemento = (*dict)[DICT_INTERVAL];
      if(elemento != NULL){
-	  controlador->agregarMessage( "INFO: intervalo de requests -> " + elemento->beInt);
+	  controlador->agregarMessage( "INFO: intervalo de requests -> " + client->intAstring(elemento->beInt));
 	  announceTime = elemento->beInt;
 
 	  std::cout << "TIEMMMMMMMMMMMMMMMPO de anuncio "<< timeToAnnounce << "\n";
@@ -642,29 +637,21 @@ int Torrent::announce(){
 
      elemento = (*dict)[DICT_MININT];
      if(elemento != NULL)
-	   controlador->agregarMessage("INFO: intervalo MINIMO de requests -> "+ elemento->beInt);
+	  controlador->agregarMessage("INFO: intervalo MINIMO de requests -> "+ client->intAstring(elemento->beInt));
 
      elemento = (*dict)[DICT_TRCKID];
-     std::cout << "--------------------------------" << std::endl;
-     std::cout << "Guardando Tracker" << std::endl;
 
      if(elemento != NULL) {
 	  controlador->agregarMessage( "INFO: ID TRACKER -> "+ elemento->beStr);
 	  std::string tracker= announceUrlList.front();
 
-	  std::cout << "Tracker: " << tracker << std::endl;
-
 	  if(!client->existeTracker(tracker)) {
-	       std::cout << "No existe" << std::endl;
 	       client->addTracker(tracker, elemento->beStr);
 	  } else {
-	       std::cout << "Existe" << std::endl;
 	       client->modificarIdTracker(tracker,	elemento->beStr);
 	  }
 
      }
-
-     std::cout << "------------------------------------" << std::endl;
 
      elemento = (*dict)[DICT_COMPLETE];
      if(elemento != NULL)
@@ -712,13 +699,6 @@ void Torrent::run(){
      //Logica. Basicamente pido datos.
      ProtocoloBitTorrent proto;
 
-//      Peer *peer = new							\
-// 	  Peer("127.0.0.1",							\
-// 	       6881,	\
-// 	       this);
-//      agregarPeer(peer);
-
-//      if(0){}
      struct timeval tiempo;
      if(do_announce() < 0){
 	  controlador->agregarMessage("Error: no se pudo conectar con ningun tracker.");
@@ -738,14 +718,15 @@ void Torrent::run(){
 	       mutexEstado.unlock();
 	       return;
 	  }
-	  else
+	  else{
 	       estado = DOWNLOADING;
+	       controlador->actualizarStatus(nombreTorrent, "Downloading");
+	  }
 	  mutexEstado.unlock();
 
 
 	  while(getEstado() == DOWNLOADING){
 	       timeToAnnounce--;
-	       std::cout << "estado downloading\n";
 
 	       mutexPiezasAVerificar.lock();
 
@@ -753,7 +734,6 @@ void Torrent::run(){
 	       velBajada = 0;
 
 	       /* Si habia peers en espera, los vuelvo a insertar */
-	       std::cout << "cantidad en espera: " << listaPeersEspera.size() << "\n";
 	       while(listaPeersEspera.size()>0){
 		    Peer* peer = listaPeersEspera.front();
 		    listaPeersEspera.pop_front();
@@ -767,7 +747,6 @@ void Torrent::run(){
 	       mutexPiezasAVerificar.unlock();
 
 	       int cantidad = listaPeersConectados.size();
-	       std::cout << "cantidad conectados: " << cantidad << "\n";
 	       while(cantidad>0){
 		    Peer* peer = listaPeersConectados.front();
 		    listaPeersConectados.pop_front();
@@ -809,7 +788,7 @@ void Torrent::run(){
 	       /* Anuncio cualquier pieza que pueda estar pendiente */
 	       anunciarPiezasPendientes();
 
-	       std::cout << "cantidad conectados ahora: " << listaPeersConectados.size() << "\n";
+	       std::cout << "cantidad activos: " << listaPeersActivos.size() << "\n";
 
 	       std::cout << "En proceso -------------->" << partsRequested << "\n";
 
@@ -848,10 +827,8 @@ void Torrent::run(){
 			      if(peer != NULL){
 				   //se la asigno para enviar el request
 				   ds->setPeer(peer);
-				   std::cout << "envio un request\n";
 				   listaPiezasPedidas.push_back(ds);
 				   peer->sendRequest(ds);
-				   std::cout << "peers conectados despues del request "<< listaPeersConectados.size() <<"\n";
 				   /* Agrego al peer a la lista de activos */
 				   listaPeersActivos.push_back(peer);
 				   size--;
@@ -888,8 +865,8 @@ void Torrent::run(){
 			      //no hay mas piezas que podamos pedir
 			      //hay que esperar
 			      //dormir = true;
-			      sleep(1);
-			      std::cout << "sleep 5\n";
+			      Lock lock(requestMutex);
+			      requestCondition.timedWait(3);
 			 }
 		    }
 	       }
@@ -901,7 +878,6 @@ void Torrent::run(){
 	       }
 	  }
 
-	  std::cout << "Stopping\n";
 	  if(getEstado() == STOPPING){
 	       cleanup();
 	  }
@@ -910,38 +886,31 @@ void Torrent::run(){
 
 /****************************************************************************/
 void Torrent::cleanup(){
-     std::cout << "borrando peers " << listaPeersActivos.size() << "\n";
 
      while(listaPeersActivos.size()>0){
 	  Peer* peer = listaPeersActivos.front();
 	  listaPeersActivos.pop_front();
-	  std::cout << "peer " << peer << "\n";
 	  delete peer;
      }
-     std::cout << "borrando peers " << listaPeersEspera.size() << "\n";
      while(listaPeersEspera.size()>0){
 	  Peer* peer = listaPeersEspera.front();
-	  listaPeersEspera.pop_front();		    std::cout << "peer " << peer << "\n";
+	  listaPeersEspera.pop_front();
 	  delete peer;
      }
-     std::cout << "borrando peers " << listaPeersConectados.size() << "\n";
      int cantidad = listaPeersConectados.size();
      while(cantidad>0){
 	  Peer* peer = listaPeersConectados.front();
 	  listaPeersConectados.pop_front();
-	  std::cout << "peer " << peer << "\n";
 	  delete peer;
 	  cantidad--;
      }
 
-     std::cout << "borando restantes\n";
      while(listaPeers.size()>0){
 	  Peer* peer = listaPeers.front();
-	  listaPeers.pop_front();		    std::cout << "peer " << peer << "\n";
+	  listaPeers.pop_front();
 	  delete peer;
      }
 
-     std::cout << "fin borrando peers\n";
      mutexEstado.lock();
      estado = STOPPED;
      mutexEstado.unlock();
@@ -959,7 +928,6 @@ void Torrent::peerChoked(Peer* peer){
      Lock lock(requestMutex);
      peer->setInterested(true);
      peer->setChoke(false);
-     std::cout << "CHOKEEEEEEEEEEEE+++++++++\n";
      //Aviso que ya hay un nuevo Peer en la cola, por si el run()
      //estaba esperando
      requestCondition.signal();
@@ -978,13 +946,11 @@ void Torrent::peerUnchoked(Peer* peer){
 void Torrent::peerTransferFinished(Peer* peer, DownloadSlot* ds){
      Lock lock(mutexPiezasAVerificar);
      downloaded += pieceSize;
-     std::cout << "Finalizo la transferencia\n";
      partsRequested--;
      piezasAVerificar[ds->getPieceIndex()] -= 1;
      if(piezasAVerificar[ds->getPieceIndex()]==0)
 	  listaPiezasAVerificar.push_back(ds->getPieceIndex());
      if(getEstado() != DOWNLOADING){
-	  std::cout << "GUARRRRRRRRRRRRRDAAAAAAAA finish despues de stop \n";
 	  return;
      }
      listaPeersActivos.remove(peer);
@@ -1004,18 +970,11 @@ void Torrent::verificarPiezasPendientes(){
      while(listaPiezasAVerificar.size() > 0){
 	  uint32_t pieza = listaPiezasAVerificar.front();
 	  listaPiezasAVerificar.pop_front();
-	  std::cout << "verificando " << pieza << "\n";
 
 	  if(validarPieza(pieza)){
 	       piezasVerificadas++;
 	       bitField->setField(pieza,true);
 	       colaPiezasAAnunciar.push(pieza);
-// 	       if(piezasVerificadas >= sizeInPieces){
-// 		    mutexEstado.lock();
-// 		    estado = SEEDING;
-// 		    controlador->complete(nombreTorrent);
-// 		    mutexEstado.unlock();
-// 	       }
 	  }
 	  else{
 	       bitField->setField(pieza,false);
@@ -1033,7 +992,6 @@ void Torrent::anunciarPiezasPendientes(){
 	  uint32_t pieza = colaPiezasAAnunciar.front();
 	  colaPiezasAAnunciar.pop();
 	  std::list<Peer*>::iterator it;
-	  std::cout << "anuncio pieza " << pieza << "\n";
 	  for(it=listaPeersConectados.begin();it!=listaPeersConectados.end();it++)
 	       (*it)->have(pieza);
 
@@ -1051,11 +1009,9 @@ void Torrent::peerTransferCanceled(Peer* peer, DownloadSlot* ds){
      Lock lock2(mutexPiezasPedidas);
 
      partsRequested--;
-     std::cout << "c la transferencia\n";
      piezasEnProceso.push(ds);
 
      if(getEstado() != DOWNLOADING){
-	  std::cout << "GUARRRRRRRRRRRRRDAAAAAAAA cancel despues de stop \n";
 	  return;
      }
 
@@ -1068,7 +1024,6 @@ void Torrent::peerTransferCanceled(Peer* peer, DownloadSlot* ds){
 /****************************************************************************/
 Torrent::~Torrent(){
 
-     std::cout << "Destruyendooooooooooooooooooooooo\n";
      while(getEstado() != STOPPED)
 	  stop();
      join();
@@ -1128,10 +1083,26 @@ double Torrent::getPorcentaje(){
 void Torrent::abortRequest(DownloadSlot *ds){
      Lock lock(mutexPiezasAVerificar);
      partsRequested--;
-     std::cout << "se aborto la transferencia\n";
      piezasEnProceso.push(ds);
      requestCondition.signal();
 }
+
+/****************************************************************************/
+
+void Torrent::agregarPeerExterno(Peer* peer){
+     Lock lock(mutexPiezasAVerificar);
+     Lock lock2(mutexPiezasPedidas);
+
+     if(getEstado() != DOWNLOADING){
+	  std::cout << "GUARRRRRRRRRRRRRDAAAAAAAAX2555, agregar despues de stop \n";
+	  delete peer;
+	  return;
+     }
+
+     listaPeersEspera.push_back(peer);
+     requestCondition.signal();
+}
+
 
 /****************************************************************************/
 std::list<std::string> Torrent::getListaPeers(){
@@ -1143,12 +1114,10 @@ std::list<std::string> Torrent::getListaPeers(){
 
 /****************************************************************************/
 uint32_t Torrent::getVelocidadSubida() {
-
 	return velSubida;
 }
 
 /****************************************************************************/
 uint32_t Torrent::getVelocidadBajada() {
-
 	return velBajada;
 }

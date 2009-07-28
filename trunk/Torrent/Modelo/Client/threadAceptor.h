@@ -6,6 +6,7 @@ class  ThreadAceptor;
 #include "socket.h"
 #include "threads.h"
 #include "peer.h"
+#include "client.h"
 
 /** 
  * Clase que en un Thread aparte escucha conexiones del exterior y las
@@ -15,6 +16,7 @@ class ThreadAceptor:public Thread{
 private:
      Socket *socket;		/**< El socket por el cual se escuchan
 				 * las conexiones entrantes */
+     Client* cliente;
      
 public:
      /** 
@@ -22,7 +24,7 @@ public:
       * 
       * @param socket El socket para escuchar conexiones.
       */
-     ThreadAceptor(Socket *socket);
+     ThreadAceptor(Socket *socket, Client* cliente);
 
      /** 
       * Comienza el thread.

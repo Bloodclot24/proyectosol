@@ -1,7 +1,8 @@
 #include "threadAceptor.h"
 
-ThreadAceptor::ThreadAceptor(Socket *socket){
+ThreadAceptor::ThreadAceptor(Socket *socket, Client *cliente){
      this->socket = socket;
+     this->cliente = cliente;
 }
 
 void ThreadAceptor::comenzar(){
@@ -21,7 +22,7 @@ void ThreadAceptor::run(){
 	  Socket *sck=NULL;
 	  sck = socket->aceptar();  //Acepto el peer
 	  if(sck){
-	       Peer *peer = new Peer(sck); //creo el peer
+	       Peer *peer = new Peer(sck,cliente); //creo el peer
 	       peer->start(""); //comienza el procesamiento
 	  }
      }
