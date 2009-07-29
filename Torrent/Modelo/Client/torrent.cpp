@@ -157,6 +157,9 @@ Torrent::Torrent(const char* fileName, Client* client,
      else{
 	  valido = false;
      }
+     
+     this->velSubida= 0;
+     this->velBajada= 0;
 }
 
 /****************************************************************************/

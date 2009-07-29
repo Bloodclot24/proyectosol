@@ -279,6 +279,8 @@ class Controlador {
 		 */ 
 		virtual void agregarMessage(std::string message)= 0;
 		
+		virtual void comenzarARefrescarPantalla() {};	
+		
 };
 
 /****************************************************************************/

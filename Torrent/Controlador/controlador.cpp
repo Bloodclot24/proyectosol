@@ -328,7 +328,7 @@ std::string Controlador::obtenerETA(uint32_t time) {
 	int hrs= (time/3600)%24;
 	int dias= (time/3600)/24;
 	
-	std::string timeS;
+	std::string timeS= "";
 	
 	if(dias > 0) {
 		timeS+= intToString(dias);
