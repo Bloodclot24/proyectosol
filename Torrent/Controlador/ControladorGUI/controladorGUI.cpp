@@ -286,11 +286,7 @@ void ControladorGUI::modificarStatusTracker(std::string name,
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::agregarMessage(std::string message) {
 	
-	//mutex.lock();
-	
 	vista->agregarMessage(message);
-	
-	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -323,6 +319,12 @@ void ControladorGUI::actualizarPantalla() {
 			vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
 			vista->actualizarDownSpeed(file, obtenerVelocidad(downSpeed));
 			vista->actualizarTime(file,obtenerETA(time));
+			
+			if(vista->archivoSeleccionado(file)) {
+				vista->modificarDownloaded(obtenerDownloaded(done));
+				vista->modificarInformacion(status);
+				modificarPeers(*it);
+			}
 			
 			this->all++;
 			

@@ -4,7 +4,13 @@
 class Refrescador;
 #include "../../Controlador/ControladorGUI/controladorGUI.h"
 
+#define TIEMPO 1
+
 /****************************************************************************/
+/**
+ * Es el encargo de refrescar la pantalla del usuario cada un determinado
+ * tiempo.
+ */
 class Refrescador: public Thread {
 	
 	private:
