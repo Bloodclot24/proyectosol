@@ -289,17 +289,7 @@ class VistaTorrent {
 		 * @return El estado del archivo.
 		 */ 
 		std::string getEstadoFile(std::string filename);	
-		
-		/**
-		 * Indica si la fila del archivo pasada por parametro
-		 * es la seleccionada.
-		 * 
-		 * @param filename Nombre del archivo.
-		 * @return TRUE si el archivo es el de la fila actual 
-		 * seleccionada.
-		 */ 
-		bool archivoSeleccionado(std::string filename);
-		
+	
 		/**********Panel Actividades**********/
 		/**
 		 * Modifica la cantidad de archivos totales(All) en 
