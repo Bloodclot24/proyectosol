@@ -424,13 +424,15 @@ void Peer::finish(){
 
 
 uint32_t Peer::getVelBajada(){
-	
-	return socket->getVelBajada();
+     if(socket)
+	  return socket->getVelBajada();
+     else return 0;
 }
 	
 uint32_t Peer::getVelSubida(){
-
-	return socket->getVelSubida();	
+     if(socket)
+	  return socket->getVelSubida();	
+     return 0;
 }
 
 Peer::~Peer(){

@@ -733,8 +733,11 @@ void Torrent::run(){
 	       while(cantidad>0){
 		    Peer* peer = listaPeersConectados.front();
 		    listaPeersConectados.pop_front();
-		    if(peer->conectado)
+		    if(peer->conectado){
 			 listaPeersConectados.push_back(peer);
+			 velBajada += peer->getVelBajada();
+			 velSubida += peer->getVelSubida();
+		    }
 		    else delete peer; //eliminarPeer(peer);
 		    cantidad--;
 	       }
