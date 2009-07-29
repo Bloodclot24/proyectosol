@@ -15,7 +15,7 @@ void Refrescador::run() {
 	while(corriendo) {
 		
 		controlador->actualizarPantalla();	
-		sleep(10);		
+		sleep(TIEMPO);		
 	}
 }
 

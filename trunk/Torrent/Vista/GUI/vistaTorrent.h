@@ -300,8 +300,6 @@ class VistaTorrent {
 		 */ 
 		bool archivoSeleccionado(std::string filename);
 		
-		void actualizarTransferencias();
-		
 		/**********Panel Actividades**********/
 		/**
 		 * Modifica la cantidad de archivos totales(All) en 

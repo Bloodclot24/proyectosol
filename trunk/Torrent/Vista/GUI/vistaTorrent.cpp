@@ -580,14 +580,6 @@ bool VistaTorrent::buscarRow_transf(std::string file, Gtk::TreeModel::Row &row) 
 }
 
 /*--------------------------------------------------------------------------*/
-void VistaTorrent::actualizarTransferencias() {
-	
-	Glib::RefPtr<Gtk::Widget> transf= Glib::RefPtr<Gtk::Widget>::cast_static(treeView_transf);
-	
-	transf->queue_draw();
-}
-
-/*--------------------------------------------------------------------------*/
 /**Panel Actividades**/
 void VistaTorrent::agregarActividad(std::string activity) {
 
