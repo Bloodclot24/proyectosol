@@ -75,7 +75,7 @@ public:
 	       socket->cerrar();
 	       while(!colaDeEspera.empty()){
 		    Mensaje *mensaje = colaDeEspera.popFront();
-		    //delete mensaje;
+		    delete mensaje;
 	       }
 	       colaDeEspera.invalidate();
 	  }

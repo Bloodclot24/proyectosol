@@ -153,7 +153,7 @@ void Peer::run(){
 	  this->emisor = new ThreadEmisor(this->socket);
 	  this->receptor = new ThreadReceptor(this->socket,false);
 	  
-//	  socket->setTimeout(3,0);
+//	  socket->setTimeout(30,0);
 	  socket->conectar();
 	  if(!socket->esValido()){
 	       stop();
@@ -190,12 +190,10 @@ void Peer::run(){
 	  if(cadena.length() == 49+19){
 	       char pstrlen = *cadena.c_str();
 	       if(pstrlen != 19 && cadena.compare(1, 19, "BitTorrent protocol") != 0 ){
-		    std::cout << "len o protocolo incorrectoooooooooooooooooooooooooooooooooooooooooooooooooo\n";
 		    conectado = false;
 		    stop();
 	       }
 	       else if(cadena.compare(19+8+1,20,hash)!= 0){
-		    std::cout << "HASSH ERRONEOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO\n";
 		    conectado = false;
 		    stop();
 	       }
@@ -295,7 +293,6 @@ void Peer::run(){
 		    bitField->setField(respuesta->index, 1);
 		    break;
 	       case BITFIELD:
-		    std::cout << "bitfield\n";
 		    if(respuesta->length == torrent->getBitField().getBytesLength()) {
 			 uint32_t i;
 			 for(i=0; i<(respuesta->length) && estado == PEER_RUNNING;i++)
@@ -303,7 +300,6 @@ void Peer::run(){
 			 
 			 if(i < respuesta->length){
 			      estado = PEER_STOPPING;
-			      std::cout << "FRENANDO BITFIELDDDDDDDDDDD\n";
 			      stop();
 			 }
 			
@@ -312,7 +308,6 @@ void Peer::run(){
 			 //Cerrar conexion y salir
 			 // "Bitfield de longitud erronea recibido"
 			 estado = PEER_STOPPING;
-			 std::cout << "FRENANDO BITFIELDDDDDDDDDDD222\n";
 			 stop();
 		    }
 		    break;
@@ -338,7 +333,6 @@ void Peer::run(){
 	       case PIECE:
 	       {
 		    //OK, me envian datos.
-		    std::cout << "piece\n";
 		    std::string bloque;
 		    while(bloque.length() < respuesta->length && estado == PEER_RUNNING){
 			 bloque += datos->popFront();
@@ -371,7 +365,6 @@ void Peer::run(){
 		    }
 		    else{
 			 estado = PEER_STOPPING;
-			 std::cout << "FRENANDO PIECEEEE\n";
 			 stop();
 		    }
 		    break;
@@ -387,7 +380,6 @@ void Peer::run(){
 		    break;
 
 	       default:
-		    std::cout << "FRENANDO por inanicion \n";
 		    estado = PEER_STOPPING;
 		    stop();
 		    break;
@@ -442,7 +434,6 @@ uint32_t Peer::getVelSubida(){
 }
 
 Peer::~Peer(){
-     std::cout << "borrando peer\n";
      finish();
      while(estado != PEER_FINISHED);
      if(receptor)
