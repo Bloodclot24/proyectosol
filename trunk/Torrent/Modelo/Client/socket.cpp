@@ -204,9 +204,9 @@ void Socket::setTimeout(int seg, int useg){
      tiempo.tv_sec= seg;
      tiempo.tv_usec= useg;
      setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char*)&tiempo, sizeof(tiempo));
-     tiempo.tv_sec= seg;
-     tiempo.tv_usec= useg;
-     setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (char*)&tiempo, sizeof(tiempo));
+//      tiempo.tv_sec= seg;
+//      tiempo.tv_usec= useg;
+//      setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (char*)&tiempo, sizeof(tiempo));
 #endif
 }
 
