@@ -360,6 +360,10 @@ void Peer::run(){
 			      torrent->peerTransferCanceled(this,ds);
 		    }
 		    else{
+			 if(ds){
+			      torrent->abortRequest(ds);
+			      std::cout << "devuelvo una pieza\n";
+			 }
 			 if(!torrent)
 			      std::cout << "no hay torrent";
 			 while(requests.size() > 0 && torrent){
