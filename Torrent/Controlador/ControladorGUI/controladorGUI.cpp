@@ -327,9 +327,10 @@ void ControladorGUI::actualizarPantalla() {
 			
 			this->all++;
 			
-			if(done == 100)
+			if(done == 100) {
 				this->completed++;
-			if(status.compare("Downloading") == 0) {
+				vista->actualizarDownSpeed(file, obtenerVelocidad(0));
+			} if(status.compare("Downloading") == 0) {
 				this->downloading++;
 				this->active++;
 			} else if(status.compare("Seeding") == 0 || status.compare("Waiting...") == 0) {
