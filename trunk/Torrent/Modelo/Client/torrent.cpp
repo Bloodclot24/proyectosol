@@ -723,14 +723,28 @@ void Torrent::run(){
 		    listaPeersEspera.pop_front();
 		    if(peer->conectado){
 			 listaPeersConectados.push_back(peer);
-			 velBajada += peer->getVelBajada();
-			 velSubida += peer->getVelSubida();
+			 //velBajada += peer->getVelBajada();
+			 //velSubida += peer->getVelSubida();
 		    }
 		    else delete peer; //eliminarPeer(peer);
 	       }
+	       
+ 	       int cantidad= listaPeersActivos.size();
+	       while(cantidad>0){
+		    Peer* peer = listaPeersActivos.front();
+		    listaPeersActivos.pop_front();
+		    if(!peer->getTimeOut()){
+			 listaPeersActivos.push_back(peer);
+		    }
+		    else{
+			 std::cout << "borro peer por timeout\n";
+			 delete peer;
+		    }
+	       }
+
 	       mutexPiezasAVerificar.unlock();
 
-	       int cantidad = listaPeersConectados.size();
+	       cantidad = listaPeersConectados.size();
 	       while(cantidad>0){
 		    Peer* peer = listaPeersConectados.front();
 		    listaPeersConectados.pop_front();
@@ -923,16 +937,19 @@ void Torrent::peerUnchoked(Peer* peer){
 void Torrent::peerTransferFinished(Peer* peer, DownloadSlot* ds){
      Lock lock(mutexPiezasAVerificar);
      downloaded += pieceSize;
-     partsRequested--;
-     piezasAVerificar[ds->getPieceIndex()] -= 1;
-     if(piezasAVerificar[ds->getPieceIndex()]==0)
-	  listaPiezasAVerificar.push_back(ds->getPieceIndex());
-     if(getEstado() != DOWNLOADING){
-	  return;
+     if(ds){
+	  partsRequested--;
+	  piezasAVerificar[ds->getPieceIndex()] -= 1;
+	  if(piezasAVerificar[ds->getPieceIndex()]==0)
+	       listaPiezasAVerificar.push_back(ds->getPieceIndex());
+	  if(getEstado() != DOWNLOADING){
+	       return;
+	  }
      }
      listaPeersActivos.remove(peer);
      mutexPiezasPedidas.lock();
-     listaPiezasPedidas.remove(ds);
+     if(ds)
+	  listaPiezasPedidas.remove(ds);
      mutexPiezasPedidas.unlock();
      listaPeersEspera.push_back(peer);
 
@@ -985,7 +1002,8 @@ void Torrent::peerTransferCanceled(Peer* peer, DownloadSlot* ds){
      Lock lock2(mutexPiezasPedidas);
 
      partsRequested--;
-     piezasEnProceso.push(ds);
+     if(ds != NULL)
+	  piezasEnProceso.push(ds);
 
      if(getEstado() != DOWNLOADING){
 	  return;
@@ -993,7 +1011,8 @@ void Torrent::peerTransferCanceled(Peer* peer, DownloadSlot* ds){
 
      listaPeersEspera.push_back(peer);
      listaPeersActivos.remove(peer);
-     listaPiezasPedidas.remove(ds);
+     if(ds != NULL)
+	  listaPiezasPedidas.remove(ds);
      requestCondition.signal();
 }
 

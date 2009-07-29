@@ -26,6 +26,9 @@ Peer::Peer(const std::string& host, int puerto , Torrent* torrent){
      socket = NULL;
      estado = PEER_WAITING;
      cliente = NULL;
+     timeoutCounter.tv_sec = 0;
+     timeoutCounter.tv_usec = 0;
+
 }
 
 /****************************************************************************/
@@ -45,6 +48,8 @@ Peer::Peer(Socket* socket, Client* cliente){
      uploaded = 0;
      corrupted = 0;
      this->cliente = cliente;
+     timeoutCounter.tv_sec = 0;
+     timeoutCounter.tv_usec = 0;
 }
 
 /****************************************************************************/
@@ -264,7 +269,7 @@ void Peer::run(){
      else
 	  stop();
 
-     socket->setTimeout(5,0);
+//     socket->setTimeout(5,0);
      while(estado == PEER_RUNNING && receptor !=NULL && emisor!=NULL &&receptor->isRunning() ){
 	  Message *respuesta = proto.decode(*datos);
 	  
@@ -326,11 +331,13 @@ void Peer::run(){
 		    break;
 	       case PIECE:
 	       {
+		    gettimeofday(&timeoutCounter, NULL);
 		    //OK, me envian datos.
 		    std::string bloque;
 		    while(bloque.length() < respuesta->length && estado == PEER_RUNNING && datos->isValid()){
 			 bloque += datos->popFront();
 		    }
+		    timeoutCounter.tv_sec=0;
 		    if(!datos->isValid())
 			 std::cout << "Seguro timeout!\n";
 		    if(estado == PEER_RUNNING && datos->isValid())
@@ -352,7 +359,7 @@ void Peer::run(){
 			 }
 		    }
 
-		    if(ds && torrent && datos->isValid()){
+		    if(ds && torrent){
 			 downloaded += respuesta->length;
 			 if(bloque.length() == respuesta->length)
 			      torrent->peerTransferFinished(this,ds);
@@ -360,19 +367,14 @@ void Peer::run(){
 			      torrent->peerTransferCanceled(this,ds);
 		    }
 		    else{
-			 if(ds){
-			      torrent->abortRequest(ds);
-			      std::cout << "devuelvo una pieza\n";
-			 }
-			 if(!torrent)
-			      std::cout << "no hay torrent";
-			 while(requests.size() > 0 && torrent){
-			      std::cout << "devuelvo una pieza\n";
-			      torrent->abortRequest(requests.popFront());
-			 }
-			      
 			 estado = PEER_STOPPING;
 			 stop();
+		    }
+		    if(!requests.isValid()){
+			 while(requests.size() > 0 && torrent){
+			      torrent->abortRequest(requests.popFront());
+			 }
+			 torrent->peerTransferCanceled(this, NULL);
 		    }
 		    break;
 	       }
@@ -434,6 +436,18 @@ uint32_t Peer::getVelBajada(){
      if(socket)
 	  return socket->getVelBajada();
      else return 0;
+}
+
+bool Peer::getTimeOut(){
+     if(timeoutCounter.tv_sec == 0)
+	  return false;
+     else{
+	  struct timeval ahora;
+	  gettimeofday(&ahora, NULL);
+	  if(ahora.tv_sec-timeoutCounter.tv_sec >= 30)
+	       return true;
+     }
+     return false;
 }
 	
 uint32_t Peer::getVelSubida(){
