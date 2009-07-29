@@ -194,14 +194,12 @@ bool Socket::conectar(void){
 /* Cierra el socket, lo desconecta */
 /****************************************************************************/
 bool Socket::cerrar(void){
-     std::cout << "cerrando socket" << this << "\n";
      int retorno=0;
      if(s > 0 ){
 	  shutdown(s,SHUT_RDWR);
 	  retorno = close(s);
      }
      s=-1;
-     std::cout << "cerrado\n";
      if(retorno == -1)
 	  error = errno;
      return esValido();
