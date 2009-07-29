@@ -517,7 +517,8 @@ int Torrent::announce(){
      socket = new Socket(announceUrl, 80);
 
      /* conecto el socket */
-     socket->conectar();
+     if(socket->esValido())
+	  socket->conectar();
 
      if(!socket->esValido()){
 	  std::string mensaje("Error al conectar: ");
