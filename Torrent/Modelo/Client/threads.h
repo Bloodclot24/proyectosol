@@ -212,8 +212,6 @@ protected:
 	  actions.sa_handler = &dummyHandler;
 	  if(sigaction(SIGUSR1,&actions,NULL)==0)
 	       signalable=1;
-	  if(sigaction(SIGALRM, &actions,NULL)==0)
-	       std::cout << "seeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee \n";
      }
      
      /** 
@@ -243,9 +241,6 @@ public:
      }
 
      int signal(){
-	  /* if(!signalable) */
-/* 	       return -1; */
-/* 	  std::cout << "señal aiiiiiiiiiiiiiiiiii\n"; */
 	  if(thread!=0)
 	       return pthread_kill(thread, SIGUSR1);
 	  return 0;

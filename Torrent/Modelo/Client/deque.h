@@ -47,9 +47,6 @@ public:
 	       temp = queue.front();
 	       queue.pop_front();
 	  }
-	  else{
-	       std::cout << "invalidez\n";
-	  }
 	  mutex.unlock();
 	  return temp;
      }
@@ -112,7 +109,6 @@ public:
      void invalidate(){
  	  Lock lock(mutex);
  	  valida=false;
-	  std::cout << "invalidateeeee\n";
  	  condition.signal();
      }
 
