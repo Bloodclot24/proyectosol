@@ -76,6 +76,8 @@ private:
      Deque<char>* colaDatos;	/**< Cola de datos para invocar a
 				 * invlidar() en el destructor si no
 				 * es NULL */
+
+     struct timeval timeoutCounter;
 protected:
      /** 
       * Metodo principal de la clase. Toda la logica se desarrolla aca
@@ -227,6 +229,7 @@ public:
       */
       uint32_t getVelSubida();
 
+      bool getTimeOut();
 
      /** 
       * Destruye el Peer.
