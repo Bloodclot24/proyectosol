@@ -552,15 +552,6 @@ std::string VistaTorrent::getEstadoFile(std::string filename) {
 }
 
 /*--------------------------------------------------------------------------*/
-bool VistaTorrent::archivoSeleccionado(std::string filename) {
-
-	Gtk::TreeModel::Row row;
-	if(buscarRow_transf(filename, row))
-		return refTreeSelection->is_selected(*row);
-	return false;
-}
-
-/*--------------------------------------------------------------------------*/
 bool VistaTorrent::buscarRow_transf(std::string file, Gtk::TreeModel::Row &row) {
 
 	typedef Gtk::TreeModel::Children type_children;

@@ -5,6 +5,10 @@ ControladorGUI::ControladorGUI() {
 	
 	this->vista= new VistaTorrent(this);
 	this->refrescador= new Refrescador(this);
+	this->all= 0;
+	this->completed= 0;
+	this->downloading= 0;
+	this->active= 0;
 	cargarConfig();
 	crearAlertaFallo();
 }
@@ -240,8 +244,9 @@ void ControladorGUI::modificarPeers(Torrent* torrent) {
 	vista->limpiarListaClientes();
 	std::list<std::string> lista= torrent->getListaPeers();
 	std::list<std::string>::iterator it;
-	for(it= lista.begin(); it != lista.end(); it++) {
-		vista->agregarCliente((*it), "");
+	if(lista.size() > 0) {
+		for(it= lista.begin(); it != lista.end(); it++)
+			vista->agregarCliente((*it), "");
 	}	
 }
 
@@ -320,12 +325,6 @@ void ControladorGUI::actualizarPantalla() {
 			vista->actualizarDownSpeed(file, obtenerVelocidad(downSpeed));
 			vista->actualizarTime(file,obtenerETA(time));
 			
-//			if(vista->archivoSeleccionado(file)) {
-//				vista->modificarDownloaded(obtenerDownloaded(done));
-//				vista->modificarInformacion(status);
-//				modificarPeers(*it);
-//			}
-			
 			this->all++;
 			
 			if(done == 100)
@@ -336,9 +335,18 @@ void ControladorGUI::actualizarPantalla() {
 			} else if(status.compare("Seeding") == 0 || status.compare("Waiting...") == 0) {
 				this->active++;			
 			}
+		}
+		
+		if(listaTorrents->size() == 1) {
+			Torrent* torrent= *(listaTorrents->begin());
+			std::string doneS= obtenerDownloaded(torrent->getPorcentaje());
+			vista->modificarDownloaded(doneS);
+			std::string statusS= obtenerStatus(torrent->getState());
+			vista->modificarInformacion(statusS);
+			//modificarPeers(torrent);
 		}	
 	}
-	
+
 	actualizarCantActividades();
 }	
 
