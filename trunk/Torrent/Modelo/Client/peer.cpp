@@ -157,7 +157,6 @@ void Peer::run(){
 	  socket->conectar();
 	  if(!socket->esValido()){
 	       stop();
-	       std::cout <<  "ERROR DEL SOCKET: " << socket->obtenerError()  << "\n";
 	       conectado = false;
 	       return;
 	  }
@@ -309,9 +308,7 @@ void Peer::run(){
 		    }
 		    break;
 	       case REQUEST:
-		    std::cout << "REQUESTTTTTTTTTTTTTTTTTTTTTTT\n";
 		    if(torrent->getBitField().getField(respuesta->index) ==1){
-			 std::cout << "request\n";
 			 //OK, me piden una pieza que tengo
 			 //Genero el mensaje del protocolo
 			 std::string aux = proto.piece(respuesta->index, respuesta->begin, respuesta->length);
@@ -334,6 +331,8 @@ void Peer::run(){
 		    while(bloque.length() < respuesta->length && estado == PEER_RUNNING && datos->isValid()){
 			 bloque += datos->popFront();
 		    }
+		    if(!datos->isValid())
+			 std::cout << "Seguro timeout!\n";
 		    if(estado == PEER_RUNNING)
 			 torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, bloque.length());
 		    
@@ -361,6 +360,11 @@ void Peer::run(){
 			      torrent->peerTransferCanceled(this,ds);
 		    }
 		    else{
+			 while(requests.size() > 0 && torrent){
+			      std::cout << "devuelvo una pieza\n";
+			      torrent->abortRequest(requests.popFront());
+			 }
+			      
 			 estado = PEER_STOPPING;
 			 stop();
 		    }
