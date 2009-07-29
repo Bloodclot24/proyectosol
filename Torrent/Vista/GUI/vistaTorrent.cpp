@@ -554,6 +554,13 @@ std::string VistaTorrent::getEstadoFile(std::string filename) {
 }
 
 /*--------------------------------------------------------------------------*/
+void VistaTorrent::actualizarTransferencias() {
+
+	Glib::RefPtr<Gtk::Widget> transf= Glib::RefPtr<Gtk::Widget>::cast_static(treeView_transf);	
+	transf->queue_draw();
+}
+
+/*--------------------------------------------------------------------------*/
 bool VistaTorrent::buscarRow_transf(std::string file, Gtk::TreeModel::Row &row) {
 
 	typedef Gtk::TreeModel::Children type_children;

@@ -888,6 +888,9 @@ void Torrent::cleanup(){
      mutexEstado.lock();
      estado = STOPPED;
      mutexEstado.unlock();
+     
+     this->velSubida= 0;
+     this->velBajada= 0;
 }
 
 /****************************************************************************/
