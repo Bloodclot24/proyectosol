@@ -26,8 +26,6 @@ Socket::Socket(std::string direccion, int puerto){
 	  }
 	  else hostName = direccion;
 
-	  // "DIRECCION->>>>>>>>>>>>>>>>>>> " << hostName 
-
 	  host=gethostbyname(hostName.c_str());
 	       
 	  if(host == NULL){
@@ -202,7 +200,6 @@ bool Socket::cerrar(void){
 /****************************************************************************/
 void Socket::setTimeout(int seg, int useg){
 #ifndef DEBUG
-     std::cout << "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS\n";
      struct timeval tiempo;
      tiempo.tv_sec= seg;
      tiempo.tv_usec= useg;
