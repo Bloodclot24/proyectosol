@@ -1,7 +1,7 @@
 #include "refrescador.h"
 
 /****************************************************************************/
-Refrescador::Refrescador(ControladorGUI* controlador): cVariable(&mutex) {
+Refrescador::Refrescador(ControladorGUI* controlador) {
 	
 	this->controlador= controlador;
 	this->corriendo= false;
@@ -14,17 +14,9 @@ void Refrescador::run() {
 	
 	while(corriendo) {
 		
-		//mutex.lock();
-				
-		std::cout << "******************Actualizandooooo******************" << std::endl;
 		controlador->actualizarPantalla();	
-
-		//mutex.unlock();
-		
 		sleep(10);		
 	}
-
-	this->corriendo= false;		
 }
 
 /*--------------------------------------------------------------------------*/
@@ -34,11 +26,9 @@ void Refrescador::comenzar() {
 }
 
 /*--------------------------------------------------------------------------*/
-void Refrescador::finish() {
+void Refrescador::terminar() {
 	
-	//mutex.lock();
 	this->corriendo= false;
-	//mutex.unlock();
 }
 
 /****************************************************************************/

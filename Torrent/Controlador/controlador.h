@@ -158,95 +158,7 @@ class Controlador {
 		 * @param filename Nombre del archivo a buscar el orden.
 		 */ 
 		virtual uint32_t obtenerOrden(std::string filename)= 0;
-		
-		/* MODELO -> VISTA 
-		 * =============== */
-		/********Files********/ 		 
-		/**
-		 * Modifica el estado del archivo pasado por parametro en el 
-		 * en el panel de transferencias a DOWNLOADING.
-		 * 
-		 * @param filename Nombre del archivo.
-		 */	
-		virtual void start(std::string filename) {};
-		
-		/**
-		 * Modifica el estado del archivo pasado por parametro en el 
-		 * en el panel de transferencias a PAUSED.
-		 * 
-		 * @param filename Nombre del archivo.
-		 */	
-		virtual void pause(std::string filename) {};
-		
-		/**
-		 * Modifica el estado del archivo pasado por parametro en el 
-		 * en el panel de transferencias a STOPPED.
-		 * 
-		 * @param filename Nombre del archivo.
-		 */	
-		virtual void stop(std::string filename) {};
-		
-		/**
-		 * Modifica el estado del archivo pasado por parametro en el 
-		 * en el panel de transferencias a COMPLETED.
-		 * 
-		 * @param file Nombre del archivo.
-		 */	
-		virtual void complete(std::string filename) {};
-		
-		/**
-		 * Modifica el estado del archivo pasado por parametro en el 
-		 * en el panel de transferencias a SEED.
-		 * 
-		 * @param file Nombre del archivo.
-		 */	
-		virtual void seed(std::string filename) {};
 			
-		/**
-		 * Actualiza el porcentaje de completado del archivo pasado por
-		 * parametro en el panel de transferencias.
-		 * 
-		 * @param filename Nombre del archivo.
-		 * @param done Porcentaje del archivo completado.
-		 */
-		virtual void actualizarDone(std::string file, int done) {};
-		
-		/**
-		 * Actualiza el estado del archivo pasado por parametro en el 
-		 * panel de transferencias.
-		 * 
-		 * @param file Nombre del archivo.
-		 * @param status Estado del archivo.
-		 */		
-		virtual void actualizarStatus(std::string file, std::string status) {};
-		
-		/**
-		 * Actualiza velocidad de bajada del archivo pasado por parametro
-		 * en el panel de transferencias.
-		 * 
-		 * @param file Nombre del archivo.
-		 * @param downSpeed Velocidad de bajada.
-		 */		
-		virtual void actualizarDownSpeed(std::string file, uint32_t downSpeed) {};
-		
-		/**
-		 * Actualiza velocidad de subida del archivo pasado por parametro
-		 * en el panel de transferencias.
-		 * 
-		 * @param file Nombre del archivo.
-		 * @param upSpeed Velocidad de subida.
-		 */	
-		virtual void actualizarUpSpeed(std::string file, uint32_t upSpeed) {};	
-		
-		/**
-		 * Actualiza el tiempo restante del archivo pasado por parametro
-		 * en el panel de transferencias.
-		 * 
-		 * @param file Nombre del archivo.
-		 * @param time Tiempo restante para completar la descarga.
-		 */	
-		virtual void actualizarTime(std::string file, uint32_t time) {};	
-		
 		/********Trackers********/
 		/**
 		 * Modifica el estado del tracker de la vista.
@@ -256,14 +168,6 @@ class Controlador {
 		 */ 
 		virtual void modificarStatusTracker(std::string name,
 		                                    std::string status) {};		
-		/**
-		 * Agrega seed al tracker de la vista.
-		 * 
-		 * @param name Nombre del tracker.
-		 * @param seed Nueva cantidad de seed.
-		 */ 
-		virtual void agregarSeedTracker(std::string name, int seed) {};
-
 		/**
 		 * Elimina el tracker pasado por parametro de la vista.
 		 * 
@@ -278,9 +182,12 @@ class Controlador {
 		 * @param message Mensaje a mostrar.
 		 */ 
 		virtual void agregarMessage(std::string message)= 0;
-		
+
+		/********Refrescador********/	
+		/**
+		 * Comienza actualizar la pantalla.
+		 */ 			
 		virtual void comenzarARefrescarPantalla() {};	
-		
 };
 
 /****************************************************************************/
