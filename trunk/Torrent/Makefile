@@ -42,7 +42,7 @@ verbose = si
 #CFLAGS += -O3 -DNDEBUG
 
 # Para valgrind o debug
-CFLAGS += -ggdb -DDEBUG -fno-inline
+CFLAGS += -ggdb -fno-inline
 
 # Opciones del enlazador.
 #LDFLAGS =
