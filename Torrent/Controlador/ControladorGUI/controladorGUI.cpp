@@ -338,14 +338,14 @@ void ControladorGUI::actualizarPantalla() {
 			}
 		}
 		
-		if(listaTorrents->size() == 1) {
-			Torrent* torrent= *(listaTorrents->begin());
-			std::string doneS= obtenerDownloaded(torrent->getPorcentaje());
-			vista->modificarDownloaded(doneS);
-			std::string statusS= obtenerStatus(torrent->getState());
-			vista->modificarInformacion(statusS);
-			//modificarPeers(torrent);
-		}	
+// 		if(listaTorrents->size() == 1) {
+// 			Torrent* torrent= *(listaTorrents->begin());
+// 			std::string doneS= obtenerDownloaded(torrent->getPorcentaje());
+// 			vista->modificarDownloaded(doneS);
+// 			std::string statusS= obtenerStatus(torrent->getState());
+// 			vista->modificarInformacion(statusS);
+// 			//modificarPeers(torrent);
+// 		}	
 	}
 
 	actualizarCantActividades();
