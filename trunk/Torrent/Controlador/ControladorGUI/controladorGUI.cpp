@@ -348,6 +348,7 @@ void ControladorGUI::actualizarPantalla() {
 	}
 
 	actualizarCantActividades();
+	vista->actualizarTransferencias();
 }	
 
 /*--------------------------------------------------------------------------*/

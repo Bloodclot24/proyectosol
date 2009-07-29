@@ -290,6 +290,11 @@ class VistaTorrent {
 		 * @return El estado del archivo.
 		 */ 
 		std::string getEstadoFile(std::string filename);	
+
+		/**
+		 * Actualiza el panel de transferencias.
+		 */ 
+		void actualizarTransferencias();
 	
 		/**********Panel Actividades**********/
 		/**
