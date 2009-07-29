@@ -118,6 +118,7 @@ void ThreadReceptor::run(){
 		    colaDeDatos.push(c);
 	       else{
 		    // "Se cerro el socket inesperadamente.
+		    std::cout << "TIMEOUT???????\n";
 		    colaDeDatos.invalidate();
 		    stop(); //para que salga del hilo
 	       }
