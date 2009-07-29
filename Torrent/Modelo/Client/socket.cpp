@@ -140,12 +140,7 @@ int Socket::recibir(void *buf, int cuanto){
 	  tiempoAntesUseg = tiempo.tv_usec;
      }
 
-     if(timeout != 0)
-	  alarm(timeout);
-
      errorRecv = recv(s, buf, cuanto, MSG_WAITALL);
-
-     alarm(0);
 
      errorDespues = gettimeofday(&tiempo,NULL);
      if((!errorAntes) && (!errorDespues) && (errorRecv > 0)){
@@ -180,10 +175,7 @@ bool Socket::conectar(void){
      }
      direccionDestino.sin_addr = *((struct in_addr *)host->h_addr);
 
-     if(timeout != 0)
-	  alarm(timeout);
      int retorno=connect(s,(struct sockaddr*)&direccionDestino,sizeof(direccionDestino));
-     alarm(0);
 
      if(retorno == -1)
 	  error = errno;
@@ -209,14 +201,16 @@ bool Socket::cerrar(void){
  * para emision de los mismos. */
 /****************************************************************************/
 void Socket::setTimeout(int seg, int useg){
-//      struct timeval tiempo;
-//      tiempo.tv_sec= seg;
-//      tiempo.tv_usec= useg;
-//      setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char*)&tiempo, sizeof(tiempo));
-//      tiempo.tv_sec= seg;
-//      tiempo.tv_usec= useg;
-//      setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (char*)&tiempo, sizeof(tiempo));
-     timeout = seg;
+#ifndef DEBUG
+     std::cout << "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS\n";
+     struct timeval tiempo;
+     tiempo.tv_sec= seg;
+     tiempo.tv_usec= useg;
+     setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char*)&tiempo, sizeof(tiempo));
+     tiempo.tv_sec= seg;
+     tiempo.tv_usec= useg;
+     setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (char*)&tiempo, sizeof(tiempo));
+#endif
 }
 
 /* Indica si se produjo algun error durante la ultima operacion */
