@@ -9,25 +9,15 @@ class Refrescador: public Thread {
 	
 	private:
 		ControladorGUI* controlador;
-		
-		int all;
-		int downloading;
-		int completed;
-		int active;
-		int inactive;
-	
+		bool corriendo;
+				
 		 /** 
-	      * Metodo principal de la clase. Toda la logica se desarrolla aca
-	      * dentro.
+	      * Metodo principal de la clase.
 	      * 
 	      * @see Thread
 	      */
 	     virtual void run();
-	     
-	     bool corriendo;
-	     Mutex mutex;
-	     CVariable cVariable;
-	
+
 	public: 
 		 /** 
       	  * Crea el hilo encargado de actualizar la pantalla.
@@ -37,18 +27,16 @@ class Refrescador: public Thread {
 		Refrescador(ControladorGUI* controlador);
 		
 		 /** 
-		  * Comienza el procesamiento y flujo de datos.
-		  * 
-		  * @param hash El hash que identifica al Torrent.
+		  * Comienza actualizarse la pantalla.
 		  */
 		 void comenzar();
 		
 		 /** 
-		  * Finaliza el thread y libera memoria.
+		  * Finaliza el thread.
 		  * 
 		  * @see Thread
 		  */
-		 void finish();	
+		 void terminar();	
 };
 
 /****************************************************************************/

@@ -1,13 +1,9 @@
 #include "controladorGUI.h"
 
 /****************************************************************************/
-ControladorGUI::ControladorGUI(): mutex() {
+ControladorGUI::ControladorGUI() {
 	
 	this->vista= new VistaTorrent(this);
-	this->all= 0;
-	this->downloading= 0;
-	this->completed= 0;
-	this->active= 0;
 	this->refrescador= new Refrescador(this);
 	cargarConfig();
 	crearAlertaFallo();
@@ -17,7 +13,7 @@ ControladorGUI::ControladorGUI(): mutex() {
 ControladorGUI::~ControladorGUI() {
 
 	guardarConfig();
-	refrescador->finish();
+	refrescador->terminar();
 	delete refrescador;
 	delete vista;	
 }
@@ -43,10 +39,10 @@ void ControladorGUI::actualizarCantActividades() {
 	vista->modificarCantCompleted(sAux);
 	sprintf(sAux, "%d", active);
 	vista->modificarCantActive(sAux);
-	if(all-active >= 0)
+	if(all-active > 0)	
 		sprintf(sAux, "%d", all-active);
 	else
-		sprintf(sAux, "%d", all);		
+		sprintf(sAux, "%d", 0);		
 	vista->modificarCantInactive(sAux);
 }
 
@@ -252,196 +248,28 @@ void ControladorGUI::modificarPeers(Torrent* torrent) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarPestanias(std::string filename) {
 	
-	//mutex.lock();
-	
 	Torrent* torrent= obtenerTorrent(filename);
 
 	modificarGeneral(torrent);
 	modificarPeers(torrent);
-	
-	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::limpiarPestanias() {
 	
 	//-General-
-	//mutex.lock();
-	
 	vista->modificarFilename("");
 	vista->modificarDownloaded("");
 	vista->modificarInformacion("");
 	
 	//-Peers-
 	vista->limpiarListaClientes();
-	
-	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
 uint32_t ControladorGUI::obtenerOrden(std::string filename) {
 	
 	return(vista->obtenerOrden(filename));
-}
-
-/*--------------------------------------------------------------------------*/
-/* MODELO -> VISTA 
- * =============== */		 
-/*--------------------------------------------------------------------------*/
-/**Files**/ 		
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::start(std::string filename) {
-	
-	//mutex.lock();
-		
-	this->active++;	
-	this->downloading++;
-	actualizarCantActividades();
-	
-	vista->start(filename);
-	
-	if(vista->archivoSeleccionado(filename)) {
-		Torrent* torrent= obtenerTorrent(filename);
-		modificarGeneral(torrent);
-	}
-	
-	//mutex.unlock();
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::pause(std::string filename) {
-	
-	//mutex.lock();	
-	
-	if(active > 0)
-		this->active--;		
-	if(downloading > 0)
-	this->downloading--;
-	actualizarCantActividades();
-	
-	vista->pause(filename);
-	
-	if(vista->archivoSeleccionado(filename)) {
-		Torrent* torrent= obtenerTorrent(filename);
-		modificarGeneral(torrent);
-	}
-	
-	//mutex.unlock();
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::stop(std::string filename) {
-	
-	//mutex.lock();
-
-	if(active > 0)
-		this->active--;	
-	if(downloading > 0)
-		this->downloading--;
-			
-	actualizarCantActividades();
-	
-	vista->stop(filename);
-	
-	if(vista->archivoSeleccionado(filename)) {
-		Torrent* torrent= obtenerTorrent(filename);
-		modificarGeneral(torrent);
-	}
-	
-	//mutex.unlock();
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::complete(std::string filename) {
-
-	//mutex.lock();
-	
-	if(downloading > 0)
-		this->downloading--;		
-	this->completed++;		
-	actualizarCantActividades();
-	
-	vista->complete(filename);	
-
-	if(vista->archivoSeleccionado(filename)) {
-		Torrent* torrent= obtenerTorrent(filename);
-		modificarGeneral(torrent);
-	}
-	
-	//mutex.unlock();
-}	
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::seed(std::string filename) {
-
-	//mutex.lock();
-	
-	this->downloading--;		
-	this->completed++;		
-	actualizarCantActividades();	
-
-	vista->seed(filename);
-	
-	//mutex.unlock();			
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarDone(std::string file, int done) {
-
-	//mutex.lock();
-	
-//	vista->actualizarDone(file, done);
-	
-//	if(vista->archivoSeleccionado(file)) {
-//		std::string doneS= obtenerDownloaded(done);
-//		vista->modificarDownloaded(doneS);
-//	}
-	
-	//mutex.unlock();
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarStatus(std::string file, std::string status) {
-	
-	//mutex.lock();
-		
-//	vista->actualizarStatus(file, status);
-//	actualizarCantActividades();
-	
-//	if(vista->archivoSeleccionado(file))
-//		vista->modificarInformacion(status);
-
-	//mutex.unlock();
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarDownSpeed(std::string file, 
-		                                             uint32_t downSpeed) {
-	
-	//mutex.lock();
-	
-//	vista->actualizarDownSpeed(file, obtenerVelocidad(downSpeed));
-//
-//	Torrent* torrent= obtenerTorrent(file);
-//	double done= torrent->getPorcentaje();
-//	double size = torrent->getTotalSize();
-//	
-//	uint32_t time= 8639999;
-//	if(downSpeed != 0)
-//		time= (size *( 100 - done)/100) / downSpeed;
-//	
-//	vista->actualizarTime(file,obtenerETA(time));
-	
-	//vista->actualizarTransferencias();
-	//mutex.unlock();
-}
-
-/*--------------------------------------------------------------------------*/
-void ControladorGUI::actualizarUpSpeed(std::string file, uint32_t upSpeed) {	
-
-	//mutex.lock();	
-	//vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
-	//mutex.unlock();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -468,14 +296,17 @@ void ControladorGUI::agregarMessage(std::string message) {
 /*--------------------------------------------------------------------------*/
 void ControladorGUI::actualizarPantalla() {
 	
+	this->all= 0;
+	this->completed= 0;
+	this->downloading= 0;
+	this->active= 0;
+	
 	const std::list<Torrent*>* listaTorrents= this->cliente->getListaTorrents();
 	std::list<Torrent*>::const_iterator it;
 	
 	if(listaTorrents->size() > 0) {
 		for(it= listaTorrents->begin(); it != listaTorrents->end(); it++) {
 			
-			std::cout << "---------------------------------------" << std::endl;
-						
 			std::string file= (*it)->getName();	
 			double done= (*it)->getPorcentaje();
 			std::string status= obtenerStatus((*it)->getState());
@@ -487,23 +318,26 @@ void ControladorGUI::actualizarPantalla() {
 			if(downSpeed != 0)
 				time= (size *( 100 - done)/100) / downSpeed;
 
-			std::cout << "FILE: " << file << std::endl;
-			std::cout << "Done: " << done << std::endl;
-			std::cout << "Status: " << status << std::endl;
-			std::cout << "DownSpeed: " << obtenerVelocidad(downSpeed) << std::endl;
-			std::cout << "UpSpeed: " << obtenerVelocidad(upSpeed) << std::endl;
-			std::cout << "ETA: " << time << std::endl;
-			
 			vista->actualizarDone(file, done);
 			vista->actualizarStatus(file, status);
 			vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
 			vista->actualizarDownSpeed(file, obtenerVelocidad(downSpeed));
 			vista->actualizarTime(file,obtenerETA(time));
 			
+			this->all++;
 			
-			std::cout << "---------------------------------------" << std::endl;	
+			if(done == 100)
+				this->completed++;
+			if(status.compare("Downloading") == 0) {
+				this->downloading++;
+				this->active++;
+			} else if(status.compare("Seeding") == 0 || status.compare("Waiting...") == 0) {
+				this->active++;			
+			}
 		}	
 	}
+	
+	actualizarCantActividades();
 }	
 
 /*--------------------------------------------------------------------------*/

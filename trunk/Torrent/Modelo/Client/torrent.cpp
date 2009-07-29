@@ -687,7 +687,6 @@ void Torrent::run(){
      struct timeval tiempo;
      if(do_announce() < 0){
 	  controlador->agregarMessage("Error: no se pudo conectar con ningun tracker.");
-	  controlador->stop(nombreTorrent);
 	  mutexEstado.lock();
 	  estado = STOPPED;
 	  mutexEstado.unlock();
@@ -705,7 +704,6 @@ void Torrent::run(){
 	  }
 	  else{
 	       estado = DOWNLOADING;
-	       controlador->actualizarStatus(nombreTorrent, "Downloading");
 	  }
 	  mutexEstado.unlock();
 
@@ -770,9 +768,6 @@ void Torrent::run(){
 
 	       /* Anuncio cualquier pieza que pueda estar pendiente */
 	       anunciarPiezasPendientes();
-
-	       controlador->actualizarDownSpeed(nombreTorrent, velBajada);
-	       controlador->actualizarUpSpeed(nombreTorrent, velSubida);
 
 	       if(piezasVerificadas<sizeInPieces){
 		    /* Si necesito mas piezas */
@@ -853,8 +848,6 @@ void Torrent::run(){
 		    mutexEstado.lock();
 		    estado = SEEDING;
 		    mutexEstado.unlock();
-		    controlador->complete(nombreTorrent);
-		    controlador->actualizarStatus(nombreTorrent, "Seeding");
 	       }
 	  }
 
@@ -960,7 +953,6 @@ void Torrent::verificarPiezasPendientes(){
 	  }
 
      }
-     controlador->actualizarDone(nombreTorrent, getPorcentaje());
 }
 
 /****************************************************************************/

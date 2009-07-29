@@ -20,11 +20,8 @@ class ControladorGUI: public Controlador {
 		int downloading;
 		int completed;
 		int active;
-		
 		void actualizarCantActividades();
 
-		Mutex mutex;
-		
 		void mostrarFile(Torrent* torrent);
 		void modificarGeneral(Torrent* torrent);
 		void modificarPeers(Torrent* torrent);
@@ -128,83 +125,6 @@ class ControladorGUI: public Controlador {
 			
 		/* MODELO -> VISTA 
 		 * =============== */		 
-		/********Files********/ 		 
-		/**
-		 * Modifica el estado del archivo pasado por parametro en el 
-		 * en el panel de transferencias a DOWNLOADING.
-		 * 
-		 * @param file Nombre del archivo.
-		 */	
-		virtual void start(std::string filename);
-		
-		/**
-		 * Modifica el estado del archivo pasado por parametro en el 
-		 * en el panel de transferencias a PAUSED.
-		 * 
-		 * @param file Nombre del archivo.
-		 */	
-		virtual void pause(std::string filename);
-		
-		/**
-		 * Modifica el estado del archivo pasado por parametro en el 
-		 * en el panel de transferencias a STOPPED.
-		 * 
-		 * @param file Nombre del archivo.
-		 */	
-		virtual void stop(std::string filename);
-		
-		/**
-		 * Modifica el estado del archivo pasado por parametro en el 
-		 * en el panel de transferencias a COMPLETED.
-		 * 
-		 * @param file Nombre del archivo.
-		 */	
-		virtual void complete(std::string filename);
-		
-		/**
-		 * Modifica el estado del archivo pasado por parametro en el 
-		 * en el panel de transferencias a SEED.
-		 * 
-		 * @param file Nombre del archivo.
-		 */	
-		virtual void seed(std::string filename);
-		
-		/**
-		 * Actualiza el porcentaje de completado del archivo pasado por
-		 * parametro en el panel de transferencias.
-		 * 
-		 * @param file Nombre del archivo.
-		 * @param done Porcentaje del archivo completado.
-		 */
-		virtual void actualizarDone(std::string file, int done);
-		
-		/**
-		 * Actualiza el estado del archivo pasado por parametro en el 
-		 * panel de transferencias.
-		 * 
-		 * @param file Nombre del archivo.
-		 * @param status Estado del archivo.
-		 */		
-		virtual void actualizarStatus(std::string file, std::string status);
-		
-		/**
-		 * Actualiza velocidad de bajada del archivo pasado por parametro
-		 * en el panel de transferencias.
-		 * 
-		 * @param file Nombre del archivo.
-		 * @param downSpeed Velocidad de bajada.
-		 */		
-		virtual void actualizarDownSpeed(std::string file, uint32_t downSpeed);
-		
-		/**
-		 * Actualiza velocidad de subida del archivo pasado por parametro
-		 * en el panel de transferencias.
-		 * 
-		 * @param file Nombre del archivo.
-		 * @param upSpeed Velocidad de subida.
-		 */	
-		virtual void actualizarUpSpeed(std::string file, uint32_t upSpeed);	
-		
 		/********Trackers********/
 		/**
 		 * Modifica el estado del tracker de la vista.
@@ -224,8 +144,14 @@ class ControladorGUI: public Controlador {
 		virtual void agregarMessage(std::string message);
 
 		/********Refrescador********/		
+		/**
+		 * Actualiza la informacion de la pantalla.
+		 */ 
 		void actualizarPantalla();
 		
+		/**
+		 * Comienza actualizar la pantalla.
+		 */ 	
 		virtual void comenzarARefrescarPantalla();		
 };
 
