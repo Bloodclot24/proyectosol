@@ -750,7 +750,7 @@ void Torrent::run(){
 	       }
 	       /* Me fijo si me quedan peers para conectar a futuro */
 	       gettimeofday(&tiempo, NULL);
-	       if(listaPeers.size()==0 && tiempo.tv_sec >= timeToAnnounce){
+	       if(listaPeers.size()==0 && (uint32_t)tiempo.tv_sec >= timeToAnnounce){
 		    /* Si no me quedan y ya puedo anunciarme */
 		    //Anunciar
 		    controlador->agregarMessage("Anunciando: " + nombreTorrent);
