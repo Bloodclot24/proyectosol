@@ -15,6 +15,7 @@
 #define PATH_STOPPED "Vista/GUI/images/statusIcons/stopped.png"
 #define PATH_ACTIVE "Vista/GUI/images/statusIcons/active.png"
 #define PATH_ALL "Vista/GUI/images/statusIcons/all.png"
+#define PATH_ERROR "Vista/GUI/images/statusIcons/error.png"
 
 /****************************************************************************/
 /**

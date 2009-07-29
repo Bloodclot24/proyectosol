@@ -126,7 +126,6 @@ void Controlador::cargarConfig() {
 	config.seekg(0, std::fstream::beg);
 		
 	if(config.is_open()) {
-		//resultado=true;
 		char* cantTorrents= new char[sizeof(uint32_t)];
 		config.read(cantTorrents, sizeof(uint32_t));
 		uint32_t cantListaTorrents= *cantTorrents;
@@ -378,6 +377,7 @@ std::string Controlador::obtenerStatus(EstadoTorrent status) {
 			sStatus= "Seeding";
 		break;
 		case ERROR:
+			sStatus= "Error";		
 		break;	
 	}
 	

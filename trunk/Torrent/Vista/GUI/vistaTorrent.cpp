@@ -124,6 +124,8 @@ std::string getPathStatusIcon(std::string status) {
 		path= PATH_ACTIVE;
 	else if(status == "All")
 		path= PATH_ALL;
+	else if(status == "Error")
+		path= PATH_ERROR;
 
 	return(path);
 }
