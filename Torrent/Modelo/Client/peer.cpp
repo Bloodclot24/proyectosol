@@ -333,7 +333,7 @@ void Peer::run(){
 		    }
 		    if(!datos->isValid())
 			 std::cout << "Seguro timeout!\n";
-		    if(estado == PEER_RUNNING)
+		    if(estado == PEER_RUNNING && datos->isValid())
 			 torrent->writeData(bloque.c_str(), respuesta->index, respuesta->begin, bloque.length());
 		    
 		    int size = requests.size();
@@ -352,7 +352,7 @@ void Peer::run(){
 			 }
 		    }
 
-		    if(ds && torrent){
+		    if(ds && torrent && datos->isValid()){
 			 downloaded += respuesta->length;
 			 if(bloque.length() == respuesta->length)
 			      torrent->peerTransferFinished(this,ds);
@@ -360,6 +360,8 @@ void Peer::run(){
 			      torrent->peerTransferCanceled(this,ds);
 		    }
 		    else{
+			 if(!torrent)
+			      std::cout << "no hay torrent";
 			 while(requests.size() > 0 && torrent){
 			      std::cout << "devuelvo una pieza\n";
 			      torrent->abortRequest(requests.popFront());
