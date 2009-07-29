@@ -181,7 +181,7 @@ class Controlador {
 		 * 
 		 * @param message Mensaje a mostrar.
 		 */ 
-		virtual void agregarMessage(std::string message)= 0;
+		virtual void agregarMessage(std::string message) {};
 
 		/********Refrescador********/	
 		/**
