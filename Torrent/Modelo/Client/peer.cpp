@@ -200,8 +200,6 @@ void Peer::run(){
 	  }
      }else{
 
-	  std::cout << "PEEEEEEEEEEEEEEER entrante ///////////////////////////////////////////\n";
-
 	  this->emisor = new ThreadEmisor(this->socket);
 	  this->receptor = new ThreadReceptor(this->socket,false);
 	  receptor->comenzar();
@@ -235,13 +233,10 @@ void Peer::run(){
 	  torrent = cliente->buscarPorHash(hash);
 
 	  if(torrent == NULL){
-	       std::cout << "PEEEEEEEEEEEEEEER entrante /////////////////////////////////////////// MALMAL\n";
 	       stop();
 	       cliente->descartarPeer(this);
 	       return;
 	  }	  
-
-	  std::cout << "PEEEEEEEEEEEEEEER entrante /////////////////////////////////////////// OKOKOK\n";
 
 	  /* Envio un handshake */
 	  mensaje = new Mensaje();
@@ -269,6 +264,8 @@ void Peer::run(){
      }
      else
 	  stop();
+
+     socket->setTimeout(5,0);
      while(estado == PEER_RUNNING && receptor !=NULL && emisor!=NULL &&receptor->isRunning() ){
 	  Message *respuesta = proto.decode(*datos);
 	  
@@ -334,7 +331,7 @@ void Peer::run(){
 	       {
 		    //OK, me envian datos.
 		    std::string bloque;
-		    while(bloque.length() < respuesta->length && estado == PEER_RUNNING){
+		    while(bloque.length() < respuesta->length && estado == PEER_RUNNING && datos->isValid()){
 			 bloque += datos->popFront();
 		    }
 		    if(estado == PEER_RUNNING)
