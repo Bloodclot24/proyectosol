@@ -195,7 +195,6 @@ bool Socket::conectar(void){
 /****************************************************************************/
 bool Socket::cerrar(void){
      std::cout << "cerrando socket" << this << "\n";
-     long arg;
      int retorno=0;
      if(s > 0 ){
 	  shutdown(s,SHUT_RDWR);
