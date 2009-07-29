@@ -1,9 +1,11 @@
-#ifndef CONTROLADORVISTA_H_
-#define CONTROLADORVISTA_H_
+#ifndef CONTROLADORGUI_H_
+#define CONTROLADORGUI_H_
 
 #include "../../Controlador/controlador.h"
 #include "../../Vista/GUI/vistaTorrent.h"
 class ControladorGUI;
+#include "../../Vista/GUI/refrescador.h"
+
 /****************************************************************************/
 /**
  * El controlador de la vista de la aplicacion Sun Torrent.
@@ -12,6 +14,7 @@ class ControladorGUI: public Controlador {
 
 	private:
 		VistaTorrent* vista;
+		Refrescador* refrescador;
 		
 		int all;
 		int downloading;
@@ -218,9 +221,13 @@ class ControladorGUI: public Controlador {
 		 * 
 		 * @param message Mensaje a mostrar.
 		 */ 
-		virtual void agregarMessage(std::string message);	
+		virtual void agregarMessage(std::string message);
+
+		/********Refrescador********/		
+		void actualizarPantalla();
+		
+		virtual void comenzarARefrescarPantalla();		
 };
 
 /****************************************************************************/
-#endif /*CONTROLADORVISTA_H_*/
-class ControladorVista;
+#endif /*CONTROLADORGUI_H_*/

@@ -100,6 +100,7 @@ void VistaTorrent::correr() {
 
 	controlador->mostrarFiles();
 	controlador->mostrarTrackers();
+	controlador->comenzarARefrescarPantalla();
 
     Gtk::Main::run(*main_window);
 }
@@ -109,7 +110,7 @@ std::string getPathStatusIcon(std::string status) {
 
 	std::string path;
 
-	if(status == "Downloading" || status == "Waiting ...")
+	if(status == "Downloading" || status == "Waiting...")
 		path= PATH_DOWN_OK;
 	else if(status == "Seeding")
 		path= PATH_SEED_OK;

@@ -8,6 +8,7 @@ ControladorGUI::ControladorGUI(): mutex() {
 	this->downloading= 0;
 	this->completed= 0;
 	this->active= 0;
+	this->refrescador= new Refrescador(this);
 	cargarConfig();
 	crearAlertaFallo();
 }
@@ -16,6 +17,8 @@ ControladorGUI::ControladorGUI(): mutex() {
 ControladorGUI::~ControladorGUI() {
 
 	guardarConfig();
+	refrescador->finish();
+	delete refrescador;
 	delete vista;	
 }
 
@@ -387,7 +390,7 @@ void ControladorGUI::actualizarDone(std::string file, int done) {
 
 	//mutex.lock();
 	
-	vista->actualizarDone(file, done);
+//	vista->actualizarDone(file, done);
 	
 //	if(vista->archivoSeleccionado(file)) {
 //		std::string doneS= obtenerDownloaded(done);
@@ -402,8 +405,8 @@ void ControladorGUI::actualizarStatus(std::string file, std::string status) {
 	
 	//mutex.lock();
 		
-	vista->actualizarStatus(file, status);
-	actualizarCantActividades();
+//	vista->actualizarStatus(file, status);
+//	actualizarCantActividades();
 	
 //	if(vista->archivoSeleccionado(file))
 //		vista->modificarInformacion(status);
@@ -417,19 +420,19 @@ void ControladorGUI::actualizarDownSpeed(std::string file,
 	
 	//mutex.lock();
 	
-	vista->actualizarDownSpeed(file, obtenerVelocidad(downSpeed));
-
-	Torrent* torrent= obtenerTorrent(file);
-	double done= torrent->getPorcentaje();
-	double size = torrent->getTotalSize();
+//	vista->actualizarDownSpeed(file, obtenerVelocidad(downSpeed));
+//
+//	Torrent* torrent= obtenerTorrent(file);
+//	double done= torrent->getPorcentaje();
+//	double size = torrent->getTotalSize();
+//	
+//	uint32_t time= 8639999;
+//	if(downSpeed != 0)
+//		time= (size *( 100 - done)/100) / downSpeed;
+//	
+//	vista->actualizarTime(file,obtenerETA(time));
 	
-	uint32_t time= 8639999;
-	if(downSpeed != 0)
-		time= (size *( 100 - done)/100) / downSpeed;
-	
-	vista->actualizarTime(file,obtenerETA(time));
-	
-	vista->actualizarTransferencias();
+	//vista->actualizarTransferencias();
 	//mutex.unlock();
 }
 
@@ -437,7 +440,7 @@ void ControladorGUI::actualizarDownSpeed(std::string file,
 void ControladorGUI::actualizarUpSpeed(std::string file, uint32_t upSpeed) {	
 
 	//mutex.lock();	
-	vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
+	//vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
 	//mutex.unlock();
 }
 
@@ -461,5 +464,52 @@ void ControladorGUI::agregarMessage(std::string message) {
 	
 	//mutex.unlock();
 }
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::actualizarPantalla() {
+	
+	const std::list<Torrent*>* listaTorrents= this->cliente->getListaTorrents();
+	std::list<Torrent*>::const_iterator it;
+	
+	if(listaTorrents->size() > 0) {
+		for(it= listaTorrents->begin(); it != listaTorrents->end(); it++) {
+			
+			std::cout << "---------------------------------------" << std::endl;
+						
+			std::string file= (*it)->getName();	
+			double done= (*it)->getPorcentaje();
+			std::string status= obtenerStatus((*it)->getState());
+			uint32_t downSpeed= (*it)->getVelocidadBajada();
+			uint32_t upSpeed= (*it)->getVelocidadSubida();
+			double size= (*it)->getTotalSize();
+			uint32_t time= 8639999;
+	
+			if(downSpeed != 0)
+				time= (size *( 100 - done)/100) / downSpeed;
+
+			std::cout << "FILE: " << file << std::endl;
+			std::cout << "Done: " << done << std::endl;
+			std::cout << "Status: " << status << std::endl;
+			std::cout << "DownSpeed: " << obtenerVelocidad(downSpeed) << std::endl;
+			std::cout << "UpSpeed: " << obtenerVelocidad(upSpeed) << std::endl;
+			std::cout << "ETA: " << time << std::endl;
+			
+			vista->actualizarDone(file, done);
+			vista->actualizarStatus(file, status);
+			vista->actualizarUpSpeed(file, obtenerVelocidad(upSpeed));
+			vista->actualizarDownSpeed(file, obtenerVelocidad(downSpeed));
+			vista->actualizarTime(file,obtenerETA(time));
+			
+			
+			std::cout << "---------------------------------------" << std::endl;	
+		}	
+	}
+}	
+
+/*--------------------------------------------------------------------------*/
+void ControladorGUI::comenzarARefrescarPantalla() {
+	
+	refrescador->comenzar();
+}		
 
 /****************************************************************************/
