@@ -448,6 +448,9 @@ void VistaTorrent::actualizarTime(std::string file, std::string time) {
 	Gtk::TreeModel::Row row;
 	if(buscarRow_transf(file, row))
 		row[columns_transf.col_time]= time;
+	Gtk::TreeModel::iterator iter= refTreeSelection->get_selected();
+	Gtk::TreePath path(iter);
+	treeModel_transf->row_changed(path,iter);	
 }
 
 /*--------------------------------------------------------------------------*/
