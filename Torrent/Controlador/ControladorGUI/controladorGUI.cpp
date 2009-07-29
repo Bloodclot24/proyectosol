@@ -39,7 +39,7 @@ void ControladorGUI::actualizarCantActividades() {
 	vista->modificarCantCompleted(sAux);
 	sprintf(sAux, "%d", active);
 	vista->modificarCantActive(sAux);
-	if(all-active > 0)	
+	if(all-active >= 0)	
 		sprintf(sAux, "%d", all-active);
 	else
 		sprintf(sAux, "%d", 0);		
@@ -320,11 +320,11 @@ void ControladorGUI::actualizarPantalla() {
 			vista->actualizarDownSpeed(file, obtenerVelocidad(downSpeed));
 			vista->actualizarTime(file,obtenerETA(time));
 			
-			if(vista->archivoSeleccionado(file)) {
-				vista->modificarDownloaded(obtenerDownloaded(done));
-				vista->modificarInformacion(status);
-				modificarPeers(*it);
-			}
+//			if(vista->archivoSeleccionado(file)) {
+//				vista->modificarDownloaded(obtenerDownloaded(done));
+//				vista->modificarInformacion(status);
+//				modificarPeers(*it);
+//			}
 			
 			this->all++;
 			
